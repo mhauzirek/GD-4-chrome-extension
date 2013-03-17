@@ -1,0 +1,33 @@
+{
+  "name": "GD 4 chrome",
+  "version": "0.5001",
+  "description": "Makes your life easier when working with GoodData gray pages",
+  "options_page": "options.html",
+  "background": {"persistent": false, "scripts": ["GDextension.js"] },
+ 
+  "page_action" :
+  {
+    "default_icon" : "icons/gd19_gray.png",
+    "default_title" : "Legen...wait for it GoodData is loading...dary!",
+    "default_popup" : "gdpopup.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://secure.gooddata.com/*","https://na1.gooddata.com/*","https://na2.gooddata.com/*","https://*.getgooddata.com/*"],
+      "js": ["gd_content_script.js"],
+      "css":["gd_content.css"]
+    }
+  ],
+
+
+  "permissions" : [
+    "https://secure.gooddata.com/*","https://na1.gooddata.com/*","https://na2.gooddata.com/*","https://*.getgooddata.com/*",
+      "tabs"
+    ],
+  "icons" : {
+    "48" : "gd48.png"
+  },
+
+  "manifest_version": 2
+}

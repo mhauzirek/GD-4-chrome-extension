@@ -1,0 +1,41 @@
+<html style="width: 730px; height: 30px;" width="730" height="30">
+  <head>
+    <meta charset="UTF-8">
+    <title>GD Extension</title>
+    <script src="popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="popup.css" /> 
+  </head>
+  <body  style="width: 730px; height: 30px;" width="730" height="30">
+    <div class="appHeader">
+      <div class="footer">GoodData for Chrome v0.5  MHA &amp; <a href="http://www.gooddata.com" id="hiddenLink">GoodData</a></div>
+      <div class="options"><a href="#" id="optLink" target="_new">+</a></div>
+      <!--div class="options options2"><a href="#" id="reload">⟲</a></div-->
+      <!--div class="options options3"><a href="#" id="something">?</a></div--> 
+
+      <a id="dashboard" href="https://${SERVER}/#s=/gdc/projects/${PID}|projectDashboardPage|" class="logoButton"></a>
+      <!--div>Project ${PID}</div-->
+      <div id="navigation">
+      <a href="https://${SERVER}/gdc/projects/" id="new_project">New</a>
+      <a href="https://${SERVER}/gdc/md/" id="project_list">List</a>
+      <span class="spacer"></span>      
+      <a class="needpid needobj" href="https://${SERVER}${OBJURL}" id="object">Obj</a>
+      <span class="spacer"></span>        
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/" id="project">Project</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/" id="md">MD</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/query" id="query">Query</a>
+      <a class="needpid" href="https://${SERVER}/#s=/gdc/projects/${PID}|dataPage|ldmModel" id="model">LDM</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/ldm/manage" id="mng">Mng</a>
+      <span class="spacer"></span> 
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/validate" id="validate">Validate</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/export" id="export">Exp</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/import" id="import">Imp</a> 
+      <span class="spacer"></span>  
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/dataload/processes" id="transformations">ETL</a>
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/schedules" id="schedules">Schedule</a>
+      <span class="spacer"></span>        
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/schedules" id="something">?</a>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,393 @@
+<html>
+<head><title>GD 4 Chrome Extension Options</title></head>
+    <link rel="stylesheet" type="text/css" href="options.css" />   
+
+<body>
+  <h1>GD 4 Chrome settings::</h1>
+  <hr>
+  <pre>
+  {
+    "ussage info": [
+      "Clicking on <b>Obj</b> in UI will redirect you to the same Object in gray pages",
+      "Clicking on <b>Obj</b> in gray pages will redirect you to UI page for that object if such page exists (dashboard, report, attribute, metric...)"
+    ],
+    "settings info" : [
+      "You can set behaviour of this extension here",
+      "You can change the icon to be notified where you are depending on: ",
+      [
+        "hostname - for example to distinguish whether you are on PI or secure",
+        "PID - to be sure which project are you currently playing with" 
+      ]
+    ],
+    "extension info" : {
+      "version" : "0.5",
+      "update_url" : "<a href="https://confluence.gooddata.com/confluence/x/NQdvBw">https://confluence.gooddata.com/confluence/x/NQdvBw</a>",
+      "update mode" : "manual"
+    }
+
+  }
+  </pre>
+  <hr>
+<div class='form'>
+<form>
+<div class="fields">
+    <fieldset>
+      <legend>Default Icon:</legend>
+      <select id="default_icon">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>
+        <option value="" disabled>Miscelanous</option>
+<option value="icons/gd19_bigdata.png">BIGdata</option>
+<option value="icons/gd19_monetize.png">Monetize!</option>
+<option value="icons/gd19_wait.png">Wait for it...</option>
+<option value="icons/gd19_transparent.png">None (stealth mode)</option>
+        </select>
+    </fieldset>
+    <fieldset>
+      <legend>Alternative Icon for host:</legend>
+      <span class="detail">hostname regexp</span><br>
+      <input id="alt_host_regexp1" value="" />
+        <select id="alt_host_icon1">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>        
+        </select>        
+        <br>
+      <input id="alt_host_regexp2" value="" />
+        <select id="alt_host_icon2">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>    
+        </select>        
+        <br> 
+      <input id="alt_host_regexp3" value="" />
+        <select id="alt_host_icon3">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>         
+        </select>        
+        <br> 
+      <input id="alt_host_regexp4" value="" />
+        <select id="alt_host_icon4">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>       
+        </select>        
+        <br>         
+      <input id="alt_host_regexp5" value="" />
+        <select id="alt_host_icon5">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>     
+        </select>        
+
+    </fieldset> 
+    <fieldset>
+      <legend>Alternative Icon for project:</legend>
+      <span class="detail">PID</span><br>
+      <input type="text" id="alt_pid1" value="" /> 
+        <select id="alt_pid_icon1">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>        
+        </select>
+        <br>
+      <input type="text" id="alt_pid2" value="" /> 
+        <select id="alt_pid_icon2">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>      
+        </select>
+        <br>  
+      <input type="text" id="alt_pid3" value="" /> 
+        <select id="alt_pid_icon3">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>        
+        </select>
+        <br>  
+      <input type="text" id="alt_pid4" value="" /> 
+        <select id="alt_pid_icon4">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>     
+        </select>
+        <br>          
+      <input type="text" id="alt_pid5" value="" /> 
+        <select id="alt_pid_icon5">
+        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_green.png">GoodGreen</option>
+<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
+<option value="icons/gd19_orange.png">GoodOrange</option>
+<option value="icons/gd19_red.png">GoodRed</option>
+<option value="icons/gd19_pink.png">GoodPink</option>
+        <option value="" disabled>GoodData Light Bulbs</option>
+<option value="icons/gd19_bulb.png">Light Bulb</option>
+<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
+<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
+<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+        <option value="-" disabled>GoodPeople</option>
+<option value="icons/gd19_goodman.png">Good Guy</option>
+<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+<option value="icons/gd19_goodman_green.png">Green Guy</option>
+<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+<option value="icons/gd19_goodman_red.png">Red Guy</option> 
+<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+        <option value="" disabled>Bears</option> 
+<option value="icons/gd19_bear.png">Our Bear</option>
+<option value="icons/gd19_bear_blue.png">Blue Bear</option>
+<option value="icons/gd19_bear_green.png">Green Bear</option>
+<option value="icons/gd19_bear_red.png">Red Bear</option>         
+        </select>
+        <br>    
+      </fieldset>   
+</div>
+
+<div class="submit">
+  <!--button>Save neco</button-->
+</div>
+</form>
+
+<input type="button" id="save" value="Save options" /> <span id="status"></span>
+</div>
+
+  <p class="documentation">
+  <a href="https://confluence.gooddata.com/confluence/x/NQdvBw" target="_blank">Documentation</a>
+  </p>
+</body>
+    <script src="options.js"></script>   
+</html>

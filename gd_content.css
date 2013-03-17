@@ -1,0 +1,117 @@
+ .gd4chrome_summary {
+
+    border-collapse: separate;
+    color: rgb(170, 170, 170);
+    display: inline;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    margin-left: 10px;
+    margin-right: 10px;    
+    margin-bottom: 10px;
+
+    border-bottom-color: rgb(153, 153, 153);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    display: block;
+    padding-bottom: 7px;
+    background: auto !important;
+}
+
+.gd4chrome_title{
+color: rgb(255, 255, 255);
+display: block;
+font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+font-size: 18px;
+font-weight: bold;
+height: 23px;
+margin-bottom: 2px;
+margin-left: 10px;
+margin-right: 10px;
+margin-top: 3px;
+padding-bottom: 1px;
+padding-left: 0px;
+padding-right: 0px;
+padding-top: 0px;
+background: auto !important;
+}
+
+
+.gd4chrome_tab{
+    border: 1;
+    width: 400px;
+    margin-bottom: 10px
+}
+
+.gd4chrome_col1{
+    margin-bottom: 2px;
+    margin-right: 10px;
+    padding-left: 10px;
+}
+
+.gd4chrome_close{
+    color: rgb(238, 238, 238);
+    cursor: pointer;
+    display: block;
+    float: right;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    margin-right: 10px;
+    margin-top: 5px;
+    vertical-align: top;
+    text-decoration: none;
+}
+
+.gd4chrome_value{
+    border-collapse: separate;
+    color: rgb(0, 170, 255);
+    display: block;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    width: 400;
+}
+
+#gd4chrome_overlay{
+    -webkit-background-clip: border-box;
+    -webkit-background-origin: padding-box;
+    -webkit-background-size: auto;
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0.85098);
+    background-image: none;
+    background-origin: padding-box;
+    background-size: auto;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    color: rgb(255, 255, 255);
+    display: block;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    outline-color: rgb(255, 255, 255);
+    outline-style: none;
+    outline-width: 0px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+
+    width:400px;
+    display:block;
+    position:fixed! important; 
+    z-index:21000;
+    top:45px;
+    right:5px;
+
+    padding: 5px 5px 5px 5px;
+    color: white;
+    background: #333;
+    background: rgba(0,0,0,0.85);
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    -ms-border-radius: 15px;
+    border-radius: 15px;
+    font-size: 110%;
+  }
+

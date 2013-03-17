@@ -1,0 +1,36 @@
+<html style="width: 150px; height: 300px;" width="150" height="300">
+  <head>
+    <title>GD Extension</title>
+    <script src="popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="popup.css" /> 
+  </head>
+  <body  style="width: 150px; height: 300px;" width="150" height="300">
+    <div class="appHeader">
+      <div class="footer">GoodData for Chrome v0.4  MHA &amp; <a href="http://www.gooddata.com" id="hiddenLink">GoodData</a></div>
+      <div class="options"><a href="#" id="optLink" target="_new">O</a></div>
+
+      <a id="dashboard" href="https://${SERVER}/#s=/gdc/projects/${PID}|projectDashboardPage|" class="logoButton"></a><br>
+      <!--div>Project ${PID}</div-->
+      <div id="navigation">
+        <a href="https://${SERVER}/gdc/projects/" id="new_project">New</a><br>
+        <a href="https://${SERVER}/gdc/md/" id="project_list">List</a><br>
+      <span class="spacer"></span>      
+      <a class="needpid needobj" href="https://${SERVER}${OBJURL}" id="object">Obj</a>       
+      <span class="spacer"></span>        
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/" id="project">Project</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/" id="md">MD</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/query" id="query">Query</a>
+      <a class="needpid" href="https://${SERVER}/#s=/gdc/projects/${PID}|dataPage|ldmModel" id="model">LDM</a>
+      <span class="spacer"></span> 
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/validate" id="validate">Validate</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/export" id="export">Export</a>
+      <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/import" id="import">Import</a> 
+      <span class="spacer"></span>  
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/etl/clover/transformations" id="transformations">ETL</a>
+      <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/schedules" id="schedules">Schedule</a>
+    </div>
+</body>
+</html>
+
+
+
