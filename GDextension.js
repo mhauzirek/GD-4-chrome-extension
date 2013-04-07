@@ -10,88 +10,6 @@
 var listOfProjects = null;
 var called = 0;
 
-/*
-function getListOfProjects(){
-  if(called==0 && listOfProjects==null){
-    listOfProjects=getList();
-    called=1;
-  }
-  return listOfProjects
-}
-*/
-
-function getProjectInfo(projID, server){
-  console.log("Getting project info for project "+projID+" on server "+server);
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "https://"+server+"/gdc/projects/"+projID, false);
-  xhr.setRequestHeader("Accept", "application/json");
-  xhr.send();
-
-
-  /*
-  xhr.onreadystatechange = function() {
-  if (xhr.readyState == 4) {
-
-    console.log(xhr.status);
-    console.log(xhr.responseText);
-*/
-
-    var resp = JSON.parse(xhr.responseText);
-
-
-    //listOfProjects = resp;
-  //}
-
-  var a = {driver: "",created: "", updated: "", title: "", summary: "", token: ""};
-  a.driver = resp.project.content.driver;
-  a.title = resp.project.meta.title;
-  a.created = resp.project.meta.created;
-  a.updated = resp.project.meta.updated;
-  a.token = resp.project.content.authorizationToken;
-  a.summary = resp.project.meta.summary;
-
-     return a;
-}
-
-/*
-function syncListOfProjects(){
-
-  console.log("called syncListOfProjects");
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "https://secure.gooddata.com/gdc/md/", true);
-  xhr.setRequestHeader("Accept", "application/json");
-  xhr.onreadystatechange = function() {
-  if (xhr.readyState == 4) {
-    console.log("Received "+resp.about.links.length+" projects");
-    var resp = JSON.parse(xhr.responseText);
-
-    var a={pid: "", title: "", queryEngine: "", driver: ""}
-    var projects;
-
-    for(var i = 0, i<=resp.about.links.length,i++){
-      a.title=resp.about.links[i].identifier; 
-      a.title=resp.about.links[i].title;
-      projects.push(a);
-      console.log("Addded: "+a);
-    }
-
-  // Save it using the Chrome extension storage API.
-  chrome.storage.local.set(a, function() {
-    console.log("list of projects saved"+chrome.storage.local.getBytesInUse(null));
-  });
-}
-
-
-  }
-}
-
-xhr.send();
-}
-
-*/
-
-
-
 
 
 var lastURL = "";
@@ -116,11 +34,19 @@ chrome.extension.onMessage.addListener(
         case "getProjectInfo":
           sendResponse(getProjectInfo(request.PID, request.server));
         break;
-/*
-        case "syncProjects"
-          syncListOfProjects();  
+
+        case "getFromLocalStorage":
+            sendResponse(localStorage[request.field]);
         break;
-*/        
+
+        case "canParseCcLog":
+            console.log("can we parse CC log?");
+            if(localStorage['dont_parse_cc_logs']=="1"){
+                sendResponse(false);
+            }else{
+                sendResponse(true);
+            }
+        break;             
 
       }
   });

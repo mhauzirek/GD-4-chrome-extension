@@ -45,6 +45,19 @@ function save_options() {
   select = document.getElementById("alt_pid_icon5");
   localStorage["alt_pid_icon5"] = select.children[select.selectedIndex].value;
 
+  select = document.getElementById("dont_parse_cc_logs");
+  if(select.checked){
+    localStorage["dont_parse_cc_logs"]="1";
+  }else{
+    localStorage.removeItem("dont_parse_cc_logs");
+  }
+
+
+  //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
+
+
+
+
   console.log("Options saved");
 
   var status = document.getElementById("status");
@@ -79,6 +92,8 @@ function restore_options() {
   var alt_pid_icon4 = localStorage["alt_pid_icon4"];
   var alt_pid5 = localStorage["alt_pid5"]; 
   var alt_pid_icon5 = localStorage["alt_pid_icon5"];
+
+  var dont_parse_cc_logs = localStorage["dont_parse_cc_logs"];
 
   if(default_icon){
     var select = document.getElementById("default_icon");
@@ -238,6 +253,12 @@ function restore_options() {
       }
     }
   }
+  if(dont_parse_cc_logs=="1"){
+    document.getElementById("dont_parse_cc_logs").checked=true;
+  }
+
+
+
 }
 
 restore_options();

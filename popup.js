@@ -82,6 +82,12 @@ function clickObject(e){
   if(e.which==2) return false;      
   chrome.tabs.update(tabId, {'url': 'https://'+server+objURL});
   loader();  
+} 
+
+function clickConsole(e){ 
+  if(e.which==2) return false;      
+  chrome.tabs.update(tabId, {'url': 'https://'+server+"/admin/dataload/"});
+  loader();  
 }
 
 function dragObject(e){
@@ -97,13 +103,21 @@ function needPidDisabler(){
     }
 }
 
-
+/*
+ * lets do this better
 function clickSomething(e){ 
   chrome.extension.sendMessage({message: "getProjectInfo",PID: pid,server: server}, function(response) {
   chrome.tabs.sendMessage(tabId, {type: "showProjectInfo",info: response});
 
 }); 
 }   
+*/
+
+function clickInfo(e){ 
+  chrome.tabs.sendMessage(tabId, {type: "showProjectInfo2",PID: pid, server: server}); 
+}
+
+
 
 function clickReload(e){ 
   chrome.extension.sendMessage({message: "syncProjects",server: server}); 
@@ -243,9 +257,11 @@ function loader(){
   document.getElementById("model").addEventListener('click', clickModel);  
   document.getElementById("mng").addEventListener('click', clickMng); 
 
-  document.getElementById("object").addEventListener('click', clickObject);   
+  document.getElementById("object").addEventListener('click', clickObject); 
 
-  document.getElementById("something").addEventListener('click', clickSomething);
+  document.getElementById("console").addEventListener('click', clickConsole);
+
+  document.getElementById("something").addEventListener('click', clickInfo);
 
   
   //document.getElementById("reload").addEventListener('click', clickReload); 

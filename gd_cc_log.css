@@ -1,0 +1,242 @@
+html {
+	background-color: white;
+}
+
+pre.shifted_log {
+	margin-top: 60px;
+	background-color: white;
+}
+
+
+#optlink{
+	color: rgb(195, 211, 229);
+	cursor: auto;
+	display: inline;
+	font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	height: auto;
+	margin-left: 5px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 0px;
+	text-decoration: none;
+	width: auto;
+}
+
+.graph_name{
+	color: white;
+	left: 0px;
+	text-align: left;
+	xfont-weight: bold;
+
+}
+.graph_run_time{
+	color: white;
+	padding-left: 5px;
+	left: 0px;
+
+}
+
+#cc_head {
+	background-attachment: scroll;
+	background-clip: border-box;
+	background-color: #39414d;
+	background-origin: padding-box;
+	background-size: auto;
+
+	color: rgb(51, 51, 51);
+	display: block;
+	font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	height: 50px;
+	width: 500px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	padding-top: 1px;
+	padding-bottom: 2px;
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	z-index: 4998;
+}
+
+
+.cc_head_label {
+	bottom: 2px;
+	color: white;
+	cursor: pointer;
+	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+	font-size: 12px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: bold;
+	height: auto;
+	background-color: #39414d;
+	width: auto;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 0px;
+	position: relative;
+	text-decoration: none;
+} 
+
+.cc_head_links{
+	display: inline-block;
+	xtext-align: right;
+	left: 0px;
+	padding-top: 5px;
+	width: 450px;
+	background-color: #39414d;	
+}
+
+.cc_head_link {
+	color: #c2d3e4;
+	text-decoration: none;
+	font-size: 13px;
+	cursor: auto;
+	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+	font-weight: 300;
+	background-color: #39414d;
+	text-decoration: none;
+} 
+
+.cc_head_link:visited {
+	color: #c2d3e4;
+	text-decoration: none;
+	background-color: #39414d;	
+} 
+
+.cc_head_link:hover {
+	color: white;
+	text-decoration: none;
+	background-color: #39414d;	
+} 
+
+.close{
+	font-weight: 700;
+	position: fixed;
+	right: 10px;
+	top: 5px;
+	background-color: #39414d;
+}
+
+a.goto_error:link, a.goto_error:visited, a.goto_error:hover{
+	color: #FF6B6B;
+
+	right: 100px;
+	position: fixed;
+
+	padding-left: 15px;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #39414d;
+}
+
+a.goto_running:link, a.goto_running:visited, a.goto_running:hover{
+	color: #b0b0b0;
+	right: 100px;
+	position: fixed;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #39414d;	
+}
+
+a.goto_success:link, a.goto_success:visited, a.goto_success:hover{
+	color: #99FF99;
+	right: 100px;
+	position: fixed;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #39414d;	
+}
+
+a.run_refresh:link, a.run_refresh:visited, a.run_refresh:hover{
+	color: #b0b0b0;
+	position: fixed;
+	right: 40px;
+	padding-left: 15px;
+	font-weight: normal;
+	background-color: #39414d;
+	text-decoration: none;
+}
+
+.cc_head_labels{
+	margin-top: 10px;
+	background-color: #39414d;
+
+}
+
+.gd_logo {
+
+color: rgb(194, 211, 228);
+cursor: auto;
+display: inline;
+font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+font-size: 20px;
+font-style: normal;
+font-variant: normal;
+font-weight: normal;
+height: auto;
+line-height: 53px;
+text-decoration: none;
+width: auto;
+
+margin-left: 50px;
+margin-right: 50px;
+}
+
+.gd_logo strong{
+	color: white;
+}
+
+
+
+
+
+
+.logline {
+	display: block;
+	font-family: monospace;
+	white-space: pre;
+}
+
+.FATAL {
+	background-color: #FF0000;
+	color: yellow;
+	display: block;
+}
+
+.ERROR {
+	background-color: #FF9EA0;
+	color: black;
+	display: block;
+}
+
+.WARN {
+	background-color: #FFD07F;
+	color: black;
+	display: block;
+}
+
+.INFO {
+	background-color: white;
+	color: black;
+	display: block;
+}
+
+.DEBUG {
+	background-color: white;
+	color: #689CD2;
+	display: block;
+}
+
+.WatchDog:not(.ERROR) {
+	background-color: white;
+	color: #BBBBBB;
+}
+
