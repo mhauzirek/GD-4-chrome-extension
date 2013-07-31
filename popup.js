@@ -12,6 +12,23 @@ var objEditURL="#";
 
 document.addEventListener('DOMContentLoaded', loader);  
 
+function parse_gd_url(url){
+console.log("parsing "+url);
+var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var objParse = url.match("https://.*/obj/([0-9]+).*");
+
+var response = {
+    server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
+    ui:  (!pidParse || !pidParse[2] ? 0 : 1),
+    pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
+    obj: (!objParse || !objParse[1] ? null : objParse[1])
+};
+console.log(response);
+return response;
+}
+
+
+
 function clickProj(e){
   if(e.which==2) return false;
   chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/projects/'+pid});
@@ -75,7 +92,7 @@ function clickModel(e){
 } 
 function clickMng(e){
   if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/ldm/manage'});
+  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/ldm/manage2'});
   loader();
 } 
 function clickObject(e){ 
@@ -156,39 +173,27 @@ function loader(){
     
     var tab = array_of_tabs[0];
     tabId= tab.id;
-    var url = tab.url;
-    var pidParse = url.match("https://(.*\..*gooddata.com)(/#s=)?[^/]*(/gdc/(projects|md)/)?([^/\|]*)[/\|]?.*");
-    try{
-   
-    if(pidParse[2]){
-      ui=1;
-    }else{
-      ui=0;
-    }
 
+     var parsed = parse_gd_url(tab.url);
+     ui=parsed.ui;
+     console.log("Are we in UI? "+ui);
+     server=parsed.server;
+     pid=parsed.pid;
+     obj=parsed.obj;
 
-    console.log("Are we in UI? "+ui);
-    
-    var objParse = url.match("https://.*/obj/([0-9]+).*");
-  
-    server=pidParse[1];
-
-    if(pidParse[5]!=null && pidParse[5]!=''){
-        pid=pidParse[5];
+    if(pid!=null){
         console.log("Found PID "+pid);
 
         needPidEnabler(); 
-        if(objParse!=null && objParse[1]!=null && objParse[1]!=''){
-          obj=objParse[1];
-          objEditURL='/gdc/md/'+pid+'/obj/'+obj+'?mode=edit';
-
+        if(obj!=null){
           console.log("Found object ID "+obj);
+          objEditURL='/gdc/md/'+pid+'/obj/'+obj+'?mode=edit';
           if(ui==0){
             //we are in gray pages and need to determine category of object
             //console.log("calling");
             chrome.tabs.sendMessage(tabId, {type: "obj_category"}, function(response) {
               console.log("in GP looking for category - received category: "+response.category);
-              switch(response.category){
+              switch(response.category){    
                 case 'projectDashboard' :
                   objURL = '/#s=/gdc/projects/'+pid+'|projectDashboardPage|/gdc/md/'+pid+'/obj/'+obj+'|';
                   needObjEnabler();  
@@ -269,12 +274,6 @@ function loader(){
 
 //  document.getElementById("object").addEventListener('dragend', dragObject); 
 
- }catch(err){
-    console.log("Error during GD4Chrome initialization. Disabling PID-depended features");
-    console.log(err);
-    needPidDisabler();
-
-  }      
     }
 );
 

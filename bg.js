@@ -18,9 +18,17 @@ chrome.extension.onMessage.addListener(
 function set_icon(tab){
     var tabId= tab.id;
     var url = tab.url;
-    var pidParse = url.match("https://(.*\..*gooddata.com)(/#s=)?.*/gdc/(projects|md)/([^/\|]*)[/\|]?.*");
+    var pidParse = url.match("https://([^\./]*\.[^\./]*\.[^\./]*(/#s=)?.*/gdc/(projects|md)/([^/\|]*)[/\|]?.*");
     var pid;
     var server;
+
+    console.log(pidParse[0]);
+    console.log(pidParse[1]);
+    console.log(pidParse[2]);
+    console.log(pidParse[3]);
+    console.log(pidParse[4]);
+ 
+
     server=pidParse[1];
     if(pidParse[4]!=null && pidParse[4]!=''){
         pid=pidParse[4];

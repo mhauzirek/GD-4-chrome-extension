@@ -2,6 +2,82 @@
  * this is content script for GD extension
  * it is embeded to GD pages and sends message to wakeup extension
  */
+function array_contains(a, obj) {
+    if(!a) return false;
+    var i = a.length;
+    while (i--) {
+       if (a[i] === obj) {
+           return true;
+       }
+    }
+    return false;
+}
+
+function parse_gd_url(url){
+//console.log("parsing "+url);
+var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var objParse = url.match("https://.*/obj/([0-9]+).*");
+
+var response = {
+    server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
+    ui:  (!pidParse || !pidParse[2] ? 0 : 1),
+    pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
+    obj: (!objParse || !objParse[1] ? null : objParse[1])
+};
+console.log(response);
+return response;
+}
+
+
+function gd_extension_init(){
+//answer extension to request for category
+
+parse_gd_url(location.href);
+chrome.extension.sendMessage({message: "wakeup"});
+chrome.extension.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    switch (request.type){
+      /** request for object category - we need to parse it from source */
+      case "obj_category":
+
+        var source = document.documentElement.outerHTML;
+        var category = source.match(/"?category"? ?: "?[a-zA-Z]+"?/g);
+
+        if(category!=null){
+          console.log(category[category.length-1]);
+          var cat_detail = category[category.length-1].match(/"?category"? ?: "?([a-zA-Z]+)"?/);
+          if(cat_detail!=null){
+            console.log(cat_detail[1]);
+          }
+
+          sendResponse({category: cat_detail[1]});
+        }else{
+          console.log("No category found");
+        }
+       break;
+
+       /** request for hiding project info box */
+       case "hideProjectInfo":
+          console.log("hiding project info overlay");
+          hideProjectInfo();
+       break;
+
+       /** better implementation of project info box */
+       case "showProjectInfo2":
+          console.log("showing project info overlay2 for project "+request.PID+", server "+request.server);
+          showProjectInfo2(request.PID, request.server);
+
+
+       break;
+
+
+
+     }
+      
+  });
+}
+
+
 
 function hideProjectInfo(){
 
@@ -33,9 +109,12 @@ function get_basic_info(pid,server){
     {
       resp = JSON.parse(proj_info.responseText);
       document.getElementById("gd4chrome_title").innerHTML=resp.project.meta.title;
+      document.getElementById("gd4chrome_title").title=resp.project.meta.title;
       document.getElementById("gd4chrome_summary").innerHTML=resp.project.meta.summary;
       document.getElementById("gd4chrome_driver").innerHTML=resp.project.content.driver;
-      document.getElementById("gd4chrome_token").innerHTML=resp.project.content.authorizationToken;
+      
+      document.getElementById("gd4chrome_token").innerHTML=resp.project.content.authorizationToken + " @ " + (resp.project.content.cluster=="" ? "AWS" : resp.project.content.cluster);
+
       document.getElementById("gd4chrome_created").innerHTML=prettyDate(resp.project.meta.created,prg_diff);
       document.getElementById("gd4chrome_created").title=resp.project.meta.created;
       document.getElementById("gd4chrome_updated").innerHTML=prettyDate(resp.project.meta.updated,prg_diff);
@@ -64,7 +143,7 @@ function get_qe_info(pid,server){
   if (qe_info.status==200)
     {
       var resp = JSON.parse(qe_info.responseText);
-      document.getElementById("gd4chrome_qe").innerHTML=resp.service.queryEngine;
+      document.getElementById("gd4chrome_qe").innerHTML="<a href='https://"+server+"/gdc/md/"+pid+"/service/engine'>"+resp.service.queryEngine+"</a>";
     }else{
       document.getElementById("gd4chrome_qe").innerHTML="[N/A]";
     }
@@ -129,7 +208,7 @@ function get_etl_info(pid,server){
   if (etl_info.status==200){
     var resp = JSON.parse(etl_info.responseText);
     var html_text="";
-    if(resp.schedules.paging.count==0){
+    if(false && resp.schedules.paging.count==0){
       document.getElementById("gd4chrome_etl_last").innerHTML="(no known)";
       document.getElementById("gd4chrome_etl_next").innerHTML="(none)";
     }else{
@@ -140,12 +219,19 @@ function get_etl_info(pid,server){
 
     var cur_last_date=null;
     var cur_next_date=null;
+    var disabled_count=0;
+    var enabled_count=0;
+    var no_schedule_states = true;
+
 
     var schedule_count = resp.schedules.items.length;
     schedule = null;
     for (var s = 0; s < schedule_count; s++) {
       schedule = resp.schedules.items[s].schedule;
       //console.log("inspecting schedule "+schedule.links.self)
+
+      if(schedule.state) no_schedule_states = false; //we have states in schedules R85 or something
+
 
       if(schedule.lastExecution){
         cur_last_date = new Date(schedule.lastExecution.execution.endTime);
@@ -156,24 +242,54 @@ function get_etl_info(pid,server){
       }
 
       cur_next_date = new Date(schedule.nextExecutionTime);
-      if(schedule.state =="ENABLED" && (nextrun==null || cur_next_date<nextrun)){
+      if((no_schedule_states || schedule.state =="ENABLED") && (nextrun==null || cur_next_date<nextrun)){
         nextrun=cur_next_date;
         nextExecution = schedule;
       }
+
+      if(schedule.state == "DISABLED"){
+        disabled_count++;
+      }
+      if(schedule.state == "ENABLED"){
+        enabled_count++;
+      }
+
+
+
     }
 
 
 
     if(lastExecution){ //already executed 
-      html_text = "<span><span title='Finished at "+lastExecution.lastExecution.execution.endTime+"'>";
-      html_text = html_text + prettyDate(lastExecution.lastExecution.execution.endTime,0)+"</span>";
-      html_text = html_text + " <span title='Started at "+lastExecution.lastExecution.execution.startTime;
-      html_text = html_text + " by "+lastExecution.lastExecution.execution.trigger+"' class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
-      html_text = html_text + lastExecution.lastExecution.execution.status+"</span>";
+        html_text = "<span>";
+        if(lastExecution.lastExecution.execution.status!="RUNNING"){
+          html_text = html_text + "<span title='Finished at "+lastExecution.lastExecution.execution.endTime+"'>";
+          html_text = html_text + prettyDate(lastExecution.lastExecution.execution.endTime,0)+"</span> ";
+        }
+        html_text = html_text + "<span title='Started at "+lastExecution.lastExecution.execution.startTime;
+        html_text = html_text + " by "+lastExecution.lastExecution.execution.trigger+"' class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+      
+      if(lastExecution.lastExecution.execution.log){
+        html_text = html_text + "<a href='"+lastExecution.lastExecution.execution.log;
+        html_text = html_text + (lastExecution.lastExecution.execution.status=="ERROR" ? "#first_error" : "#last_line")+"'";
+        html_text = html_text + " class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+        html_text = html_text + lastExecution.lastExecution.execution.status;
+        html_text = html_text + "</a>";
+      }else{
+        html_text = html_text + "<span class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+        html_text = html_text + lastExecution.lastExecution.execution.status;
+        html_text = html_text + "</span>";
+      }
+
+      if(lastExecution.lastExecution.execution.status=="RUNNING"){
+        html_text = html_text + " <span class='gd4chrome_value_inline'>started "+prettyDate(lastExecution.lastExecution.execution.startTime,0)+"</span>";
+      }
+
+      html_text = html_text + "</span>"
 
     }else{
       //never executed
-      html_text = "<span>Not yet";
+      html_text = "<span>no known";
     }
 
     html_text = html_text + "</span>";
@@ -181,17 +297,30 @@ function get_etl_info(pid,server){
 
 
 
-    if(nextExecution){ //already executed 
+    if(nextExecution){ 
       html_text = "<span title='Next run at "+nextExecution.nextExecutionTime+"'>";
       html_text = html_text + prettyDate(nextExecution.nextExecutionTime,0);
-    }else{
-      //never executed
-      html_text = "<span>(none)";
+    
+    if(schedule_count>1){
+      if(no_schedule_states){
+        html_text = html_text + " <a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>("+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+      }else{
+        html_text = html_text + " <a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>("+(enabled_count>0 ? enabled_count+" enabled " : "");
+        html_text = html_text + (disabled_count>0 ? disabled_count+" disabled " : "");
+        html_text = html_text + "schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+      }
+
     }
 
-    if(resp.schedules.paging.count>1){
-      html_text = html_text + " <a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>("+resp.schedules.paging.count+" schedules total)</a>";
+
+    }else{
+      if(schedule_count==0){
+        html_text = "<span>(no schedules)";
+      }else{
+        html_text = "<a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>(no enabled, "+disabled_count+" disabled schedule"+(disabled_count>1 ? "s" : "")+")</a>";
+      }
     }
+
     html_text = html_text + "</span>";
     document.getElementById("gd4chrome_etl_next").innerHTML=html_text;
   }
@@ -235,7 +364,7 @@ function showProjectInfo2(pid, server){
             </td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1' width='100'>Created</td>\
+            <td class='gd4chrome_col1' width='120'>Created</td>\
             <td width='290'><span class='gd4chrome_value' id='gd4chrome_created'>...</span></td>\
             <td width='10'></td>\
             </tr>\
@@ -270,7 +399,7 @@ function showProjectInfo2(pid, server){
             <td></td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1'>Token</td>\
+            <td class='gd4chrome_col1'>Token &amp; Cluster</td>\
             <td><span class='gd4chrome_value' id='gd4chrome_token'>...</span></td>\
             <td></td>\
             </tr>\
@@ -291,53 +420,7 @@ function showProjectInfo2(pid, server){
 
 
 
-console.log("content_script_executed");
-console.log("sending wakeup message");
 
-chrome.extension.sendMessage({message: "wakeup"});
-
-//answer extension to request for category
-chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    switch (request.type){
-      /** request for object category - we need to parse it from source */
-      case "obj_category":
-
-        var source = document.documentElement.outerHTML;
-        var category = source.match(/"?category"? ?: "?[a-zA-Z]+"?/g);
-
-        if(category!=null){
-          console.log(category[category.length-1]);
-          var cat_detail = category[category.length-1].match(/"?category"? ?: "?([a-zA-Z]+)"?/);
-          if(cat_detail!=null){
-            console.log(cat_detail[1]);
-          }
-
-          sendResponse({category: cat_detail[1]});
-        }else{
-          console.log("No category found");
-        }
-       break;
-
-       /** request for hiding project info box */
-       case "hideProjectInfo":
-          console.log("hiding project info overlay");
-          hideProjectInfo();
-       break;
-
-       /** better implementation of project info box */
-       case "showProjectInfo2":
-          console.log("showing project info overlay2 for project "+request.PID+", server "+request.server);
-          showProjectInfo2(request.PID, request.server);
-
-
-       break;
-
-
-
-     }
-      
-  });
 
 
 function prettyDate(date_str,tz_offset){
@@ -346,7 +429,7 @@ function prettyDate(date_str,tz_offset){
   if(!tz_offset) tz_offset = 0;
 
   var time_formats = [
-  [60, 'just now', 1], // 60
+  [60, 'seconds', 1], // 60
   [120, '1 minute ago', '1 minute from now'], // 60*2
   [7200, 'minutes', 60], // 60*60, 60
   [7200, '1 hour ago', '1 hour from now'], // 60*60*2
@@ -426,6 +509,25 @@ if(today >= prg_dls_start && today <= prg_dls_end){
 var tz_offset = new Date().getTimezoneOffset();
 var prg_diff = prg_dls_diff();
 
+
+chrome.storage.local.get("wl_domains", function(items)
+          {
+            console.log("Domains set for GD Extension:"+items.wl_domains);
+
+            var url_regexp = /.*\.(get)?gooddata\.com$/;
+            var url_matches = url_regexp.exec(location.hostname);
+            if(url_matches){
+              console.log("GoodData domain detected, executing GD Extension");
+              gd_extension_init();
+            }else{
+              if(array_contains(items.wl_domains,location.hostname)){
+                console.log(location.hostname+" is in whitelabeled domains list. executing GD Extension");
+                gd_extension_init();
+              }else{
+                console.log(location.hostname+" is not in whitelabeled domain list. Can be added in extension settings - "+chrome.extension.getURL("options.html"));
+              }
+            }
+          });
 
 
 

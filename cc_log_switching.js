@@ -85,7 +85,7 @@ function reload_refresh(){
 function reload_hash(){
   console.log("reloading without parsing");
   location.href=location.href.split(/\?|#/)[0]+"#no_parse";
-  window.location.reload(true);
+  //window.location.reload(true);
   return false;
 }
 

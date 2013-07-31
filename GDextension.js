@@ -11,7 +11,6 @@ var listOfProjects = null;
 var called = 0;
 
 
-
 var lastURL = "";
 //when I receive message, show icon
 chrome.extension.onMessage.addListener(
@@ -53,22 +52,33 @@ chrome.extension.onMessage.addListener(
 
 
 //change icon depending on current PID, hostname and settings
+
+function parse_gd_url(url){
+console.log("parsing "+url);
+var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var objParse = url.match("https://.*/obj/([0-9]+).*");
+
+var response = {
+    server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
+    ui:  (!pidParse || !pidParse[2] ? 0 : 1),
+    pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
+    obj: (!objParse || !objParse[1] ? null : objParse[1])
+};
+console.log(response);
+return response;
+}
+
+
 function set_icon(tab) {
 
 console.log("called set_icon");
 
-    var tabId = tab.id;
-    var url = tab.url;
-    var pidParse = url.match("https://(.*\..*gooddata.com)(/#s=)?(.*/gdc/)?(projects|md)?/?([^/\|]*)[/\|]?.*");
-    var pid;
-    var server;
+var parsed = parse_gd_url(tab.url);
 
-    if(pidParse){
+    var server = parsed.server;
+    var pid = parsed.pid;
 
-    server = pidParse[1];
-    if (pidParse[5] != null && pidParse[5] != '') {
-        pid = pidParse[5];
-    }
+    if(server){
 
     var default_icon = localStorage["default_icon"];
     if (!default_icon) default_icon = "icons/gd19_blue.png";

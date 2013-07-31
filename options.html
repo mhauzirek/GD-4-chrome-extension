@@ -3,7 +3,7 @@
     <link rel="stylesheet" type="text/css" href="options.css" />   
 
 <body>
-  <h1>GD 4 Chrome settings::</h1>
+  <h1>GoodData Extension Tool::</h1>
   <hr>
   <pre>
   {
@@ -17,12 +17,12 @@
       [
         "hostname - for example to distinguish whether you are on PI or secure",
         "PID - to be sure which project are you currently playing with" 
-      ]
+      ],
+      "You can disable CloudConnect logs parsing if you don't like colors",
+      "You can enable this extension on sites using GoodData in whitelabeled domains other than gooddata.com"
     ],
     "extension info" : {
-      "version" : "0.6",
-      "update_url" : "<a href="https://confluence.gooddata.com/confluence/x/NQdvBw">https://confluence.gooddata.com/confluence/x/NQdvBw</a>",
-      "update mode" : "manual"
+      "version" : "<b id='ext_version'>0.6200</b>",
     }
 
   }
@@ -382,6 +382,21 @@
 
     </fieldset>
 
+    <fieldset>
+      <legend>Whitelabeled hostnames:</legend>
+      <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
+      <input type="text" id="add_wl_domain">
+      <input type="button" id="add_wl" value="Add new">
+      <br>
+      <select multiple="multiple" id="wl_domains">
+      </select>
+      <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
+   
+
+
+    </fieldset>
+
+
 
 </div>
 
@@ -393,9 +408,6 @@
 <input type="button" id="save" value="Save options" /> <span id="status"></span>
 </div>
 
-  <p class="documentation">
-  <a href="https://confluence.gooddata.com/confluence/x/NQdvBw" target="_blank">Documentation</a>
-  </p>
 </body>
     <script src="options.js"></script>   
 </html>

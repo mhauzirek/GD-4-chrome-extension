@@ -1,4 +1,65 @@
 // Saves options to localStorage.
+
+ function remove_wl_domains(){
+  var select = document.getElementById("wl_domains");
+  for(i=0; i<select.length; i++){
+    if(select[i].selected){
+      select.removeChild(select[i]);
+      i--;
+    }
+  }
+}
+
+ function add_wl_domain(){
+  var select = document.getElementById("wl_domains");
+  var text = document.getElementById("add_wl_domain");
+  var exists = false;
+  if(text.value!=''){
+    for(i=0; i<select.length; i++){
+      if(select[i].value==text.value){
+        exists=true;
+        alert("This value is already there.");
+        break;
+      }
+    }
+    if(!exists){
+      var opt = document.createElement('option');
+      opt.value = text.value;
+      opt.innerHTML = text.value;
+      select.appendChild(opt);
+      text.value='';
+    }
+  }
+ }
+
+ function read_wl_domains(){
+  var select = document.getElementById("wl_domains");
+  chrome.storage.local.get("wl_domains", function(items)
+          {
+            console.log(items.wl_domains);
+            for(i=0; i<items.wl_domains.length; i++){
+              var opt = document.createElement('option');
+              opt.value = items.wl_domains[i];
+              opt.innerHTML = items.wl_domains[i];
+              select.appendChild(opt);
+            }
+          });
+ }
+
+
+ function write_wl_domains(){
+  var select = document.getElementById("wl_domains");
+  var arr = [];
+  for(i=0; i<select.length; i++){
+    arr[i]=select[i].value;
+  }
+
+  console.log(arr);
+  chrome.storage.local.set({wl_domains: arr}); 
+ }
+
+
+
 function save_options() {
 
   var select = document.getElementById("default_icon");
@@ -56,7 +117,7 @@ function save_options() {
   //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
 
 
-
+  write_wl_domains();
 
   console.log("Options saved");
 
@@ -257,9 +318,17 @@ function restore_options() {
     document.getElementById("dont_parse_cc_logs").checked=true;
   }
 
+  read_wl_domains();
+
 
 
 }
 
+document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
+
 restore_options();
-document.querySelector('#save').addEventListener('click', save_options);  
+document.querySelector('#save').addEventListener('click', save_options);
+document.querySelector('#remove_wl_domains_button').addEventListener('click', remove_wl_domains);  
+document.querySelector('#add_wl').addEventListener('click', add_wl_domain);
+
+

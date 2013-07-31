@@ -19,7 +19,7 @@ function add_style(name, display, none){
 console.log("content script for CloudConnect logs executed, sending wakeup message");
 chrome.extension.sendMessage({message: "wakeup_cc"});
 
-var url_regexp = /^.*\.log[^\/]*$/;
+var url_regexp = /^.*[\.\/]log[^\/]*$/;
 var url_matches = url_regexp.exec(location.href);
 
 if(url_matches){
@@ -85,7 +85,9 @@ add_style("ERROR",(show.err == "0" ? "none" : "block"));
 
 
 //parse plaintext to divs with classes
-document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
+//document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
+
+document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
 
 //find first error and tag it with id
 var first_error = document.querySelector('.ERROR');
@@ -104,12 +106,12 @@ s.onload = function() {
 
 //add tool with checkboxes
 
-var properties_element = document.body.firstChild.children[1];
+var properties_element = document.body.firstChild.children[4];
 var last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
 
   last_element.id = "last_element";
   var last_line = last_element.textContent;
-  var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4})( \[WatchDog\] \[INFO\]: request_id=[^ ]+ WatchDog thread finished)?.*/;
+  var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4})( \[WatchDog_?[0-9]*\] \[INFO\]: request_id=[^ ]+ WatchDog thread finished)?.*/;
   var match_last = last_regexp.exec(last_line);
 
   if(match_last){
@@ -123,14 +125,26 @@ var last_element = document.body.firstChild.children[document.body.firstChild.ch
 if(properties_element){
 
   var properties_line = properties_element.textContent;
+
+console.log(properties_element.textContent);
+
   var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph ([^ ]+) additional properties {([^}]+)}/;
   var match = prop_regexp.exec(properties_line);
+
+console.log(match[0]);
+console.log(match[1]);
+console.log(match[2]);
+console.log(match[3]);
+console.log(match[4]);
+console.log(match[5]);
+
+
   var properties;
   if(match){
     //found property line
     run_from = Date.parse(match[1]);
 
-    request_id = match[2]
+    request_id = match[2];
     graph_name = match[3];
     properties = match[4].split(", ");
 
@@ -166,7 +180,7 @@ toolbox.innerHTML="\
     <a class='cc_head_link close' href='#' xtarget='_blank' title='Show original log' onclick='reload_hash();return(false)'>X</a>\
     </span>\
     <div class='cc_head_labels'>\
-    <label class='cc_head_label'><input type='checkbox' "+(show.rid=="1" ? "checked='checked'" : "")+" onclick='switch_style(\"request_id\", this.checked, null, \"inline\")'/> RequestID</label>\
+    <label class='cc_head_label cc_head_label_first' onclick='window.prompt(\"Copy request_id to clipboard:\", \"request_id="+request_id+"\")' xonclick='switch_style(\"request_id\", this.checked, null, \"inline\");' /> RequestID</label>\
     <label class='cc_head_label'><input type='checkbox' "+(show.wdg=="1" ? "checked='checked'" : "")+" onclick='switch_style(\"WatchDog\", this.checked, \"ERROR\")'/> WatchDog</label></a>\
     <label class='cc_head_label'><input type='checkbox' "+(show.dbg=="0" ? "" : "checked='checked'")+" onclick='switch_style(\"DEBUG\", this.checked, \"WatchDog\")'/> DEBUG</label>\
     <label class='cc_head_label'><input type='checkbox' "+(show.inf=="0" ? "" : "checked='checked'")+" onclick='switch_style(\"INFO\", this.checked, \"WatchDog\")'/> INFO</label>\

@@ -1,9 +1,9 @@
 {
-  "name": "GD 4 chrome",
-  "version": "0.6001",
-  "description": "Makes your life easier when working with GoodData gray pages",
+  "name": "GoodData Extension Tool",
+  "version": "0.6301",
+  "description": "Makes your life easier when developing in GoodData BI platform",
   "options_page": "options.html",
-  "background": {"persistent": true, "scripts": ["GDextension.js"] },
+  "background": {"persistent": false, "scripts": ["GDextension.js"] },
  
   "page_action" :
   {
@@ -14,12 +14,12 @@
 
   "content_scripts": [
     {
-      "matches": ["https://*.secure.gooddata.com/*","https://na1.gooddata.com/*","https://na2.gooddata.com/*","https://*.getgooddata.com/*"],
+      "matches": ["https://*/*"],
       "js": ["gd_content_script.js"],
       "css":["gd_content.css"]
     },
       {
-      "matches": ["https://*.secure-di.gooddata.com/uploads/*","https://na2.gooddata.com/uploads/*","https://*.getgooddata.com/uploads/*"],
+      "matches": ["https://*/*/log*"],
       "js": ["gd_cc_log_script.js"],
       "css":["gd_cc_log.css"]
     } 
@@ -27,8 +27,9 @@
 
 
   "permissions" : [
-    "https://*.secure.gooddata.com/*","https://na1.gooddata.com/*","https://na2.gooddata.com/*","https://*.getgooddata.com/*",
-      "tabs"
+    "https://*/*",
+    "tabs",
+    "storage"
     ],
   "icons" : {
     "48" : "gd48.png"
