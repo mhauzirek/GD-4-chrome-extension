@@ -1,4 +1,27 @@
 /*
+ * Copyright (c) 2013, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
  * this is content script for GD extension
  * it is embeded to GD pages and sends message to wakeup extension
  */
@@ -106,8 +129,13 @@ s.onload = function() {
 
 //add tool with checkboxes
 
-var properties_element = document.body.firstChild.children[4];
 var last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
+var pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
+
+//this line comes after last line with status
+if(/.*Unable to create helper class for driver unregistering.*/.exec(last_element.textContent)){
+  last_element = pre_last_element;
+}
 
   last_element.id = "last_element";
   var last_line = last_element.textContent;
@@ -122,22 +150,24 @@ var last_element = document.body.firstChild.children[document.body.firstChild.ch
     run_finished = true;
   }
 
-if(properties_element){
 
-  var properties_line = properties_element.textContent;
+//check first 5 rows to find "additional properties"
 
-console.log(properties_element.textContent);
+var properties_element;
+var tested_line;
+var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph ([^ ]+) additional properties {([^}]+)}/;
+var match;
+  for(i=0;i<=5;i++){
+    tested_line = document.body.firstChild.children[i].textContent;
+    match = prop_regexp.exec(tested_line);
+    if(match){
+      properties_element = true;
+      //console.log(tested_line);
+      break;
+    }
+  }
 
-  var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph ([^ ]+) additional properties {([^}]+)}/;
-  var match = prop_regexp.exec(properties_line);
-
-console.log(match[0]);
-console.log(match[1]);
-console.log(match[2]);
-console.log(match[3]);
-console.log(match[4]);
-console.log(match[5]);
-
+  if(properties_element){
 
   var properties;
   if(match){
@@ -161,7 +191,8 @@ console.log(match[5]);
 
 var goto_link;
 if(first_error){
-  goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a>";
+  var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
+  goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Get Data</a>";
 }else{
   if(run_finished){
     goto_link="<a class='cc_head_link goto_success' href='#last_line'>Go to last line</a>";
@@ -193,15 +224,19 @@ toolbox.innerHTML="\
 var last_line = document.createElement('div');
 last_line.id="last_line";
 
-
-//disable watchdog & request_id by default
-//switch_style("WatchDog",false);
-//switch_style("request_id",false,null,"inline");
-
 //everything is set, show it;
 
 document.body.firstChild.appendChild(toolbox);
 document.body.firstChild.appendChild(last_line);
+
+//autoscroll
+if(first_error){
+  location.hash="#first_error";
+}else{
+  location.hash="#last_line";  
+}
+
+
 
 
 
@@ -212,9 +247,6 @@ if(location.hash=="#last_line" || location.hash=="#first_error"){
 
   document.body.firstChild.display = "block";
 
-/*
-
-*/
 }
 
 

@@ -1,4 +1,27 @@
 /*
+ * Copyright (c) 2013, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
  * this is script for interaction of the popup when clicked on the icon
  */
 
@@ -9,12 +32,22 @@ var server="";
 var ui=0;
 var objURL="#";
 var objEditURL="#";
+var webdav_dir;//="#";
 
 document.addEventListener('DOMContentLoaded', loader);  
 
+
+  function replacer(){
+    var target = document.body.innerHTML.replace(/\${PID}/g,pid);
+    target = target.replace(/\${SERVER}/g,server).replace(/\${OBJURL}/g,objURL);
+    //target = target.replace(/\${WEBDAV_PATH}/g,webdav_dir);
+    document.body.innerHTML=target;
+  }
+
 function parse_gd_url(url){
 console.log("parsing "+url);
-var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 var response = {
@@ -27,6 +60,32 @@ console.log(response);
 return response;
 }
 
+function get_webdav_info(pid,server){
+
+  var webdav_info = new XMLHttpRequest();
+  webdav_info.onload = function()
+  {
+  if (webdav_info.status==200)
+    {
+      var resp = JSON.parse(webdav_info.responseText);
+      webdav_dir = resp.project.links.uploads;
+
+      document.getElementById("data").href=webdav_dir;
+      document.getElementById("data").addEventListener('click', clickData);
+      
+console.log(document.body.innerHTML);      
+      //var target = document.body.innerHTML.replace(/\${WEBDAV_PATH}/g,resp.project.links.uploads);
+      //document.body.innerHTML=target;
+      //console.log(document.body.innerHTML);
+    }else{
+      console.log("cannot get project uploads directory")
+    }
+  }
+  webdav_info.open("GET", "https://"+server+"/gdc/projects/"+pid);
+  webdav_info.setRequestHeader("Accept", "application/json");
+  webdav_info.send();
+
+}
 
 
 function clickProj(e){
@@ -107,6 +166,12 @@ function clickConsole(e){
   loader();  
 }
 
+function clickData(e){ 
+  if(e.which==2) return false;
+  chrome.tabs.update(tabId, {'url': webdav_dir});
+  loader();
+}
+
 function dragObject(e){
   chrome.tabs.update(tabId, {'url': 'https://'+server+objEditURL }); 
   loader();
@@ -183,6 +248,7 @@ function loader(){
 
     if(pid!=null){
         console.log("Found PID "+pid);
+        get_webdav_info(pid,server);
 
         needPidEnabler(); 
         if(obj!=null){
@@ -242,10 +308,11 @@ function loader(){
         needPidDisabler();
       }
 
-    var target = document.body.innerHTML.replace(/\${PID}/g,pid);
-    target = target.replace(/\${SERVER}/g,server).replace(/\${OBJURL}/g,objURL);
-  
-    document.body.innerHTML=target;
+
+
+
+
+  replacer();
 
   document.getElementById("project").addEventListener('click', clickProj);
   document.getElementById("md").addEventListener('click', clickMd);
@@ -267,6 +334,8 @@ function loader(){
   document.getElementById("console").addEventListener('click', clickConsole);
 
   document.getElementById("something").addEventListener('click', clickInfo);
+
+  
 
   
   //document.getElementById("reload").addEventListener('click', clickReload); 

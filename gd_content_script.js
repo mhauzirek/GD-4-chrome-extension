@@ -1,4 +1,27 @@
 /*
+ * Copyright (c) 2013, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+/*
  * this is content script for GD extension
  * it is embeded to GD pages and sends message to wakeup extension
  */
@@ -15,7 +38,8 @@ function array_contains(a, obj) {
 
 function parse_gd_url(url){
 //console.log("parsing "+url);
-var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 var response = {
@@ -135,24 +159,28 @@ function get_basic_info(pid,server){
 
 }
 
-function get_qe_info(pid,server){
+function get_tz_info(pid,server){
 
-  var qe_info = new XMLHttpRequest();
-  qe_info.onload = function()
+  var tz_info = new XMLHttpRequest();
+  tz_info.onload = function()
   {
-  if (qe_info.status==200)
+  if (tz_info.status==200)
     {
-      var resp = JSON.parse(qe_info.responseText);
-      document.getElementById("gd4chrome_qe").innerHTML="<a href='https://"+server+"/gdc/md/"+pid+"/service/engine'>"+resp.service.queryEngine+"</a>";
+      var resp = JSON.parse(tz_info.responseText);
+      document.getElementById("gd4chrome_tz").innerHTML="<a href='https://"+server+"/gdc/md/"+pid+"/service/timezone'>"+resp.service.timezone+"</a>";
     }else{
-      document.getElementById("gd4chrome_qe").innerHTML="[N/A]";
+      document.getElementById("gd4chrome_tz").innerHTML="[N/A]";
     }
   }
-  qe_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/service/engine");
-  qe_info.setRequestHeader("Accept", "application/json");
-  qe_info.send();
+  tz_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/service/timezone");
+  tz_info.setRequestHeader("Accept", "application/json");
+  tz_info.send();
 
 }
+
+
+//
+
 
 
 function get_dataload_info(pid,server){
@@ -340,7 +368,7 @@ function get_etl_info(pid,server){
 function reloadProjectInfo(pid, server){
   get_dataload_info(pid,server);
   get_basic_info(pid,server);
-  get_qe_info(pid,server);
+  get_tz_info(pid,server);
   get_etl_info(pid,server);
   
 
@@ -379,8 +407,8 @@ function showProjectInfo2(pid, server){
             <td></td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1'><a href='https://"+server+"/gdc/md/"+pid+"/service/engine'>Query Engine</a></td>\
-            <td><span class='gd4chrome_value' id='gd4chrome_qe'>...</span></td>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/gdc/md/"+pid+"/service/timezone'>Timezone</a></td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tz'>...</span></td>\
             <td></td>\
             </tr>\
             <tr>\

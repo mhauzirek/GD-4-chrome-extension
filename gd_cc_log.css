@@ -137,6 +137,18 @@ a.goto_error:link, a.goto_error:visited, a.goto_error:hover{
 	background-color: #39414d;
 }
 
+a.goto_err_data:link, a.goto_err_data:visited, a.goto_err_data:hover{
+	color: #FF8000;
+
+	right: 170px;
+	position: fixed;
+
+	padding-left: 15px;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #39414d;
+}
+
 a.goto_running:link, a.goto_running:visited, a.goto_running:hover{
 	color: #b0b0b0;
 	right: 100px;
