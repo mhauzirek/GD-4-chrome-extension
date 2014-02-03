@@ -58,12 +58,19 @@ color: #C3D3E5;
 font-weight: bold;
 text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
 text-decoration: none;
-margin-left: 5px;
+margin-left: 4px;
 }
 
 #navigation a:hover, .options a:hover{
 color: white;
 }
+
+#navigation .subnav {
+  font-size: 10px;
+  margin-left: 1px;
+  margin-right: -2px;
+}
+
 
 Xbody, Xhtml {
   width: 750px;
@@ -119,7 +126,7 @@ a {
 text-decoration: none;
 }
 
-#navigation .disabled {
+#navigation a.disabled  {
   pointer-events: none;
   cursor: default;
   color: #666;
@@ -127,7 +134,7 @@ text-decoration: none;
   border: 0 solid white;
 }
 
-#navigation .partdisabled {
+#navigation a.partdisabled {
   xpointer-events: none;
   xcursor: default;
   color: #666;

@@ -106,7 +106,6 @@ add_style("WARN",(show.wrn == "0" ? "none" : "block"),"WatchDog");
 add_style("ERROR",(show.err == "0" ? "none" : "block"));
 
 
-
 //parse plaintext to divs with classes
 //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
 
@@ -117,14 +116,6 @@ var first_error = document.querySelector('.ERROR');
 if(first_error){
   first_error.id="first_error";
 }
-
-//inject script with switch functions
-var s = document.createElement('script');
-s.src = chrome.extension.getURL("cc_log_switching.js");
-s.onload = function() {
-    this.parentNode.removeChild(this);
-};
-(document.head||document.documentElement).appendChild(s);
 
 
 //add tool with checkboxes
@@ -149,6 +140,16 @@ if(/.*Unable to create helper class for driver unregistering.*/.exec(last_elemen
   if(match_last[2]){
     run_finished = true;
   }
+
+
+//inject script with switch functions
+var s = document.createElement('script');
+s.src = chrome.extension.getURL("cc_log_switching.js");
+s.onload = function() {
+    this.parentNode.removeChild(this);
+};
+(document.head||document.documentElement).appendChild(s);
+
 
 
 //check first 5 rows to find "additional properties"
@@ -195,7 +196,7 @@ if(first_error){
   goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Get Data</a>";
 }else{
   if(run_finished){
-    goto_link="<a class='cc_head_link goto_success' href='#last_line'>Go to last line</a>";
+    goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Go to last line</a>";
   }else{
     goto_link="<a class='cc_head_link goto_running' href='#last_line'>Go to last line</a>";
   }
@@ -207,7 +208,7 @@ toolbox.id="cc_head";
 toolbox.innerHTML="\
     <span class='cc_head_links'><span class='graph_name'><i>"+graph_name+"</i></span>\
     <span class='graph_run_time'>runtime: "+graph_run_string+"</span>"+goto_link+"\
-    <a class='run_refresh' href='#' onclick='reload_refresh();return(false)'>Reload</a>\
+    <a class='run_refresh' href='#' onclick='reload_refresh();return(false)'>Reload</a><input type='checkbox' "+(show.refresh=="1" ? "checked='checked'" : "")+" onclick='toggle_refresh()' title='Reload every 5 minutes' id='auto_refresh'/>\
     <a class='cc_head_link close' href='#' xtarget='_blank' title='Show original log' onclick='reload_hash();return(false)'>X</a>\
     </span>\
     <div class='cc_head_labels'>\
@@ -232,7 +233,28 @@ document.body.firstChild.appendChild(last_line);
 //autoscroll
 if(first_error){
   location.hash="#first_error";
+
+  chrome.extension.sendMessage(
+    {message: "showNotification",
+     title:"ETL Process ERROR", 
+     text: "Monitored ETL process finished with ERROR (click to view log file)",
+     img: "icons/gd_etl_error.png",
+     only_other_tab: true
+   });
+
 }else{
+  if(run_finished){
+    chrome.extension.sendMessage(
+    {message: "showNotification",
+     title:"ETL Process FINISHED OK", 
+     text: "Monitored ETL process finished successfully. (click to view log file)",
+     img: "icons/gd_etl_ok.png",
+     only_other_tab: true
+   });
+
+  }
+
+
   location.hash="#last_line";  
 }
 
@@ -244,9 +266,7 @@ if(location.hash=="#last_line" || location.hash=="#first_error"){
   console.log("scrolling...");
   location.href=location.hash;
 }
-
   document.body.firstChild.display = "block";
-
 }
 
 

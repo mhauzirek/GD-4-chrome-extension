@@ -170,11 +170,18 @@ a.goto_success:link, a.goto_success:visited, a.goto_success:hover{
 a.run_refresh:link, a.run_refresh:visited, a.run_refresh:hover{
 	color: #b0b0b0;
 	position: fixed;
-	right: 40px;
-	padding-left: 15px;
+	right: 45px;
+	padding-left: 10px;
 	font-weight: normal;
 	background-color: #39414d;
 	text-decoration: none;
+}
+
+#auto_refresh{
+	position: fixed;
+	right: 27px;
+	top: 4px;
+	padding-left: 5px;
 }
 
 .cc_head_labels{

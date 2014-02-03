@@ -31,34 +31,45 @@
   <hr>
   <pre>
   {
-    "ussage info": [
-      "Clicking on <b>Obj</b> in UI will redirect you to the same Object in gray pages",
-      "Clicking on <b>Obj</b> in gray pages will redirect you to UI page for that object if such page exists (dashboard, report, attribute, metric...)"
-    ],
-    "settings info" : [
-      "You can set behaviour of this extension here",
+    "<b>settings info</b>" : [
+      "You can set behaviour of this extension on this page - <a href='#settings'>scroll down a bit</a>",
       "You can change the icon to be notified where you are depending on: ",
       [
         "hostname - for example to distinguish whether you are on PI or secure",
         "PID - to be sure which project are you currently playing with" 
       ],
-      "You can disable CloudConnect logs parsing if you don't like colors",
-      "You can enable this extension on sites using GoodData in whitelabeled domains other than gooddata.com"
+      "You can disable CloudConnect logs parsing if you don't like colors or it is too slow on your computer.",
+      "If you want to use this extension on <b>whitelabeled</b> environment (GoodData running on other domain than *.gooddata.com), you need to add the domain below.
+      Note that the extension will not be whitelabeled."
     ],
+    "usage info": [
+      "Clicking on Obj in UI will redirect you to the same Object in gray pages",
+      "Clicking on Obj in gray pages will redirect you to UI page for that object if such page exists (dashboard, report, attribute, metric...)"
+      "Clicking on EX (next to Obj) will redirect you to explain resource that shows how the report is calculated (works only for reports)
+      "Clicking on Exp and Imp allows you to export and import whole project, this is used for <a href='http://developer.gooddata.com/article/project-cloning#GrayPages'>project cloning</a>."
+      "Clicking on MD next to Exp and Imp allows you to do <a href='http://developer.gooddata.com/article/migrating-selected-objects-between-projects#GrayPages'>migrate certain objects from project to project</a>"
+      "<span title='yes, exactly like this...'>Keep the mouse over any link in extension</title> for a moment to see what it does.</span>"
+      "There is now an article about this piece of software on official GoodData developer site <a href='http://developer.gooddata.com/article/gooddata-extension-tool-for-chrome'>http://developer.gooddata.com/article/gooddata-extension-tool-for-chrome</a>"
+    ]    
     "extension info" : {
-      "version" : "<b id='ext_version'>0.6200</b>",
+      "version" : "<b id='ext_version'>0.0000</b>",
     }
 
   }
   </pre>
   <hr>
-<div class='form'>
+<div class='form'><a name='settings'></a>
 <form>
 <div class="fields">
     <fieldset>
       <legend>Default Icon:</legend>
       <select id="default_icon">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -96,7 +107,12 @@
       <span class="detail">hostname regexp</span><br>
       <input id="alt_host_regexp1" value="" />
         <select id="alt_host_icon1">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -126,7 +142,12 @@
         <br>
       <input id="alt_host_regexp2" value="" />
         <select id="alt_host_icon2">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -156,7 +177,12 @@
         <br> 
       <input id="alt_host_regexp3" value="" />
         <select id="alt_host_icon3">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -186,7 +212,12 @@
         <br> 
       <input id="alt_host_regexp4" value="" />
         <select id="alt_host_icon4">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -216,7 +247,12 @@
         <br>         
       <input id="alt_host_regexp5" value="" />
         <select id="alt_host_icon5">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -250,7 +286,12 @@
       <span class="detail">PID</span><br>
       <input type="text" id="alt_pid1" value="" /> 
         <select id="alt_pid_icon1">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -280,7 +321,12 @@
         <br>
       <input type="text" id="alt_pid2" value="" /> 
         <select id="alt_pid_icon2">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -310,7 +356,12 @@
         <br>  
       <input type="text" id="alt_pid3" value="" /> 
         <select id="alt_pid_icon3">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -340,7 +391,12 @@
         <br>  
       <input type="text" id="alt_pid4" value="" /> 
         <select id="alt_pid_icon4">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
@@ -370,7 +426,12 @@
         <br>          
       <input type="text" id="alt_pid5" value="" /> 
         <select id="alt_pid_icon5">
-        <option value="" disabled>GoodData "G"</option>
+<option value="icons/gd19_blue.png">default icon</option>          
+<option value="" disabled>New GoodData "G"</option>
+<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+        <option value="" disabled>Old GoodData "G"</option>
 <option value="icons/gd19_blue.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 

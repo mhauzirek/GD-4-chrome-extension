@@ -28,11 +28,13 @@
 
 //when GD page is (re)loaded, content script calls wakeup
 //let's reload then
+
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message == "set_icon"){      
       set_icon(sender.tab);
       chrome.extension.sendMessage({message: "wakeup"});
+
       }
   }); 
 

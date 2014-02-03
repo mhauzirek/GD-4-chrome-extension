@@ -35,6 +35,7 @@ var listOfProjects = null;
 var called = 0;
 
 
+
 var lastURL = "";
 //when I receive message, show icon
 chrome.extension.onMessage.addListener(
@@ -69,10 +70,49 @@ chrome.extension.onMessage.addListener(
             }else{
                 sendResponse(true);
             }
+        break;
+
+        case "showNotification":
+        //when only_other_tab is true show notification only when other tab is active or whole window is not focused
+        //= do not show notification when I am in the window.
+        chrome.windows.getCurrent(function(current_window){
+          chrome.tabs.query({active: true,currentWindow: true}, function(activeTab){
+            if(request.only_other_tab==false || current_window.focused==false || sender.tab.id!=activeTab[0].id){
+              notify(request.title, request.text, sender.tab.id, request.img);  
+            }
+          });
+        })                                     
         break;             
       }
   });
 
+
+// show desktop notification
+
+function notify(title, text, tab, img) {
+  img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
+  //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
+
+  var havePermission = window.webkitNotifications.checkPermission();
+  if (havePermission == 0) {
+    // 0 is PERMISSION_ALLOWED
+    var notification = window.webkitNotifications.createNotification(
+      img,
+      title,
+      text
+    );
+
+    notification.onclick = function () {
+      chrome.tabs.update(tab, {selected: true});
+      notification.close();
+    }
+    notification.ondisplay = function() { setTimeout(function() { notification.cancel(); }, 10000); }
+
+    notification.show();
+  } else {
+      window.webkitNotifications.requestPermission();
+  }
+}  
 
 //change icon depending on current PID, hostname and settings
 
@@ -171,7 +211,7 @@ var parsed = parse_gd_url(tab.url);
         'path': icon
     });
     }else{
-      console.log("no server found in URL "+url);
+      console.log("no server found in URL ");
     }
 }
 

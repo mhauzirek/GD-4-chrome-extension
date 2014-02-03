@@ -48,7 +48,7 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-console.log(response);
+//console.log(response);
 return response;
 }
 
@@ -68,15 +68,16 @@ chrome.extension.onMessage.addListener(
         var category = source.match(/"?category"? ?: "?[a-zA-Z]+"?/g);
 
         if(category!=null){
-          console.log(category[category.length-1]);
+          //console.log(category[category.length-1]);
           var cat_detail = category[category.length-1].match(/"?category"? ?: "?([a-zA-Z]+)"?/);
           if(cat_detail!=null){
-            console.log(cat_detail[1]);
+            //console.log(cat_detail[1]);
           }
 
           sendResponse({category: cat_detail[1]});
         }else{
-          console.log("No category found");
+          //console.log("No category found");
+          sendResponse({category: "none"});
         }
        break;
 
@@ -91,9 +92,14 @@ chrome.extension.onMessage.addListener(
           console.log("showing project info overlay2 for project "+request.PID+", server "+request.server);
           showProjectInfo2(request.PID, request.server);
 
+      break;
 
-       break;
+       /** reload project info box */
+       case "reloadProjectInfo":
+          console.log("reloading project info overlay2 for project "+request.PID+", server "+request.server);
+          reloadProjectInfo(request.PID, request.server);
 
+      break;
 
 
      }
@@ -137,7 +143,7 @@ function get_basic_info(pid,server){
       document.getElementById("gd4chrome_summary").innerHTML=resp.project.meta.summary;
       document.getElementById("gd4chrome_driver").innerHTML=resp.project.content.driver;
       
-      document.getElementById("gd4chrome_token").innerHTML=resp.project.content.authorizationToken + " @ " + (resp.project.content.cluster=="" ? "AWS" : resp.project.content.cluster);
+      document.getElementById("gd4chrome_token").innerHTML=(typeof resp.project.content.authorizationToken === 'undefined' ? "[N/A]" : resp.project.content.authorizationToken) + " @ " + (resp.project.content.cluster=="" ? "AWS" : resp.project.content.cluster);
 
       document.getElementById("gd4chrome_created").innerHTML=prettyDate(resp.project.meta.created,prg_diff);
       document.getElementById("gd4chrome_created").title=resp.project.meta.created;
@@ -150,7 +156,7 @@ function get_basic_info(pid,server){
       resp = JSON.parse(proj_info.responseText);
       document.getElementById("gd4chrome_title").innerHTML="<span class='gd4chrome_clickreload'>ERROR</span>";
       document.getElementById("gd4chrome_summary").innerHTML="<span class='gd4chrome_clickreload'>error loading project info for project "+pid+"</span>";
-      console.log(proj_info.responseText);
+      //console.log(proj_info.responseText);
     }
   }
   proj_info.open("GET", "https://"+server+"/gdc/projects/"+pid);
@@ -236,7 +242,7 @@ function get_etl_info(pid,server){
   if (etl_info.status==200){
     var resp = JSON.parse(etl_info.responseText);
     var html_text="";
-    if(false && resp.schedules.paging.count==0){
+    if(resp.schedules.paging.count==0){
       document.getElementById("gd4chrome_etl_last").innerHTML="(no known)";
       document.getElementById("gd4chrome_etl_next").innerHTML="(none)";
     }else{
@@ -345,7 +351,7 @@ function get_etl_info(pid,server){
       if(schedule_count==0){
         html_text = "<span>(no schedules)";
       }else{
-        html_text = "<a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>(no enabled, "+disabled_count+" disabled schedule"+(disabled_count>1 ? "s" : "")+")</a>";
+        html_text = "<span><a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>(no enabled, "+disabled_count+" disabled schedule"+(disabled_count>1 ? "s" : "")+")</a>";
       }
     }
 
@@ -540,7 +546,7 @@ var prg_diff = prg_dls_diff();
 
 chrome.storage.local.get("wl_domains", function(items)
           {
-            console.log("Domains set for GD Extension:"+items.wl_domains);
+            //console.log("Domains set for GD Extension:"+items.wl_domains);
 
             var url_regexp = /.*\.(get)?gooddata\.com$/;
             var url_matches = url_regexp.exec(location.hostname);

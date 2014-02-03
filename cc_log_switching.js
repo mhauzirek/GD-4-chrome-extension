@@ -84,7 +84,8 @@ function set_refresh_url(){
   (show_int.dbg=="0" ? "dbg=0&" : "")+
   (show_int.inf=="0" ? "inf=0&" : "")+
   (show_int.wrn=="0" ? "wrn=0&" : "")+
-  (show_int.err=="0" ? "err=0&" : "")
+  (show_int.err=="0" ? "err=0&" : "")+
+  (show_int.refresh=="1" ? "refresh=1&" : "") //TODO upravit na finished???
 
   if(is_error){
     new_url+="#first_error";
@@ -96,6 +97,7 @@ function set_refresh_url(){
 
 
 function reload_refresh(){
+  console.log("we are reloading...");
   if(location.href==refresh_url){
     location.reload(true);
   }else{
@@ -115,7 +117,43 @@ function reload_hash(){
 }
 
 
+
+function set_refresh(){
+  console.log("setting auto reload to 5 minutes");
+  show_int.refresh="1";
+  timed_refresh = setTimeout(reload_refresh, 300000);
+
+
+}
+
+function stop_refresh() {
+  console.log("canceling auto reload");
+  show_int.refresh="0";
+  clearTimeout(timed_refresh);
+}
+
+function toggle_refresh(){
+  if(show_int.refresh=="1"){
+    stop_refresh();
+  }else{
+    set_refresh();
+  }
+  refresh_url = set_refresh_url();
+}
+
+var timed_refresh = null;
 var is_error = document.getElementById('first_error');
+var is_finished = document.getElementById('finished_ok');
 var show_int = parse_query(location.search);
 var refresh_url = set_refresh_url();
+
+console.log(refresh_url);
+if(show_int.refresh=="1") set_refresh();
+if(is_error || is_finished){
+    document.getElementById('auto_refresh').checked=false;
+    document.getElementById('auto_refresh').disabled=true;
+    stop_refresh();
+  }
+
+
 

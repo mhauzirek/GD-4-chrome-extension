@@ -32,6 +32,7 @@ var server="";
 var ui=0;
 var objURL="#";
 var objEditURL="#";
+var explain_url;
 var webdav_dir;//="#";
 
 document.addEventListener('DOMContentLoaded', loader);  
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', loader);
   }
 
 function parse_gd_url(url){
-console.log("parsing "+url);
+//console.log("parsing "+url);
 //var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
 var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
@@ -56,7 +57,7 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-console.log(response);
+//console.log(response);
 return response;
 }
 
@@ -73,10 +74,6 @@ function get_webdav_info(pid,server){
       document.getElementById("data").href=webdav_dir;
       document.getElementById("data").addEventListener('click', clickData);
       
-console.log(document.body.innerHTML);      
-      //var target = document.body.innerHTML.replace(/\${WEBDAV_PATH}/g,resp.project.links.uploads);
-      //document.body.innerHTML=target;
-      //console.log(document.body.innerHTML);
     }else{
       console.log("cannot get project uploads directory")
     }
@@ -86,6 +83,41 @@ console.log(document.body.innerHTML);
   webdav_info.send();
 
 }
+
+
+function get_explain_info(pid,server,obj){
+//console.log("get_explain_info called");
+  var report_info = new XMLHttpRequest();
+  report_info.onload = function()
+  {
+  if (report_info.status==200)
+    {
+
+      //console.log("received object  definition");
+
+      var resp = JSON.parse(report_info.responseText);
+      //console.log(resp);
+
+      if( typeof resp.report === 'undefined' || resp.report.meta.category!='report'){
+        //console.log("this is not a report, cannot explain");
+        explainDisabler();
+      }else{
+        //console.log("this is report - parsing definitions");
+        var last_report_def = resp.report.content.definitions[resp.report.content.definitions.length-1];
+        explain_url = 'https://'+server+last_report_def+'/explain2?type=oqt_dot&format=html&submit=submit';
+        explainEnabler();
+    }
+  }else{
+      console.log("cannot get last report definition for explain")
+      explainDisabler();
+    }
+  }
+  report_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/obj/"+obj);
+  report_info.setRequestHeader("Accept", "application/json");
+  report_info.send();
+
+}
+
 
 
 function clickProj(e){
@@ -123,6 +155,17 @@ function clickImport(e){
   chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/import'});
   loader();  
 }
+function clickMdExport(e){
+  if(e.which==2) return false;  
+  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/partialmdexport'});
+  loader(); 
+}
+function clickMdImport(e){
+  if(e.which==2) return false;  
+  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/partialmdimport'});
+  loader();  
+}
+
 
 function clickTrans(e){
   if(e.which==2) return false;
@@ -172,6 +215,12 @@ function clickData(e){
   loader();
 }
 
+function clickExplain(e){ 
+  if(e.which==2) return false;
+  chrome.tabs.update(tabId, {'url': explain_url});
+  loader();
+}
+
 function dragObject(e){
   chrome.tabs.update(tabId, {'url': 'https://'+server+objEditURL }); 
   loader();
@@ -183,17 +232,8 @@ function needPidDisabler(){
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className+=" disabled";
     }
+    explainDisabler();
 }
-
-/*
- * lets do this better
-function clickSomething(e){ 
-  chrome.extension.sendMessage({message: "getProjectInfo",PID: pid,server: server}, function(response) {
-  chrome.tabs.sendMessage(tabId, {type: "showProjectInfo",info: response});
-
-}); 
-}   
-*/
 
 function clickInfo(e){ 
   chrome.tabs.sendMessage(tabId, {type: "showProjectInfo2",PID: pid, server: server}); 
@@ -214,11 +254,24 @@ function needPidEnabler(){
     }
 }
 
+function explainEnabler(){
+  //console.log("enabling explain");
+  document.getElementById("explain").href=explain_url;
+  document.getElementById("explain").addEventListener('click', clickExplain);
+  document.getElementById("explain").className.replace(" disabled","");
+}
+
+function explainDisabler(){
+  //console.log("disabling explain");
+  document.getElementById("explain").className+=(" disabled"); 
+}
+
 function needObjDisabler(){
     needpid = document.getElementsByClassName('needobj')
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className+=" disabled";
     }
+    explainDisabler();
 }
 
 function needObjEnabler(){
@@ -230,7 +283,7 @@ function needObjEnabler(){
 
 
 function loader(){
-  console.log("executing loader");
+  //console.log("executing loader");
 
   document.getElementById('optLink').href=chrome.extension.getURL("options.html");
   chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
@@ -241,28 +294,28 @@ function loader(){
 
      var parsed = parse_gd_url(tab.url);
      ui=parsed.ui;
-     console.log("Are we in UI? "+ui);
+     //console.log("Are we in UI? "+ui);
      server=parsed.server;
      pid=parsed.pid;
      obj=parsed.obj;
 
     if(pid!=null){
-        console.log("Found PID "+pid);
+        //console.log("Found PID "+pid);
         get_webdav_info(pid,server);
 
         needPidEnabler(); 
         if(obj!=null){
-          console.log("Found object ID "+obj);
-          objEditURL='/gdc/md/'+pid+'/obj/'+obj+'?mode=edit';
+          //console.log("Found object ID "+obj);
           if(ui==0){
             //we are in gray pages and need to determine category of object
-            //console.log("calling");
+            //console.log("calling for category");
             chrome.tabs.sendMessage(tabId, {type: "obj_category"}, function(response) {
-              console.log("in GP looking for category - received category: "+response.category);
+              //console.log("in GP looking for category - received category: "+response.category);
               switch(response.category){    
                 case 'projectDashboard' :
                   objURL = '/#s=/gdc/projects/'+pid+'|projectDashboardPage|/gdc/md/'+pid+'/obj/'+obj+'|';
-                  needObjEnabler();  
+                  needObjEnabler();
+                  explainDisabler();
                 break;
                  case 'dataSet' :
                  case 'attribute': 
@@ -271,35 +324,40 @@ function loader(){
                  case 'prompt':
                   objURL = '/#s=/gdc/projects/'+pid+'|objectPage|/gdc/md/'+pid+'/obj/'+obj+'|';
                   needObjEnabler();
+                  explainDisabler();
                  break; 
 
                  case 'report':
                   objURL = '/#s=/gdc/projects/'+pid+'|analysisPage|head|/gdc/md/'+pid+'/obj/'+obj+'|';
-                  needObjEnabler();  
+                  get_explain_info(pid,server,obj);
+                  needObjEnabler();
                  break;
 
                  case 'dimension':
                   objURL = '/#s=/gdc/projects/'+pid+'|dataPage|attributes|/gdc/md/'+pid+'/obj/'+obj+'|';
-                  needObjEnabler();  
+                  needObjEnabler();
+                  explainDisabler(); 
                  break; 
 
                  case 'folder':
                   //folder is for both metrics and facts so this is not ideal
                   objURL = '/#s=/gdc/projects/'+pid+'|dataPage|facts|/gdc/md/'+pid+'/obj/'+obj+'|';
-                  needObjEnabler();  
+                  needObjEnabler();
+                  explainDisabler();  
                  break; 
 
                 default:
                   objURL="";
                   needObjDisabler();
+                  get_explain_info(pid,server,obj);
               }
             });
 
           }else{
-            //we are in UI this is simple
-            console.log("in UI - redirecting to GP");
+            //we are in UI this is simple 
             objURL='/gdc/md/'+pid+'/obj/'+obj;
             needObjEnabler(); 
+            get_explain_info(pid,server,obj);
           }
         }else{
           needObjDisabler();
@@ -321,7 +379,9 @@ function loader(){
   document.getElementById("validate").addEventListener('click', clickValidate);
   document.getElementById("export").addEventListener('click', clickExport);
   document.getElementById("import").addEventListener('click', clickImport);
-  
+  document.getElementById("md_export").addEventListener('click', clickMdExport);
+  document.getElementById("md_import").addEventListener('click', clickMdImport);
+
   document.getElementById("transformations").addEventListener('click', clickTrans);
   document.getElementById("schedules").addEventListener('click', clickSched);
   document.getElementById("dashboard").addEventListener('click', clickDashboard);
