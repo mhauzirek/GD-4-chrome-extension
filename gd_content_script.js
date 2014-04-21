@@ -143,7 +143,9 @@ function get_basic_info(pid,server){
       document.getElementById("gd4chrome_summary").innerHTML=resp.project.meta.summary;
       document.getElementById("gd4chrome_driver").innerHTML=resp.project.content.driver;
       
-      document.getElementById("gd4chrome_token").innerHTML=(typeof resp.project.content.authorizationToken === 'undefined' ? "[N/A]" : resp.project.content.authorizationToken) + " @ " + (resp.project.content.cluster=="" ? "AWS" : resp.project.content.cluster);
+// 2014-04-03 - after AWS cutoff is no longer valid
+//      document.getElementById("gd4chrome_token").innerHTML=(typeof resp.project.content.authorizationToken === 'undefined' ? "[N/A]" : resp.project.content.authorizationToken) + " @ " + (resp.project.content=="" ? "AWS" : resp.project.content);
+      document.getElementById("gd4chrome_token").innerHTML=(typeof resp.project.content.authorizationToken === 'undefined' ? "[N/A]" : resp.project.content.authorizationToken);
 
       document.getElementById("gd4chrome_created").innerHTML=prettyDate(resp.project.meta.created,prg_diff);
       document.getElementById("gd4chrome_created").title=resp.project.meta.created;
@@ -433,7 +435,7 @@ function showProjectInfo2(pid, server){
             <td></td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1'>Token &amp; Cluster</td>\
+            <td class='gd4chrome_col1'>Auth. Token</td>\
             <td><span class='gd4chrome_value' id='gd4chrome_token'>...</span></td>\
             <td></td>\
             </tr>\

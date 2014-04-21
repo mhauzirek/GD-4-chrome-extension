@@ -89,7 +89,7 @@ chrome.extension.onMessage.addListener(
 
 // show desktop notification
 
-function notify(title, text, tab, img) {
+function notify(title, text, tab, img, link) {
   img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
   //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
 
@@ -103,8 +103,14 @@ function notify(title, text, tab, img) {
     );
 
     notification.onclick = function () {
-      chrome.tabs.update(tab, {selected: true});
-      notification.close();
+      if (typeof link !== 'undefined' && typeof tab !== 'undefined'){
+        chrome.tabs.create({url: link});
+      }else{
+        if(typeof tab !== 'undefined'){
+          chrome.tabs.update(tab, {selected: true});
+        }
+      }
+      //notification.close();
     }
     notification.ondisplay = function() { setTimeout(function() { notification.cancel(); }, 10000); }
 
@@ -145,7 +151,10 @@ var parsed = parse_gd_url(tab.url);
     if(server){
 
     var default_icon = localStorage["default_icon"];
-    if (!default_icon) default_icon = "icons/gd19_blue.png";
+    if (!default_icon) default_icon = "icons/gd19_rebrand_black.png";
+//overwrite old default
+    if(default_icon=="icons/gd19_blue.png") default_icon="icons/default.png";
+
 
     var alt_host_regexp1 = localStorage["alt_host_regexp1"];
     var alt_host_icon1 = localStorage["alt_host_icon1"];
@@ -213,6 +222,7 @@ var parsed = parse_gd_url(tab.url);
     }else{
       console.log("no server found in URL ");
     }
+
 }
 
 
@@ -220,6 +230,17 @@ chrome.runtime.onSuspend.addListener(function(){
     console.info("GoodData extension for chrome is going to sleep");
   });
 
+
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        console.log("This is a first install of GoodData Extension Tool!");
+        notify("Welcome to GoodData Extension Tool!", "Click here to see the help",null,"install_96.png","gd_help.html#top");
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+        notify("GoodData Extension has been updated!", "Click here to see what is new",null,"install_96.png","gd_help.html#changelog");
+    }
+});
 
  
 //Export project

@@ -1,0 +1,219 @@
+<!--
+/*
+ * Copyright (c) 2013, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+-->
+<html style="width: 730px; height: 40px;" width="730" height="40">
+  <head>
+    <meta charset="UTF-8">
+    <title>GD Extension</title>
+    <link rel="stylesheet" type="text/css" href="help.css" /> 
+  </head>
+  <body  xstyle="width: 730px; height: 40px; margin: 0px;" xwidth="730" xheight="40">
+  <a name="top"></a>
+  <h1>GoodData Extension Tool Help</h1>
+
+  <p>This extension tool makes your life easier when developing with GoodData BI Platform.</p>
+  <p>It contains several components described below.</p>
+  <p><sup>(*)</sup>These functions require user to be an Administrator of a project.</p>
+  <p></p>
+  <p><a href="#changelog" class="internal_link">"I already know the extension, just show me what's new..."</a></p>
+
+
+  <h2>The Toolbar</h2>
+  <p>To show The Toolbar click on the 'G' icon in the browser address bar. This icon is displayed on gooddata sites (and whitelabeled GoodData sites when configured in the options (see below).</p>
+  <div id="navigation">
+      <p>
+        <a id="dashboard" href="#" class="logoButton" title="Go to project dashboard"><img src="logo_new.png"></a><span class="hlp_desc">Go to current project's Dashboard (or last visited project's Dashboard if not in project)</span>
+      </p>
+      <p>
+        <a href="#" id="new_project" title="Create new project">New</a><span class="hlp_desc">Create new project / Go to gray page <span class="gp">/gdc/projects</span></span>
+      </p>
+      <p>
+        <a href="#" id="project_list" title="Show list of all projects available to current user">List</a><span class="hlp_desc">Show list of all projects available to current user / Go to gray page <span class="gp">/gdc/md</span></span>
+      </p>
+
+      <p>
+        <a href="#" id="object" title="Toggle between GUI and API display of objects">Obj</a><sub><a class="subnav disabled" href="#">EX</a></sub><span class="hlp_desc">Toggle between GUI and API display of objects (only for selected types of objects) / display object definition on gray page <span class="gp">/gdc/md/PID/obj/OBJ_ID</span></span>
+      </p>
+      <p>
+        <a href="#" id="object" class="disabled">Obj</a><sub><a class="subnav" href="#" title="Explain calculation of report">EX</a></sub><span class="hlp_desc">Explain calculation of last saved version of particular report (only for reports) / find latest reportDefinition and run <span class="gp">/gdc/md/obj/OBJ_ID/explain2</span> for it. Additional features of explain2 resource is described in <a class="dev_link" href="http://developer.gooddata.com/blog/advanced-report-definition-tools">Advanced Report Definition Tools</a>.</span>
+      </p>
+
+      <p>
+        <a href="#" title="Basic project information">Proj</a><span class="hlp_desc">Go to gray page <span class="gp">/gdc/projects/PID</span> with basic project information</span>
+      </p>
+      <p>
+        <a href="#" title="Project Metadata">MD</a><span class="hlp_desc">Go to gray page <span class="gp">/gdc/md/PID</span> with project metadata information</span>
+      </p>
+      <p>
+        <a href="#" title="Listing resources within project by type">Query</a><span class="hlp_desc">Go to gray page <span class="gp">/gdc/md/PID/query</span> where you can list project objects by type</span>
+      </p>
+
+      <p>
+        <a href="#" id="model" title="Logical Data Model of a project (image)">LDM</a><sub><a class="subnav disabled" href="#">LAB</a></sub><span class="hlp_desc">Display generated Logical Data Model of a project (same as in Manage - Model)</span>
+      </p>
+      <p>
+        <a href="#" id="model" class="disabled">LDM</a><sub><a class="subnav" href="#" title="Logical Data Model of last UI selected project in new LABS application">LAB</a></sub><span class="hlp_desc">Display interactive Logical Data Model of last project accessed in UI within experimental LABS application<sup>(*)</sup>.</span>
+      </p>
+      
+      <p>
+        <a href="" id="mng" title="Execute MAQL to modify project LDM">Mng</a><span class="hlp_desc">Go to gray page <span class="gp">/gdc/md/PID/ldm/manage2</span> where you can change Logical Data Model by executing MAQL DDL</span>
+      </p>
+
+      <p>
+        <a href="#" id="validate" title="Validation of project structure and data">Valid</a><span class="hlp_desc">Go to gray page <span class="gp">/gdc/md/PID/validate</span> where you can perform project validation</span>
+      </p>
+
+      <p>
+           <a href="#" id="export" title="Export project to create a copy">Exp</a><sub><a class="subnav disabled" href="#">MD</a></sub><span class="hlp_desc">Perform full project export on gray page <span class="gp">/gdc/md/PID/maintenance/export</span> as described in article <a class="dev_link" href="http://developer.gooddata.com/article/project-cloning">Project Cloning</a><sup>(*)</sup></span>
+      </p>
+      <p>
+           <a href="#" id="export"  class="disabled">Exp</a><sub><a class="subnav" href="#" title="Export dashboard/metric/report to import it to another project">MD</a></sub><span class="hlp_desc">Perform partial metadata export on gray page <span class="gp">/gdc/md/PID/maintenance/partialmdexport</span> as described in article <a class="dev_link" href="http://developer.gooddata.com/article/migrating-selected-objects-between-projects">Migrating Selected Objects between Projects</a><sup>(*)</sup></span>
+      </p>
+      <p>
+        <a href="#" id="import" title="Import previously exported project to blank project">Imp</a><sub><a class="subnav disabled" href="#">MD</a></sub><span class="hlp_desc">Perform full project import from previously exported project into new blank project using gray page <span class="gp">/gdc/md/PID/maintenance/import</span> as described in article <a class="dev_link" href="http://developer.gooddata.com/article/project-cloning">Project Cloning</a><sup>(*)</sup></span>
+      </p>
+      <p>
+        <a class="disabled" href="#" id="import">Imp</a><sub><a class="subnav" href="#" title="Import previously exported dashboard/metric/report">MD</a></sub><span class="hlp_desc">Perform import of previously exported metadata using gray page <span class="gp">/gdc/md/PID/maintenance/partialmdimport</span> as described in article <a class="dev_link" href="http://developer.gooddata.com/article/migrating-selected-objects-between-projects">Migrating Selected Objects between Projects</a><sup>(*)</sup></span>
+      </p>
+
+      <p>
+        <a href="#" id="data" title="Go to project-specific WebDav directory">Data</a><span class="hlp_desc">Go to project-specific WebDav directory of current project as described in article <a class="dev_link" href="https://developer.gooddata.com/article/project-specific-storage">Project Specific Storage</a><sup>(*)</sup>. This opens the directory in browser in read only mode.</span>
+      </p>
+
+      <p>
+        <a href="#" id="transformations" title="ETL processes within a project">ETL</a><span class="hlp_desc">Display ETL processes deployed to current project on gray page <span class="gp">/gdc/projects/PID/dataload/processes</span><sup>(*)</sup></span>
+      </p>
+      <p>
+        <a href="#" id="schedules" title="ETL Schedules within a project">Schd</a><span class="hlp_desc">Display Schedules of ETL processes within current project on gray page <span class="gp">/gdc/projects/PID/schedules</span><sup>(*)</sup></span>
+      </p>
+
+      <p>
+        <a href="#" id="something" title="Useful Project Information">ℹ</a><span class="hlp_desc">Display overlay with useful information about project (see below).</span>
+      </p>
+
+      <p>
+        <a href="#" id="optLink" class="options" title="Configure this extension">+</a><span class="hlp_desc">Display extension options (see below).</span>
+      </p>
+      <p>
+        <a href="#" id="hlpLink" class="options" title="Display help to extension">?</a><span class="hlp_desc">Display this help.</span>
+      </p>      
+      <p><a href="#" id="dataload" class="options" title="Go to Data Loading console">DL</a><span class="hlp_desc">Display Data Loading Console<sup>(*)</sup>.</span>
+      </p>
+    </div>
+
+  <h2>The Overlay</h2>
+<p class="help_div">The Overlay appears when you click on <span class="tb_link">ℹ</span> icon in The Toolbar.</p>
+<p class="help_div">All the fuzzy dates and times are converted from original timezone in the API to your local timezone</p>
+<p class="help_div">You can hold the mouse over any of the fuzzy dates to show exact date and timi as it was returned by the API</p>
+<p class="help_div">You can click on the project timezone to go to <span class="gp">/gdc/md/PID/service/timezone</span> where the timezone can be changed as described in <a class="dev_link" href="http://developer.gooddata.com/article/setting-a-custom-time-zone-for-your-project">Setting a custom time zone for your project</a></p>
+
+<div id="gd4chrome_overlay">
+   <table class="gd4chrome_tab" border="0">
+      <tbody>
+         <tr>
+            <td class="gd4chrome_headercol" colspan="2" width="390">              <span class="gd4chrome_proj gd4chrome_title" id="gd4chrome_title" title="Project Name">[Project Name]</span>              <span class="gd4chrome_det gd4chrome_summary" id="gd4chrome_summary">[Project Summary]</span>            </td>
+            <td width="10" valign="top">              <span class="gd4chrome_close">X</span>            </td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1" width="120">Created</td>
+            <td width="290"><span class="gd4chrome_value" id="gd4chrome_created" title="hover to see exact date">[fuzzy date of project creation]</span></td>
+            <td width="10"></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1">Updated</td>
+            <td><span class="gd4chrome_value" id="gd4chrome_updated" title="hover to see exact date">[fuzzy date of project update]</span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1">DB driver</td>
+            <td><span class="gd4chrome_value" id="gd4chrome_driver">[database of the project Pg or Vertica]</span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1">Timezone</td>
+            <td><span class="gd4chrome_value" id="gd4chrome_tz"><span title="click to change it">[project timezone]</span></span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1"><a href="#">Last data load</a></td>
+            <td><span class="gd4chrome_value" id="gd4chrome_last_dataload"><span title="hover to see exact date">[fuzzy date of last upload to any dataset]</span></span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1"><a href="#">Last sched. ETL</a></td>
+            <td><span class="gd4chrome_value" id="gd4chrome_etl_last">[fuzzy date of last executed scheduled ETL process + its status + link to log file<sup>(*)</sup>]</span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1"><a href="#">Next sched. ETL</a></td>
+            <td><span class="gd4chrome_value" id="gd4chrome_etl_next">[fuzzy date of next scheduled ETL process<sup>(*)</sup>]</span></td>
+            <td></td>
+         </tr>
+         <tr>
+            <td class="gd4chrome_col1">Auth. Token</td>
+            <td><span class="gd4chrome_value" id="gd4chrome_token">[project authentication token<sup>(*)</sup>]</span></td>
+            <td></td>
+         </tr>
+      </tbody>
+   </table>
+</div>
+
+  <h2>The Log Parser<sup>(*)</sup></h2>
+<p class="help_div">The Log Parser appears when a CloudConenct Log is detected.</p>
+<p class="help_div">It allows you to clearly see where are errors an warnings and hide some information that is not so important.</p>
+<p class="help_div">In case of error it automatically scrolls to that line. Otherwise it scrolls to last line.</p>
+<p class="help_div">You can manually refresh the log with the Refresh link (it will keep your display settings).</p>
+<p class="help_div">By default the WatchDog process information (regular information each few seconds about what is running) is hidden. You can display it by clicking on the checkbox marked Watchdog. </p>
+<p class="help_div">By default the request_id part (present on each line) is hidden to make the log easier to read. To display the request_id click the RequestID link.</p>
+<p class="help_div">When the graph is still running, you can check the box next to Reload link to automatically refresh it every 5 minutes. If it then finishes and the window is not focused, you will be informed by desktop notification.</p>
+<p class="help_div">You can disable parsing of the log files in extension options (in case it is too slow on your computer or you just want to see the raw logs).</p> 
+
+<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i>[Graph Name]</i></span>    <span class="graph_run_time">runtime: [Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
+
+<h2>The Options</h2>
+<p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
+<p class="help_div">You can set alternate icons for different projects or hostnames.</p>
+<p class="help_div">To enable the extension od hostnames other than *.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section.</p>
+<div class="end"></div>
+<a name="changelog"></a>
+<h2>What's new</h2>
+<p>v0.7500b:
+  <ul>
+    <li>New icon and design to match GoodData new branding</li>
+    <li>Links to partial MD export and import in The Toolbar</li>
+    <li>Link to report explain in The Toolbar</li>
+    <li>Link to AllData Hackathon Winning LDM Visualizer in Labs</li>
+    <li>Removed query engine and cluster from The Overlay</li>
+    <li>Added project timezone to The Overlay</li>
+    <li>Automatically go to last line (first error) in The Log Parser</li>
+    <li>Automatically refresh log in 5 minutes if enabled + desktop notifiation when the process finishes</li>
+    <li>Added this help</li>
+    <li>Added install/upgrade notification</li>
+    <li>Fixed some minor bugs</li>
+  </ul>
+</p>
+<p><a href="#top" class="internal_link">"Show me full help"</a></p>
+<div class="end2"></div>
+</body>
+</html>

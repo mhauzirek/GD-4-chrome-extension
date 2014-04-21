@@ -123,6 +123,7 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     margin-top: 5px;
     vertical-align: top;
     text-decoration: none;
+    font-weight: 500;
 }
 
 
@@ -154,7 +155,7 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     display:block;
     position:fixed! important; 
     z-index:21000;
-    top:45px;
+    top:50px;
     right:5px;
 
     padding: 5px 5px 5px 5px;

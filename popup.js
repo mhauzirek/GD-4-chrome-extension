@@ -192,6 +192,11 @@ function clickModel(e){
   chrome.tabs.update(tabId, {'url': 'https://'+server+'/#s=/gdc/projects/'+pid+'|dataPage|ldmModel'});
   loader();
 } 
+function clickModel2(e){
+  if(e.which==2) return false;  
+  chrome.tabs.update(tabId, {'url': 'https://'+server+'/labs/apps/ldm_visualizer/'});
+  loader();
+} 
 function clickMng(e){
   if(e.which==2) return false;  
   chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/ldm/manage2'});
@@ -283,12 +288,15 @@ function needObjEnabler(){
 
 
 function loader(){
-  //console.log("executing loader");
+  console.log("executing loader");
 
   document.getElementById('optLink').href=chrome.extension.getURL("options.html");
+  document.getElementById('hlpLink').href=chrome.extension.getURL("gd_help.html");
+//added status: "complete" to avoid errors when clicking on internal notifications of extension
   chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
-
     
+  if(array_of_tabs.length>0){
+
     var tab = array_of_tabs[0];
     tabId= tab.id;
 
@@ -387,6 +395,8 @@ function loader(){
   document.getElementById("dashboard").addEventListener('click', clickDashboard);
   document.getElementById("new_project").addEventListener('click', clickNewProject);
   document.getElementById("model").addEventListener('click', clickModel);  
+  document.getElementById("model2").addEventListener('click', clickModel2);  
+
   document.getElementById("mng").addEventListener('click', clickMng); 
 
   document.getElementById("object").addEventListener('click', clickObject); 
@@ -402,8 +412,8 @@ function loader(){
 
 
 //  document.getElementById("object").addEventListener('dragend', dragObject); 
-
+    }
     }
 );
-
+  
 }

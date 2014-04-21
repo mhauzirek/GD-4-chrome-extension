@@ -1,0 +1,218 @@
+      .appHeader {
+        position: relative;
+        left: 0;
+        right: 0;
+        top: 0;
+        z-index: 4998;
+        margin: 0 auto;
+        height: 44px;
+        background-color: #000000;
+        box-shadow: 0 1px 3px rgba(0,0,0,.35);
+      }
+
+
+body {
+  font-family: Avenir,sans-serif;
+  font-size: 12px;
+  color: #333;
+  margin: 0px;
+}
+
+span.spacer {
+ color: #666;
+ margin-left: 2px;
+ margin-right: 3px;
+ width: 0px;
+ border-left: 1px solid #444;
+ height: 40px;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ margin-top: 0px;
+ margin-bottom: 0px;
+ xposition: absolute;
+ top: 0px; 
+}
+
+div {
+  outline: 0;
+}
+
+.appHeader {
+  position: fixed!important;
+}
+
+.appHeader .logoButton {
+xposition: absolute;
+xtop: 10px;
+xleft: 10px;
+xheight: 19px;
+xborder: 0;
+background: url("logo_new.png") no-repeat 0 0;
+xwidth: 121px;
+
+float: left;
+margin: 7px 18px 0 20px;
+cursor: pointer;
+-webkit-transition: .2s;
+transition: .2s;
+
+width: 30px;
+height: 29px;
+
+}
+
+.appHeader .logoButton:hover {
+  opacity:.6;
+}
+
+#navigation {
+position: absolute;
+top: 0px;
+left: 40px;
+white-space: nowrap;
+display: inline;
+
+margin-left: 25px;
+}
+
+#navigation a {
+padding-bottom: 10px;
+font-family: Avenir,sans-serif;
+border-bottom: 3px solid #000;
+color: #999;
+text-decoration: none;
+
+height: 41px;
+line-height: 43px;
+
+xline-height: 37px;
+font-size: 14px;
+padding-left: 3px;
+padding-right: 3px;
+-webkit-transition: .2s;
+transition: .2s;
+
+
+}
+
+#navigation a:hover, .options a:hover{
+color: white;
+}
+
+#navigation a:hover {
+  border-bottom:3px solid #999;
+}
+
+#navigation .subnav {
+  font-size: 10px;
+  margin-left: -5px;
+  margin-right: -1px;
+  padding-bottom: 8;
+  color: #999;
+}
+
+
+Xbody, Xhtml {
+  width: 750px;
+  height: 30px;
+}
+
+.footer {
+position: absolute;
+top: 60px;
+left: 400px;
+border: 0;
+font-size: 11px;
+padding: 0;
+color: #69707C;
+text-decoration: none;
+}
+
+div.options{
+  color: #4a90e2;
+}
+
+.options a {
+position: absolute;
+padding-bottom: 0px;
+top: 0px;
+left: 715px;
+border: 0;
+text-decoration: none;
+height: 20px;
+line-height: 20px;
+width: 20px;
+}
+
+a#optLink {
+  height: 20px; 
+  line-height: 20px;
+  top: 0px;
+}
+
+.options2 a {
+top: 14px;
+}
+
+.options3 a {
+top: 28px;
+}  
+
+.options a {
+font-size: 11px;
+xpadding: 0;
+color: #4a90e2;
+text-decoration: none;
+border: 0 solid white;
+font-weight: 1000;
+}
+
+#navigation a.objedit {
+margin-left: 0px;
+}
+
+
+
+.footer a:visited {
+  color: #69707C;
+}
+
+a {
+text-decoration: none;
+}
+
+#navigation a.disabled  {
+  pointer-events: none;
+  cursor: default;
+  color: #555;
+  text-shadow: none;
+  border: 0 solid white;
+}
+
+#navigation a.partdisabled {
+  xpointer-events: none;
+  xcursor: default;
+  color: #555;
+  text-shadow: none;
+  border: 0 solid white;
+} 
+
+#navigation #something {
+  xborder-color: #4a90e2;
+  font-weight: 700;
+  margin-left: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 22px;
+  line-height: 18px;
+  padding-bottom: 7px;
+  color: white;
+}
+
+#navigation #something.disabled {
+  color: #555;
+}
+
+.gd4chrome_close {
+  font-weight: 500;
+}

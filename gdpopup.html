@@ -22,18 +22,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 -->
-<html style="width: 730px; height: 30px;" width="730" height="30">
+<html style="width: 730px; height: 44px;" width="730" height="44">
   <head>
     <meta charset="UTF-8">
     <title>GD Extension</title>
     <script src="popup.js"></script>
-    <link rel="stylesheet" type="text/css" href="popup.css" /> 
+    <link rel="stylesheet" type="text/css" href="popup_new.css" /> 
   </head>
-  <body  style="width: 730px; height: 30px;" width="730" height="40">
+  <body  style="width: 730px; height: 40px; margin: 0px;" width="730" height="40">
     <div class="appHeader">
-      <!--div class="footer">GoodData for Chrome v0.6  MHA &amp; <a href="http://www.gooddata.com" id="hiddenLink">GoodData</a></div-->
-      <div class="options"><a href="#" id="optLink" target="_new" title="Configure this extension">+</a></div>
-      <!--div class="options options2"><a href="#" id="reload">⟲</a></div-->
+      <div class="footer"><a href="http://www.gooddata.com" id="hiddenLink">GoodData</a></div>
+      <div class="options"><a href="#" id="optLink" target="_new" title="Configure this extension"> + </a></div>
+      <div class="options options2"><a href="#" id="hlpLink" target="_new">?</a></div>
       <div class="options options3" id="console"><a href="https://${SERVER}/admin/dataload/" id="dataload" title="Go to Data Loading console">DL</a></div> 
 
       <a id="dashboard" href="https://${SERVER}/#s=/gdc/projects/${PID}|projectDashboardPage|" class="logoButton" title="Go to project dashboard"></a>
@@ -47,7 +47,7 @@
       <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/" id="project" title="Basic project information">Proj</a>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/" id="md" title="Project Metadata">MD</a>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/query" id="query" title="Listing resources within project by type">Query</a>
-      <a class="needpid" href="https://${SERVER}/#s=/gdc/projects/${PID}|dataPage|ldmModel" id="model" title="Logical Data Model of a project (image)">LDM</a>
+      <a class="needpid" href="https://${SERVER}/#s=/gdc/projects/${PID}|dataPage|ldmModel" id="model" title="Logical Data Model of a project (image)">LDM</a><sub><a class="subnav" href="https://${SERVER}/labs/apps/ldm_visualizer/" id="model2" title="Logical Data Model of last UI selected project in new LABS application">LAB</a></sub>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/ldm/manage2" id="mng" title="Execute MAQL to modify project LDM">Mng</a>
       <span class="spacer"></span> 
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/validate" id="validate" title="Validation of project structure and data">Valid</a>
@@ -58,7 +58,7 @@
       <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/dataload/processes" id="transformations" title="ETL processes within a project">ETL</a>
       <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/schedules" id="schedules" title="ETL Schedules within a project">Schd</a>
       <span class="spacer"></span>        
-      <a class="needpid" href="#" id="something" title="Useful Project Information">?</a>
+      <a class="needpid" href="#" id="something" title="Useful Project Information">ℹ</a>
     </div>
 </body>
 </html>
