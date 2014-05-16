@@ -23,8 +23,10 @@
  */
 -->
 <html>
-<head><title>GD 4 Chrome Extension Options</title></head>
-    <link rel="stylesheet" type="text/css" href="options.css" />   
+<head>
+    <title>GD 4 Chrome Extension Options</title>
+    <link rel="stylesheet" type="text/css" href="options.css" />
+</head>
 
 <body>
   <h1>GoodData Extension Tool::</h1>
@@ -60,439 +62,433 @@
   <hr>
 <div class='form'><a name='settings'></a>
 <form>
-<div class="fields">
+    <div class="fields">
+
     <fieldset>
-      <legend>Default Icon:</legend>
-      <select id="default_icon">
-<option value="icons/default.png">default icon</option>
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>
-        <option value="" disabled>Miscelanous</option>
-<option value="icons/gd19_bigdata.png">BIGdata</option>
-<option value="icons/gd19_monetize.png">Monetize!</option>
-<option value="icons/gd19_wait.png">Wait for it...</option>
-<option value="icons/gd19_transparent.png">None (stealth mode)</option>
+        <legend>Default Icon:</legend>
+        <select id="default_icon">
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+            <option value="" disabled>Miscelanous</option>
+            <option value="icons/gd19_bigdata.png">BIGdata</option>
+            <option value="icons/gd19_monetize.png">Monetize!</option>
+            <option value="icons/gd19_wait.png">Wait for it...</option>
+            <option value="icons/gd19_transparent.png">None (stealth mode)</option>
         </select>
     </fieldset>
+
     <fieldset>
-      <legend>Alternative Icon for host:</legend>
-      <span class="detail">hostname regexp</span><br>
-      <input id="alt_host_regexp1" value="" />
+        <legend>Alternative Icon for host:</legend>
+        <span class="detail">hostname regexp</span><br>
+        <input id="alt_host_regexp1" value=""/>
         <select id="alt_host_icon1">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>        
-        </select>        
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+        </select>
         <br>
-      <input id="alt_host_regexp2" value="" />
+        <input id="alt_host_regexp2" value=""/>
         <select id="alt_host_icon2">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>    
-        </select>        
-        <br> 
-      <input id="alt_host_regexp3" value="" />
-        <select id="alt_host_icon3">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>         
-        </select>        
-        <br> 
-      <input id="alt_host_regexp4" value="" />
-        <select id="alt_host_icon4">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>       
-        </select>        
-        <br>         
-      <input id="alt_host_regexp5" value="" />
-        <select id="alt_host_icon5">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>     
-        </select>        
-
-    </fieldset> 
-    <fieldset>
-      <legend>Alternative Icon for project:</legend>
-      <span class="detail">PID</span><br>
-      <input type="text" id="alt_pid1" value="" /> 
-        <select id="alt_pid_icon1">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>        
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
         </select>
         <br>
-      <input type="text" id="alt_pid2" value="" /> 
+        <input id="alt_host_regexp3" value=""/>
+        <select id="alt_host_icon3">
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+        </select>
+        <br>
+        <input id="alt_host_regexp4" value=""/>
+        <select id="alt_host_icon4">
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+        </select>
+        <br>
+        <input id="alt_host_regexp5" value=""/>
+        <select id="alt_host_icon5">
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+        </select>
+    </fieldset>
+
+    <fieldset>
+        <legend>Alternative Icon for project:</legend>
+        <span class="detail">PID</span><br>
+        <input type="text" id="alt_pid1" value=""/>
+        <select id="alt_pid_icon1">
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
+        </select>
+        <br>
+        <input type="text" id="alt_pid2" value=""/>
         <select id="alt_pid_icon2">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>      
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
         </select>
-        <br>  
-      <input type="text" id="alt_pid3" value="" /> 
+        <br>
+        <input type="text" id="alt_pid3" value=""/>
         <select id="alt_pid_icon3">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>        
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
         </select>
-        <br>  
-      <input type="text" id="alt_pid4" value="" /> 
+        <br>
+        <input type="text" id="alt_pid4" value=""/>
         <select id="alt_pid_icon4">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>     
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
         </select>
-        <br>          
-      <input type="text" id="alt_pid5" value="" /> 
+        <br>
+        <input type="text" id="alt_pid5" value=""/>
         <select id="alt_pid_icon5">
-<option value="icons/default.png">default icon</option>          
-<option value="" disabled>New GoodData "G"</option>
-<option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
-<option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
-<option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
-        <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
-<option value="icons/gd19_green.png">GoodGreen</option>
-<option value="icons/gd19_lblue.png">GoodLightBblue</option> 
-<option value="icons/gd19_orange.png">GoodOrange</option>
-<option value="icons/gd19_red.png">GoodRed</option>
-<option value="icons/gd19_pink.png">GoodPink</option>
-        <option value="" disabled>GoodData Light Bulbs</option>
-<option value="icons/gd19_bulb.png">Light Bulb</option>
-<option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
-<option value="icons/gd19_bulb_green.png">Green Bulb</option> 
-<option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
-<option value="icons/gd19_bulb_red.png">Red Bulb</option> 
-<option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
-        <option value="-" disabled>GoodPeople</option>
-<option value="icons/gd19_goodman.png">Good Guy</option>
-<option value="icons/gd19_goodman_blue.png">Blue Guy</option>
-<option value="icons/gd19_goodman_green.png">Green Guy</option>
-<option value="icons/gd19_goodman_orange.png">Orange Guy</option>
-<option value="icons/gd19_goodman_red.png">Red Guy</option> 
-<option value="icons/gd19_goodman_pink.png">Pink Guy</option>
-        <option value="" disabled>Bears</option> 
-<option value="icons/gd19_bear.png">Our Bear</option>
-<option value="icons/gd19_bear_blue.png">Blue Bear</option>
-<option value="icons/gd19_bear_green.png">Green Bear</option>
-<option value="icons/gd19_bear_red.png">Red Bear</option>         
+            <option value="icons/default.png">default icon</option>
+            <option value="" disabled>New GoodData "G"</option>
+            <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+            <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
+            <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
+            <option value="" disabled>Old GoodData "G"</option>
+            <option value="icons/gd19_blue_old.png">GoodBlue</option>
+            <option value="icons/gd19_green.png">GoodGreen</option>
+            <option value="icons/gd19_lblue.png">GoodLightBlue</option>
+            <option value="icons/gd19_orange.png">GoodOrange</option>
+            <option value="icons/gd19_red.png">GoodRed</option>
+            <option value="icons/gd19_pink.png">GoodPink</option>
+            <option value="" disabled>GoodData Light Bulbs</option>
+            <option value="icons/gd19_bulb.png">Light Bulb</option>
+            <option value="icons/gd19_bulb_blue.png">Blue Bulb</option>
+            <option value="icons/gd19_bulb_green.png">Green Bulb</option>
+            <option value="icons/gd19_bulb_orange.png">Orange Bulb</option>
+            <option value="icons/gd19_bulb_red.png">Red Bulb</option>
+            <option value="icons/gd19_bulb_pink.png">Pink Bulb</option>
+            <option value="-" disabled>GoodPeople</option>
+            <option value="icons/gd19_goodman.png">Good Guy</option>
+            <option value="icons/gd19_goodman_blue.png">Blue Guy</option>
+            <option value="icons/gd19_goodman_green.png">Green Guy</option>
+            <option value="icons/gd19_goodman_orange.png">Orange Guy</option>
+            <option value="icons/gd19_goodman_red.png">Red Guy</option>
+            <option value="icons/gd19_goodman_pink.png">Pink Guy</option>
+            <option value="" disabled>Bears</option>
+            <option value="icons/gd19_bear.png">Our Bear</option>
+            <option value="icons/gd19_bear_blue.png">Blue Bear</option>
+            <option value="icons/gd19_bear_green.png">Green Bear</option>
+            <option value="icons/gd19_bear_red.png">Red Bear</option>
         </select>
-        <br>    
-      </fieldset>   
-
-    <fieldset>
-      <legend>CloudConnect logs:</legend>
-      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs</label>
-
     </fieldset>
 
     <fieldset>
-      <legend>Whitelabeled hostnames:</legend>
-      <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
-      <input type="text" id="add_wl_domain">
-      <input type="button" id="add_wl" value="Add new">
-      <br>
-      <select multiple="multiple" id="wl_domains">
-      </select>
-      <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
-   
-
-
+        <legend>CloudConnect logs:</legend>
+        <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs</label>
     </fieldset>
 
+    <fieldset>
+        <legend>Whitelabeled hostnames:</legend>
+        <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
+        <input type="text" id="add_wl_domain">
+        <input type="button" id="add_wl" value="Add new">
+        <br>
+        <select multiple="multiple" id="wl_domains">
+        </select>
+        <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
+    </fieldset>
 
+    </div>
 
-</div>
-
-<div class="submit">
-  <!--button>Save neco</button-->
-</div>
+    <div class="submit">
+        <input type="button" id="save" value="Save options" /> <span id="status"></span>
+    </div>
 </form>
 
-<input type="button" id="save" value="Save options" /> <span id="status"></span>
 </div>
 
+<script src="options.js"></script>
 </body>
-    <script src="options.js"></script>   
 </html>
