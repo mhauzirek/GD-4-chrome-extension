@@ -214,6 +214,14 @@ function clickConsole(e){
   loader();  
 }
 
+function clickMagic(e) {
+    if (e.which == 2) {
+        return false;
+    }
+    chrome.tabs.update(tabId, {'url': document.getElementById("magic").getAttribute("href")});
+    loader();
+}
+
 function clickData(e){ 
   if(e.which==2) return false;
   chrome.tabs.update(tabId, {'url': webdav_dir});
@@ -230,7 +238,6 @@ function dragObject(e){
   chrome.tabs.update(tabId, {'url': 'https://'+server+objEditURL }); 
   loader();
 }
-
 
 function needPidDisabler(){
     needpid = document.getElementsByClassName('needpid')
@@ -375,9 +382,6 @@ function loader(){
       }
 
 
-
-
-
   replacer();
 
   document.getElementById("project").addEventListener('click', clickProj);
@@ -405,11 +409,9 @@ function loader(){
 
   document.getElementById("something").addEventListener('click', clickInfo);
 
-  
+  document.getElementById("magic").addEventListener('click', clickMagic);
 
-  
   //document.getElementById("reload").addEventListener('click', clickReload); 
-
 
 //  document.getElementById("object").addEventListener('dragend', dragObject); 
     }

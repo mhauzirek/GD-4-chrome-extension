@@ -136,11 +136,13 @@ function save_options() {
     localStorage.removeItem("dont_parse_cc_logs");
   }
 
-
   //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
 
-
   write_wl_domains();
+
+  localStorage["magic_title"] = document.getElementById("magic_title").value;
+  localStorage["magic_help"] = document.getElementById("magic_help").value;
+  localStorage["magic_link"] = document.getElementById("magic_link").value;
 
   console.log("Options saved");
 
@@ -178,6 +180,10 @@ function restore_options() {
   var alt_pid_icon5 = localStorage["alt_pid_icon5"];
 
   var dont_parse_cc_logs = localStorage["dont_parse_cc_logs"];
+
+  var magic_title = localStorage["magic_title"];
+  var magic_help = localStorage["magic_help"];
+  var magic_link = localStorage["magic_link"];
 
   if(default_icon){
     var select = document.getElementById("default_icon");
@@ -337,14 +343,22 @@ function restore_options() {
       }
     }
   }
+
   if(dont_parse_cc_logs=="1"){
     document.getElementById("dont_parse_cc_logs").checked=true;
   }
 
+  if (magic_title) {
+      document.getElementById("magic_title").value = magic_title;
+  }
+  if (magic_help) {
+      document.getElementById("magic_help").value = magic_help;
+  }
+  if (magic_link) {
+      document.getElementById("magic_link").value = magic_link;
+  }
+
   read_wl_domains();
-
-
-
 }
 
 document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
