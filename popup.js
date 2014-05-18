@@ -31,53 +31,45 @@ var pid = "";
 var server="";
 var ui=0;
 var objURL="#";
-var objEditURL="#";
 var explain_url;
 var webdav_dir;//="#";
 
-document.addEventListener('DOMContentLoaded', loader);  
+document.addEventListener('DOMContentLoaded', loader);
 
 
-  function replacer(){
-    var target = document.body.innerHTML.replace(/\${PID}/g,pid);
-    target = target.replace(/\${SERVER}/g,server).replace(/\${OBJURL}/g,objURL);
-    //target = target.replace(/\${WEBDAV_PATH}/g,webdav_dir);
-    document.body.innerHTML=target;
-  }
+function replacer() {
+    var target = document.body.innerHTML.replace(/\${PID}/g, pid);
+    target = target.replace(/\${SERVER}/g, server).replace(/\${OBJURL}/g, objURL);
+    document.body.innerHTML = target;
+}
 
-function parse_gd_url(url){
-//console.log("parsing "+url);
-//var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-var objParse = url.match("https://.*/obj/([0-9]+).*");
+function parse_gd_url(url) {
+    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+    var objParse = url.match("https://.*/obj/([0-9]+).*");
 
-var response = {
-    server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
-    ui:  (!pidParse || !pidParse[2] ? 0 : 1),
-    pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
-    obj: (!objParse || !objParse[1] ? null : objParse[1])
-};
-//console.log(response);
-return response;
+    return {
+        server: (!pidParse || !pidParse[1] ? null : pidParse[1]),
+        ui: (!pidParse || !pidParse[2] ? 0 : 1),
+        pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
+        obj: (!objParse || !objParse[1] ? null : objParse[1])
+    };
 }
 
 function get_webdav_info(pid,server){
 
   var webdav_info = new XMLHttpRequest();
-  webdav_info.onload = function()
-  {
-  if (webdav_info.status==200)
-    {
+  webdav_info.onload = function() {
+    if (webdav_info.status==200) {
       var resp = JSON.parse(webdav_info.responseText);
       webdav_dir = resp.project.links.uploads;
 
       document.getElementById("data").href=webdav_dir;
-      document.getElementById("data").addEventListener('click', clickData);
-      
+      document.getElementById("data").addEventListener('click', clickBtn);
+
     }else{
       console.log("cannot get project uploads directory")
     }
-  }
+  };
   webdav_info.open("GET", "https://"+server+"/gdc/projects/"+pid);
   webdav_info.setRequestHeader("Accept", "application/json");
   webdav_info.send();
@@ -88,10 +80,8 @@ function get_webdav_info(pid,server){
 function get_explain_info(pid,server,obj){
 //console.log("get_explain_info called");
   var report_info = new XMLHttpRequest();
-  report_info.onload = function()
-  {
-  if (report_info.status==200)
-    {
+  report_info.onload = function() {
+    if (report_info.status==200) {
 
       //console.log("received object  definition");
 
@@ -106,12 +96,12 @@ function get_explain_info(pid,server,obj){
         var last_report_def = resp.report.content.definitions[resp.report.content.definitions.length-1];
         explain_url = 'https://'+server+last_report_def+'/explain2?type=oqt_dot&format=html&submit=submit';
         explainEnabler();
-    }
-  }else{
-      console.log("cannot get last report definition for explain")
+      }
+    }else{
+      console.log("cannot get last report definition for explain");
       explainDisabler();
     }
-  }
+  };
   report_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/obj/"+obj);
   report_info.setRequestHeader("Accept", "application/json");
   report_info.send();
@@ -119,128 +109,16 @@ function get_explain_info(pid,server,obj){
 }
 
 
-
-function clickProj(e){
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/projects/'+pid});
-  loader(); 
-}
-function clickMd(e){
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid});
-  loader(); 
-}
-function clickProjList(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'});
-  loader();
-}
-function clickQuery(e){
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/query'});
-  loader();  
-}
-function clickValidate(e){
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/validate'});
-  loader(); 
-}
-function clickExport(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/export'});
-  loader(); 
-}
-function clickImport(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/import'});
-  loader();  
-}
-function clickMdExport(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/partialmdexport'});
-  loader(); 
-}
-function clickMdImport(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/maintenance/partialmdimport'});
-  loader();  
-}
-
-
-function clickTrans(e){
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/projects/'+pid+'/dataload/processes'});
-  loader();  
-}
-function clickSched(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/projects/'+pid+'/schedules'});
-  loader();  
-}
-function clickDashboard(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/#s=/gdc/projects/'+pid+'|projectDashboardPage|'});
-  loader();
-}
-function clickNewProject(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/projects/'});
-  loader();
-}
-function clickModel(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/#s=/gdc/projects/'+pid+'|dataPage|ldmModel'});
-  loader();
-} 
-function clickModel2(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/labs/apps/ldm_visualizer/'});
-  loader();
-} 
-function clickMng(e){
-  if(e.which==2) return false;  
-  chrome.tabs.update(tabId, {'url': 'https://'+server+'/gdc/md/'+pid+'/ldm/manage2'});
-  loader();
-} 
-function clickObject(e){ 
-  if(e.which==2) return false;      
-  chrome.tabs.update(tabId, {'url': 'https://'+server+objURL});
-  loader();  
-} 
-
-function clickConsole(e){ 
-  if(e.which==2) return false;      
-  chrome.tabs.update(tabId, {'url': 'https://'+server+"/admin/dataload/"});
-  loader();  
-}
-
-function clickMagic(e) {
+function clickBtn(e) {
     if (e.which == 2) {
         return false;
     }
-    chrome.tabs.update(tabId, {'url': document.getElementById("magic").getAttribute("href")});
+    chrome.tabs.update(tabId, {'url': e.target.getAttribute("href")});
     loader();
 }
 
-function clickData(e){ 
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': webdav_dir});
-  loader();
-}
-
-function clickExplain(e){ 
-  if(e.which==2) return false;
-  chrome.tabs.update(tabId, {'url': explain_url});
-  loader();
-}
-
-function dragObject(e){
-  chrome.tabs.update(tabId, {'url': 'https://'+server+objEditURL }); 
-  loader();
-}
-
 function needPidDisabler(){
-    needpid = document.getElementsByClassName('needpid')
+    needpid = document.getElementsByClassName('needpid');
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className+=" disabled";
     }
@@ -251,15 +129,8 @@ function clickInfo(e){
   chrome.tabs.sendMessage(tabId, {type: "showProjectInfo2",PID: pid, server: server}); 
 }
 
-
-
-function clickReload(e){ 
-  chrome.extension.sendMessage({message: "syncProjects",server: server}); 
-} 
-
-
 function needPidEnabler(){
-    needpid = document.getElementsByClassName('needpid')
+    needpid = document.getElementsByClassName('needpid');
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className=needpid[i].className.replace(" disabled","");
       needpid[i].className=needpid[i].className.replace(" partdisabled","");
@@ -268,8 +139,8 @@ function needPidEnabler(){
 
 function explainEnabler(){
   //console.log("enabling explain");
-  document.getElementById("explain").href=explain_url;
-  document.getElementById("explain").addEventListener('click', clickExplain);
+  document.getElementById("explain").href = explain_url;
+  document.getElementById("explain").addEventListener('click', clickBtn);
   document.getElementById("explain").className.replace(" disabled","");
 }
 
@@ -279,7 +150,7 @@ function explainDisabler(){
 }
 
 function needObjDisabler(){
-    needpid = document.getElementsByClassName('needobj')
+    needpid = document.getElementsByClassName('needobj');
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className+=" disabled";
     }
@@ -287,7 +158,7 @@ function needObjDisabler(){
 }
 
 function needObjEnabler(){
-    needpid = document.getElementsByClassName('needobj')
+    needpid = document.getElementsByClassName('needobj');
     for (var i = 0; i < needpid.length; i++) {
       needpid[i].className=needpid[i].className.replace(" disabled","");
     }
@@ -384,36 +255,33 @@ function loader(){
 
   replacer();
 
-  document.getElementById("project").addEventListener('click', clickProj);
-  document.getElementById("md").addEventListener('click', clickMd);
-  document.getElementById("project_list").addEventListener('click',clickProjList);
-  document.getElementById("query").addEventListener('click', clickQuery);
-  document.getElementById("validate").addEventListener('click', clickValidate);
-  document.getElementById("export").addEventListener('click', clickExport);
-  document.getElementById("import").addEventListener('click', clickImport);
-  document.getElementById("md_export").addEventListener('click', clickMdExport);
-  document.getElementById("md_import").addEventListener('click', clickMdImport);
+  document.getElementById("project").addEventListener('click', clickBtn);
+  document.getElementById("md").addEventListener('click', clickBtn);
+  document.getElementById("project_list").addEventListener('click',clickBtn);
+  document.getElementById("query").addEventListener('click', clickBtn);
+  document.getElementById("validate").addEventListener('click', clickBtn);
+  document.getElementById("export").addEventListener('click', clickBtn);
+  document.getElementById("import").addEventListener('click', clickBtn);
+  document.getElementById("md_export").addEventListener('click', clickBtn);
+  document.getElementById("md_import").addEventListener('click', clickBtn);
 
-  document.getElementById("transformations").addEventListener('click', clickTrans);
-  document.getElementById("schedules").addEventListener('click', clickSched);
-  document.getElementById("dashboard").addEventListener('click', clickDashboard);
-  document.getElementById("new_project").addEventListener('click', clickNewProject);
-  document.getElementById("model").addEventListener('click', clickModel);  
-  document.getElementById("model2").addEventListener('click', clickModel2);  
+  document.getElementById("transformations").addEventListener('click', clickBtn);
+  document.getElementById("schedules").addEventListener('click', clickBtn);
+  document.getElementById("dashboard").addEventListener('click', clickBtn);
+  document.getElementById("new_project").addEventListener('click', clickBtn);
+  document.getElementById("model").addEventListener('click', clickBtn);
+  document.getElementById("model2").addEventListener('click', clickBtn);
 
-  document.getElementById("mng").addEventListener('click', clickMng); 
+  document.getElementById("mng").addEventListener('click', clickBtn);
 
-  document.getElementById("object").addEventListener('click', clickObject); 
+  document.getElementById("object").addEventListener('click', clickBtn);
 
-  document.getElementById("console").addEventListener('click', clickConsole);
+  document.getElementById("console").addEventListener('click', clickBtn);
 
   document.getElementById("something").addEventListener('click', clickInfo);
 
-  document.getElementById("magic").addEventListener('click', clickMagic);
+  document.getElementById("magic").addEventListener('click', clickBtn);
 
-  //document.getElementById("reload").addEventListener('click', clickReload); 
-
-//  document.getElementById("object").addEventListener('dragend', dragObject); 
     }
     }
 );
