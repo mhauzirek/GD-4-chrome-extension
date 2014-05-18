@@ -1,6 +1,6 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.7501",
+  "version": "0.7503",
   "description": "Makes your life easier when developing in GoodData BI platform",
   "options_page": "options.html",
   "background": {"persistent": false, "scripts": ["GDextension.js"] },
