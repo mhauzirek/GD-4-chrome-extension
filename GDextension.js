@@ -25,7 +25,7 @@
 /*
  * this is event (non-persistent background) page for GD extension 
  * it receives message from content script and shows pageAction (icon)
- * content script is used to trigger this extension only on pages specfied
+ * content script is used to trigger this extension only on pages specified
  * by matches part of manifest.json
  *
  * it also logs to console when the extension is awakened and suspended
