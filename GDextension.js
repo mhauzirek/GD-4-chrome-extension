@@ -125,7 +125,7 @@ function notify(title, text, tab, img, link) {
 function parse_gd_url(url){
 console.log("parsing "+url);
 //var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 var response = {

@@ -56,7 +56,7 @@
         <a href="#" id="object" title="Toggle between GUI and API display of objects">Obj</a><sub><a class="subnav disabled" href="#">EX</a></sub><span class="hlp_desc">Toggle between GUI and API display of objects (only for selected types of objects) / display object definition on gray page <span class="gp">/gdc/md/PID/obj/OBJ_ID</span></span>
       </p>
       <p>
-        <a href="#" id="object" class="disabled">Obj</a><sub><a class="subnav" href="#" title="Explain calculation of report">EX</a></sub><span class="hlp_desc">Explain calculation of last saved version of particular report (only for reports) / find latest reportDefinition and run <span class="gp">/gdc/md/obj/OBJ_ID/explain2</span> for it. Additional features of explain2 resource is described in <a class="dev_link" href="http://developer.gooddata.com/blog/advanced-report-definition-tools">Advanced Report Definition Tools</a>.</span>
+        <a href="#" id="object" class="disabled">Obj</a><sub><a class="subnav" href="#" title="Explain calculation of report">EX</a></sub><span class="hlp_desc">Explain calculation of last saved report definition of a report. Hover over object colorful IDs there to see their title, click to open. <span class="gp">/gdc/md/obj/OBJ_ID/explain2</span> resource is described in <a class="dev_link" href="http://developer.gooddata.com/blog/advanced-report-definition-tools">Advanced Report Definition Tools</a>.</span>
       </p>
 
       <p>
@@ -105,7 +105,14 @@
         <a href="#" id="transformations" title="ETL processes within a project">ETL</a><span class="hlp_desc">Display ETL processes deployed to current project on gray page <span class="gp">/gdc/projects/PID/dataload/processes</span><sup>(*)</sup></span>
       </p>
       <p>
-        <a href="#" id="schedules" title="ETL Schedules within a project">Schd</a><span class="hlp_desc">Display Schedules of ETL processes within current project on gray page <span class="gp">/gdc/projects/PID/schedules</span><sup>(*)</sup></span>
+        <a href="#" title="ETL Schedules within a project">Sch</a><sub><a class="disabled subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub><span class="hlp_desc">Display Schedules of ETL processes within current project in DISC<sup>(*)</sup></span>
+      </p>
+      <p>
+        <a href="#" title="ETL Schedules within a project" class="disabled">Sch</a><sub><a class="subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub><span class="hlp_desc">Display Schedules of ETL processes within current project on gray page <span class="gp">/gdc/projects/PID/schedules</span><sup>(*)</sup></span>
+      </p>
+
+      <p>
+        <a href="#" title="custom link">(custom)</a><span class="hlp_desc">Custom link can be added in the options. You can use placeholders ${SERVER}, ${PID} and ${OBJ} and they will be replaced by current values</span>
       </p>
 
       <p>
@@ -118,7 +125,7 @@
       <p>
         <a href="#" id="hlpLink" class="options" title="Display help to extension">?</a><span class="hlp_desc">Display this help.</span>
       </p>      
-      <p><a href="#" id="dataload" class="options" title="Go to Data Loading console">DL</a><span class="hlp_desc">Display Data Loading Console<sup>(*)</sup>.</span>
+      <p><a href="#" id="dataload" class="options" title="Go to Data Integration Service Console">DL</a><span class="hlp_desc">Display Data Integration Service Console<sup>(*)</sup>.</span>
       </p>
     </div>
 
@@ -167,7 +174,7 @@
          </tr>
          <tr>
             <td class="gd4chrome_col1"><a href="#">Next sched. ETL</a></td>
-            <td><span class="gd4chrome_value" id="gd4chrome_etl_next">[fuzzy date of next scheduled ETL process<sup>(*)</sup>]</span></td>
+            <td><span class="gd4chrome_value" id="gd4chrome_etl_next">[fuzzy date of next scheduled ETL process + number of enabled / total schedules<sup>(*)</sup>]</span></td>
             <td></td>
          </tr>
          <tr>
@@ -195,11 +202,28 @@
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
 <p class="help_div">You can set alternate icons for different projects or hostnames.</p>
 <p class="help_div">To enable the extension od hostnames other than *.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section.</p>
-<p class="help_div">You can add custom magic button for your favourite GoodData resource. E.g. title = "Valid", popup help = "Validation of project", link = "https://${SERVER}/gdc/md/${PID}/validate" (or "https://${SERVER}${OBJURL}/explain2")</p>
+<p class="help_div">You can add custom magic button for your favourite GoodData resource. E.g. title = "Valid", popup help = "Validation of project", link = "https://${SERVER}/gdc/md/${PID}/validate"). Possible placeholders are: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object. Link with ${OBJ} will only be active when object is displayed, link with ${PID} will only be active if project is selected.</p>
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
-<p>v0.750*:
+
+<p>v0.7505:
+  <ul>
+    <li>Added customizable magic button - thanks to LIR</li>
+    <li>Fixed some minor bugs</li>
+    <li>Hovers with titles for graphical explain</li>
+    <li>More compact display of schedules in overlay</li>
+    <li>Support for new DISC:</li>
+    <ul>
+      <li>DL link leads to DISC instead of the old console</li>
+      <li>Parsing project ID also in DISC</li>
+      <li>Sched link renamed to Sch and lead now to DISC instead of gray pages</li>
+      <li>Added new Sch<sub>GP</sub> link to gray page version of schedules</li> 
+    </ul>
+
+</ul>
+</p>
+<p>v0.7500:
   <ul>
     <li>New icon and design to match GoodData new branding</li>
     <li>Links to partial MD export and import in The Toolbar</li>
@@ -211,8 +235,6 @@
     <li>Automatically refresh log in 5 minutes if enabled + desktop notifiation when the process finishes</li>
     <li>Added this help</li>
     <li>Added install/upgrade notification</li>
-    <li>Added customizable magic button</li>
-    <li>Fixed some minor bugs</li>
   </ul>
 </p>
 <p><a href="#top" class="internal_link">"Show me full help"</a></p>

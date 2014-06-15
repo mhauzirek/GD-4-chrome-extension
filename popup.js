@@ -38,13 +38,16 @@ document.addEventListener('DOMContentLoaded', loader);
 
 
 function replacer() {
+//console.log("executing replacer with objURL="+objURL);
     var target = document.body.innerHTML.replace(/\${PID}/g, pid);
     target = target.replace(/\${SERVER}/g, server).replace(/\${OBJURL}/g, objURL);
+    target = target.replace(/\${OBJ}/g, obj);
     document.body.innerHTML = target;
 }
 
 function parse_gd_url(url) {
-    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+    //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");    
     var objParse = url.match("https://.*/obj/([0-9]+).*");
 
     return {
@@ -78,7 +81,7 @@ function get_webdav_info(pid,server){
 
 
 function get_explain_info(pid,server,obj){
-//console.log("get_explain_info called");
+console.log("get_explain_info called");
   var report_info = new XMLHttpRequest();
   report_info.onload = function() {
     if (report_info.status==200) {
@@ -108,6 +111,40 @@ function get_explain_info(pid,server,obj){
 
 }
 
+function addListeners(){
+  document.getElementById("project").addEventListener('click', clickBtn);
+  document.getElementById("md").addEventListener('click', clickBtn);
+  document.getElementById("project_list").addEventListener('click',clickBtn);
+  document.getElementById("query").addEventListener('click', clickBtn);
+  document.getElementById("validate").addEventListener('click', clickBtn);
+  document.getElementById("export").addEventListener('click', clickBtn);
+  document.getElementById("import").addEventListener('click', clickBtn);
+  document.getElementById("md_export").addEventListener('click', clickBtn);
+  document.getElementById("md_import").addEventListener('click', clickBtn);
+
+  document.getElementById("transformations").addEventListener('click', clickBtn);
+  document.getElementById("schedules").addEventListener('click', clickBtn);
+  document.getElementById("schedules_gp").addEventListener('click', clickBtn);
+  document.getElementById("dashboard").addEventListener('click', clickBtn);
+  document.getElementById("new_project").addEventListener('click', clickBtn);
+  document.getElementById("model").addEventListener('click', clickBtn);
+  document.getElementById("model2").addEventListener('click', clickBtn);
+
+  document.getElementById("mng").addEventListener('click', clickBtn);
+
+  document.getElementById("object").addEventListener('click', clickBtn);
+
+  document.getElementById("console").addEventListener('click', clickBtn);
+
+  document.getElementById("something").addEventListener('click', clickInfo);
+  document.getElementById("explain").addEventListener('click', clickBtn);
+  
+  var magic = document.getElementById("magic");
+  if(magic != null){
+    magic.addEventListener('click', clickBtn);
+  }else{
+  }
+}
 
 function clickBtn(e) {
     if (e.which == 2) {
@@ -140,7 +177,6 @@ function needPidEnabler(){
 function explainEnabler(){
   //console.log("enabling explain");
   document.getElementById("explain").href = explain_url;
-  document.getElementById("explain").addEventListener('click', clickBtn);
   document.getElementById("explain").className.replace(" disabled","");
 }
 
@@ -166,7 +202,7 @@ function needObjEnabler(){
 
 
 function loader(){
-  console.log("executing loader");
+  //console.log("executing loader");
 
   document.getElementById('optLink').href=chrome.extension.getURL("options.html");
   document.getElementById('hlpLink').href=chrome.extension.getURL("gd_help.html");
@@ -237,52 +273,31 @@ function loader(){
                   needObjDisabler();
                   get_explain_info(pid,server,obj);
               }
+            replacer();
+            addListeners();
             });
 
           }else{
             //we are in UI this is simple 
             objURL='/gdc/md/'+pid+'/obj/'+obj;
-            needObjEnabler(); 
             get_explain_info(pid,server,obj);
+            replacer();
+            addListeners();
+            needObjEnabler();
           }
         }else{
           needObjDisabler();
+          replacer();
+          addListeners();
         }       
       }else{
         needPidDisabler();
+        replacer();
+        addListeners();
       }
 
-
-  replacer();
-
-  document.getElementById("project").addEventListener('click', clickBtn);
-  document.getElementById("md").addEventListener('click', clickBtn);
-  document.getElementById("project_list").addEventListener('click',clickBtn);
-  document.getElementById("query").addEventListener('click', clickBtn);
-  document.getElementById("validate").addEventListener('click', clickBtn);
-  document.getElementById("export").addEventListener('click', clickBtn);
-  document.getElementById("import").addEventListener('click', clickBtn);
-  document.getElementById("md_export").addEventListener('click', clickBtn);
-  document.getElementById("md_import").addEventListener('click', clickBtn);
-
-  document.getElementById("transformations").addEventListener('click', clickBtn);
-  document.getElementById("schedules").addEventListener('click', clickBtn);
-  document.getElementById("dashboard").addEventListener('click', clickBtn);
-  document.getElementById("new_project").addEventListener('click', clickBtn);
-  document.getElementById("model").addEventListener('click', clickBtn);
-  document.getElementById("model2").addEventListener('click', clickBtn);
-
-  document.getElementById("mng").addEventListener('click', clickBtn);
-
-  document.getElementById("object").addEventListener('click', clickBtn);
-
-  document.getElementById("console").addEventListener('click', clickBtn);
-
-  document.getElementById("something").addEventListener('click', clickInfo);
-
-  document.getElementById("magic").addEventListener('click', clickBtn);
-
     }
+    
     }
 );
   

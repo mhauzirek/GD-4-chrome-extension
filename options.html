@@ -39,22 +39,12 @@
         "PID - to be sure which project are you currently playing with" 
       ],
       "You can disable CloudConnect logs parsing if you don't like colors or it is too slow on your computer.",
-      "If you want to use this extension on <b>whitelabeled</b> environment (GoodData running on other domain than *.gooddata.com), you need to add the domain below.
-      Note that the extension will not be whitelabeled."
+      "If you want to use this extension on <b>whitelabeled</b> environment (GoodData running on other domain than *.gooddata.com), you need to add the domain below. Note that the extension will not be whitelabeled."
     ],
-    "usage info": [
-      "Clicking on Obj in UI will redirect you to the same Object in gray pages",
-      "Clicking on Obj in gray pages will redirect you to UI page for that object if such page exists (dashboard, report, attribute, metric...)"
-      "Clicking on EX (next to Obj) will redirect you to explain resource that shows how the report is calculated (works only for reports)
-      "Clicking on Exp and Imp allows you to export and import whole project, this is used for <a href='http://developer.gooddata.com/article/project-cloning#GrayPages'>project cloning</a>."
-      "Clicking on MD next to Exp and Imp allows you to do <a href='http://developer.gooddata.com/article/migrating-selected-objects-between-projects#GrayPages'>migrate certain objects from project to project</a>"
-      "<span title='yes, exactly like this...'>Keep the mouse over any link in extension</title> for a moment to see what it does.</span>"
-      "There is now an article about this piece of software on official GoodData developer site <a href='http://developer.gooddata.com/article/gooddata-extension-tool-for-chrome'>http://developer.gooddata.com/article/gooddata-extension-tool-for-chrome</a>"
-    ]    
+    "usage info": "see <a href="gd_help.html">the help</a>",
     "extension info" : {
-      "version" : "<b id='ext_version'>0.0000</b>",
+      "version" : "<b id='ext_version'>0.0000</b>"
     }
-
   }
   </pre>
   <hr>
@@ -483,7 +473,7 @@
 
     <fieldset>
         <legend>Magic button:</legend>
-        <div class="detail">You can add custom button - e.g.:<br>
+        <div class="detail">You can add custom button and use wildcards ${SERVER}, ${PID}, ${OBJ} - e.g.:<br>
             &emsp; Title: Valid<br>
             &emsp; Popup help: Validation of project<br>
             &emsp; Link: https://${SERVER}/gdc/md/${PID}/validate

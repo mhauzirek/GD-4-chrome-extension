@@ -278,7 +278,7 @@ function get_etl_info(pid,server){
       }
 
       cur_next_date = new Date(schedule.nextExecutionTime);
-      if((no_schedule_states || schedule.state =="ENABLED") && (nextrun==null || cur_next_date<nextrun)){
+      if((no_schedule_states || schedule.state =="ENABLED") && (nextrun==null || cur_next_date<nextrun) && (schedule.lastExecution.execution.status!="RUNNING") ) {
         nextrun=cur_next_date;
         nextExecution = schedule;
       }
@@ -339,11 +339,10 @@ function get_etl_info(pid,server){
     
     if(schedule_count>1){
       if(no_schedule_states){
-        html_text = html_text + " <a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>("+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+        html_text = html_text + " <a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
       }else{
-        html_text = html_text + " <a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>("+(enabled_count>0 ? enabled_count+" enabled " : "");
-        html_text = html_text + (disabled_count>0 ? disabled_count+" disabled " : "");
-        html_text = html_text + "schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+        html_text = html_text + " <a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+enabled_count+" / "+schedule_count;
+        html_text = html_text + " schedule"+(schedule_count>1 ? "s" : "")+")</a>";
       }
 
     }
@@ -353,7 +352,7 @@ function get_etl_info(pid,server){
       if(schedule_count==0){
         html_text = "<span>(no schedules)";
       }else{
-        html_text = "<span><a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>(no enabled, "+disabled_count+" disabled schedule"+(disabled_count>1 ? "s" : "")+")</a>";
+        html_text = "<span><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+enabled_count+" / "+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
       }
     }
 
@@ -425,12 +424,12 @@ function showProjectInfo2(pid, server){
             <td></td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1'><a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>Last sched. ETL</a></td>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>Last sched. ETL</a></td>\
             <td><span class='gd4chrome_value' id='gd4chrome_etl_last'>...</span></td>\
             <td></td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1'><a href='https://"+server+"/gdc/projects/"+pid+"/schedules'>Next sched. ETL</a></td>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>Next sched. ETL</a></td>\
             <td><span class='gd4chrome_value' id='gd4chrome_etl_next'>...</span></td>\
             <td></td>\
             </tr>\

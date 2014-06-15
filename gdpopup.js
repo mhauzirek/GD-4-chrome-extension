@@ -30,7 +30,8 @@
  */
 function widen() {
     var stdWidth = 730;
-    var separatorWidth = 6;
+    //var separatorWidth = 6;
+    var separatorWidth = 10;
     var letterWidth = 10;
 
     var newWidth = stdWidth + separatorWidth + letterWidth * localStorage["magic_title"].length;
@@ -62,6 +63,9 @@ function addMagicButton() {
     var classAttr = "";
     if (localStorage["magic_link"].indexOf("${PID}") >= 0) {
         classAttr += "needpid ";
+    }
+    if (localStorage["magic_link"].indexOf("${OBJ}") >= 0) {
+        classAttr += "needobj ";
     }
     if (localStorage["magic_link"].indexOf("${OBJURL}") >= 0) {
         classAttr += "needobj ";
