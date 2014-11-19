@@ -147,7 +147,7 @@ function addListeners(){
 }
 
 function clickBtn(e) {
-    if (e.which == 2) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.which == 2) {
         return false;
     }
     chrome.tabs.update(tabId, {'url': e.target.getAttribute("href")});

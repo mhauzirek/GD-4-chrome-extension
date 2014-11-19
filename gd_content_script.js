@@ -129,6 +129,14 @@ function showProjectInfo(info){
           } 
 } 
 
+function html_entities(rawStr){
+  var encodedStr = rawStr.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+    return '&#'+i.charCodeAt(0)+';';
+  });
+  return encodedStr;
+}
+
+
 function get_basic_info(pid,server){
 
   var proj_info = new XMLHttpRequest();
@@ -138,9 +146,9 @@ function get_basic_info(pid,server){
   if (proj_info.status==200)
     {
       resp = JSON.parse(proj_info.responseText);
-      document.getElementById("gd4chrome_title").innerHTML=resp.project.meta.title;
-      document.getElementById("gd4chrome_title").title=resp.project.meta.title;
-      document.getElementById("gd4chrome_summary").innerHTML=resp.project.meta.summary;
+      document.getElementById("gd4chrome_title").innerHTML=html_entities(resp.project.meta.title);
+      document.getElementById("gd4chrome_title").title=html_entities(resp.project.meta.title);
+      document.getElementById("gd4chrome_summary").innerHTML=html_entities(resp.project.meta.summary);
       document.getElementById("gd4chrome_driver").innerHTML=resp.project.content.driver;
       
 // 2014-04-03 - after AWS cutoff is no longer valid

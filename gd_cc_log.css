@@ -3,7 +3,7 @@ html {
 }
 
 pre.shifted_log {
-	margin-top: 60px;
+	margin-top: 75px;
 	background-color: white;
 }
 
@@ -30,9 +30,27 @@ pre.shifted_log {
 	color: #999;
 	left: 0px;
 	text-align: left;
-	xfont-weight: bold;
-
+	font-weight: bold;
+	font-style: normal;
+	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;	
 }
+
+span.graph_name a {
+	text-decoration: none;
+	color: #999;
+	border-bottom: 2px solid #000;
+	padding-bottom: 3px;
+	-webkit-transition: .2s;
+	transition: .2s;		
+}
+
+span.graph_name a:hover {
+	text-decoration: none;
+	color: white;
+	padding-bottom: 3px;
+	border-bottom: 2px solid #999;
+}
+
 .graph_run_time{
 	xcolor: white;
 	color: #999;
@@ -62,11 +80,141 @@ pre.shifted_log {
 	padding-top: 1px;
 	padding-bottom: 2px;
 	position: fixed;
-	right: 0px;
+	right: 20px;
 	top: 0px;
 	z-index: 4998;
 }
 
+#cc_head_writers_box {
+	background-color: #000000;
+	background-origin: padding-box;
+	background-size: auto;
+
+	color: rgb(51, 51, 51);
+	xdisplay: block;
+	font-family: Avenir,sans-serif;
+	font-size: 12px;
+	min-height: 50px;
+	max-height: 198px;
+	resize: vertical;
+	width: 500px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	padding-top: 1px;
+	padding-bottom: 0px;
+	position: fixed;
+	right: 20px;
+	top: 73px;
+	z-index: 4997;
+	display: inline;
+	overflow-y: scroll;
+}
+
+#cc_head_writers_box:hover{
+	xmax-height: 90%;
+	max-height: calc(100% - 90px);
+	max-height: -webkit-calc(100% - 90px);
+}
+
+
+.cc_head_writers{
+	display: table;
+	border-spacing: 0px;
+	padding-bottom: 5px;
+
+}
+
+.hidden{
+	display: none;
+}
+
+#cc_head_writers_hider{
+	width: 500px;
+	height: 20px;
+	font-family: Avenir,sans-serif;
+	font-size: 13px;
+	color: #999;
+	z-index: 5000;
+	position: fixed;
+	right: 20px;
+	top: 53px;
+	text-align: center;
+	border-top: 1px #777 dashed;
+	cursor: hand;
+}
+
+#cc_head_writers_hider:hover {
+	color: #fff;
+	background-color: #777;
+}
+
+#cc_head_writers_hider.hider_open{
+	background-color: #000;
+}
+
+#cc_head_writers_hider.hider_closed{
+	background-color: #000;
+}
+
+#cc_head_writers_hider.hider_inactive, #cc_head_writers_hider.hider_inactive:hover{
+	background-color: #000;
+	color: #777;
+}
+
+
+tr.cc_head_writer{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	margin-top: 1px;
+	margin-bottom: 0px;
+	font-size: 12px;
+	margin: 0em;
+}
+
+tr.cc_head_writer_header td{
+font-size: 10px;
+font-style: normal;
+font-variant: normal;
+font-weight: normal;
+outline-color: #999;
+outline-style: none;
+outline-width: 0px;
+text-align: right;
+text-transform: uppercase; 
+color: #fff;
+}
+
+.cc_head_writer_total {
+	border-bottom: 1px solid #999;
+	color: #999;
+	font-weight: bold;
+}
+
+.cc_writer_name {
+	color: #999;
+	padding-left: 10px;
+	width: 100px;
+	background-color: #000000;
+	text-align: left;
+}
+
+.cc_writer_rows {
+	color: #999;
+	padding-left: 20px;
+	width: 80px;
+	background-color: #000000;
+	text-align: right;
+}
+
+.cc_writer_size {
+	color: #999;
+	padding-left: 20px;
+	width: 80px;
+	background-color: #000000;
+	text-align: right;
+}
 
 .cc_head_label {
 	bottom: 2px;
@@ -88,7 +236,7 @@ pre.shifted_log {
 	position: relative;
 	text-decoration: none;
 	border-bottom: 3px solid #000;	
-
+	
 	-webkit-transition: .2s;
 	transition: .2s;	
 } 
@@ -139,7 +287,7 @@ pre.shifted_log {
 .close{
 	font-weight: 500;
 	position: fixed;
-	right: 10px;
+	right: 30px;
 	top: 5px;
 	xbackground-color: #39414d;
 	background-color: #000000;
@@ -149,7 +297,7 @@ pre.shifted_log {
 a.goto_error:link, a.goto_error:visited, a.goto_error:hover{
 	color: #FF6B6B;
 
-	right: 100px;
+	right: 120px;
 	position: fixed;
 
 	padding-left: 15px;
@@ -162,7 +310,7 @@ a.goto_error:link, a.goto_error:visited, a.goto_error:hover{
 a.goto_err_data:link, a.goto_err_data:visited, a.goto_err_data:hover{
 	color: #FF8000;
 
-	right: 170px;
+	right: 190px;
 	position: fixed;
 
 	padding-left: 15px;
@@ -174,7 +322,7 @@ a.goto_err_data:link, a.goto_err_data:visited, a.goto_err_data:hover{
 
 a.goto_running:link, a.goto_running:visited, a.goto_running:hover{
 	color: #b0b0b0;
-	right: 100px;
+	right: 120px;
 	position: fixed;
 	font-weight: normal;
 	font-style: italic;
@@ -184,7 +332,7 @@ a.goto_running:link, a.goto_running:visited, a.goto_running:hover{
 
 a.goto_success:link, a.goto_success:visited, a.goto_success:hover{
 	color: #99FF99;
-	right: 100px;
+	right: 120px;
 	position: fixed;
 	font-weight: normal;
 	font-style: italic;
@@ -195,8 +343,8 @@ a.goto_success:link, a.goto_success:visited, a.goto_success:hover{
 a.run_refresh:link, a.run_refresh:visited, a.run_refresh:hover{
 	color: #b0b0b0;
 	position: fixed;
-	right: 45px;
-	padding-left: 10px;
+	right: 65px;
+	padding-left: 5px;
 	font-weight: normal;
 	xbackground-color: #39414d;
 	background-color: #000000;
@@ -205,7 +353,7 @@ a.run_refresh:link, a.run_refresh:visited, a.run_refresh:hover{
 
 #auto_refresh{
 	position: fixed;
-	right: 27px;
+	right: 47px;
 	top: 4px;
 	padding-left: 5px;
 }
@@ -289,4 +437,28 @@ margin-right: 50px;
 
 .cc_head_label_first{
  margin-left: 20px;
+}
+
+.blink_me {
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: .7s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 2;
+}
+
+@-webkit-keyframes blinker {  
+    0% { background-color: #000; color: #999;}
+    50% { background-color: #999; color: #fff;}
+    100% { background-color: #000; color: #999;}
+}
+
+
+.loader_on{
+	display: block;
+	background-image: url("https://secure.gooddata.com/images/icons/loading-16.gif");
+	position: fixed;
+	top: 5px;
+	right: 2px;
+	width: 16px;
+	height: 16px;
 }

@@ -117,6 +117,32 @@ function reload_hash(){
 }
 
 
+//fade effects by http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/
+// fade out
+function fadeOut(el){
+  el.style.opacity = 1;
+  (function fade() {
+    if ((el.style.opacity -= .1) < 0) {
+      el.style.display = "none";
+    } else {
+      requestAnimationFrame(fade);
+    }
+  })();
+}
+
+// fade in
+function fadeIn(el, display){
+  el.style.opacity = 0;
+  el.style.display = display || "block";
+  (function fade() {
+    var val = parseFloat(el.style.opacity);
+    if (!((val += .1) > 1)) {
+      el.style.opacity = val;
+      requestAnimationFrame(fade);
+    }
+  })();
+}
+
 
 function set_refresh(){
   console.log("setting auto reload to 5 minutes");
@@ -141,6 +167,22 @@ function toggle_refresh(){
   refresh_url = set_refresh_url();
 }
 
+function switch_gd_writers(){
+  console.log("switching");
+  var gdw = document.getElementById('cc_head_writers_box');
+  var hdw_hid = document.getElementById('cc_head_writers_hider');
+
+  if(gdw.style.display=="none"){
+    hdw_hid.classList.remove('hider_open');
+    hdw_hid.classList.add('hider_closed');
+    fadeIn(gdw, 'inline');
+  }else{
+    hdw_hid.classList.remove('hider_closed');
+    hdw_hid.classList.add('hider_open');
+    fadeOut(gdw);
+  }
+}
+
 var timed_refresh = null;
 var is_error = document.getElementById('first_error');
 var is_finished = document.getElementById('finished_ok');
@@ -154,6 +196,5 @@ if(is_error || is_finished){
     document.getElementById('auto_refresh').disabled=true;
     stop_refresh();
   }
-
 
 

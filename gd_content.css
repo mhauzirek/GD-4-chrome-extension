@@ -131,14 +131,14 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
 #gd4chrome_overlay{
     background-attachment: scroll;
     background-clip: border-box;
-    background-color: rgba(0, 0, 0, 0.85098);
+    background-color: rgb(0, 0, 0);
     background-image: none;
     background-origin: padding-box;
     background-size: auto;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    x_border-bottom-left-radius: 15px;
+    x_border-bottom-right-radius: 15px;
+    x_border-top-left-radius: 15px;
+    x_border-top-right-radius: 15px;
     color: rgb(255, 255, 255);
     display: block;
     font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
@@ -155,14 +155,14 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     display:block;
     position:fixed! important; 
     z-index:21000;
-    top:50px;
-    right:5px;
+    top:70px;
+    right:20px;
 
     padding: 5px 5px 5px 5px;
     color: white;
     background: #333;
-    background: rgba(0,0,0,0.85);
-    border-radius: 15px;
+    background: rgb(0,0,0);
+    border-radius: 5px;
     font-size: 110%;
   }
 

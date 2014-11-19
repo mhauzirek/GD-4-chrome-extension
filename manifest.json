@@ -1,10 +1,14 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.7505",
+  "version": "0.9001",
+  "icons" : {
+    "48" : "gd48_beta.png"
+  },  
+
   "description": "Makes your life easier when developing in GoodData BI platform",
   "options_page": "options.html",
   "background": {"persistent": false, "scripts": ["GDextension.js"] },
- 
+
   "page_action" :
   {
     "default_icon" : "icons/gd19_rebrand_gray.png",
@@ -36,9 +40,6 @@
     "storage",
     "notifications"
     ],
-  "icons" : {
-    "48" : "gd48.png"
-  },
   "web_accessible_resources": ["cc_log_switching.js"],
 
   "manifest_version": 2

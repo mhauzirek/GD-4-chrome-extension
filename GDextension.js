@@ -34,6 +34,7 @@
 var listOfProjects = null;
 var called = 0;
 
+var notID=0;
 
 
 var lastURL = "";
@@ -79,6 +80,8 @@ chrome.extension.onMessage.addListener(
           chrome.tabs.query({active: true,currentWindow: true}, function(activeTab){
             if(request.only_other_tab==false || current_window.focused==false || sender.tab.id!=activeTab[0].id){
               notify(request.title, request.text, sender.tab.id, request.img);  
+            }else{
+              console.log("NOT NOTIFYING ON SAME TAB");
             }
           });
         })                                     
@@ -87,9 +90,78 @@ chrome.extension.onMessage.addListener(
   });
 
 
+//notification event
+      function clicked(tab,link){
+console.log("CLICKED");
+        console.log("tab: "+tab);
+        console.log("link: "+link);
+
+        console.log(typeof link);
+
+        if (typeof link !== 'undefined'){
+            console.log("CREATING NEW TAB FROM NOTIFICATION "+notID);
+            chrome.tabs.create({url: link});
+          }else{
+            if(typeof tab !== 'undefined'){
+              chrome.tabs.update(tab, {selected: true});
+            }
+          }
+      }
+
+
 // show desktop notification
 
 function notify(title, text, tab, img, link) {
+  img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
+  //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
+
+  chrome.notifications.getPermissionLevel(function(permissionLevel){
+    if(permissionLevel == "granted"){
+      //permission allowed
+
+      var notOptions = {
+        type: "basic",
+        title: title,
+        message: text,
+        iconUrl: img
+      };
+      
+      chrome.notifications.create("id"+notID++, notOptions, function(notID){
+        console.log("created notification "+notID+" with title "+title);
+      });
+    }else{
+      console.log("GD4Chrome cannot display notification");
+      console.log(permissionLevel);
+    }
+  });
+}
+
+//todo click on notification
+
+function creationCallback(notID) {
+    setTimeout(function() {
+      chrome.notifications.clear(notID, function(wasCleared) {
+        console.log("Notification " + notID + " cleared: " + wasCleared);
+      });
+    }, 10000);
+  }
+
+function notificationClicked(notID) {
+  console.log("The notification '" + notID + "' was clicked");
+
+if (typeof link !== 'undefined' && typeof tab !== 'undefined'){
+        chrome.tabs.create({url: link});
+      }else{
+        if(typeof tab !== 'undefined'){
+          chrome.tabs.update(tab, {selected: true});
+        }
+      }
+
+
+}  
+
+
+function notify_old(title, text, tab, img, link) {
   img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
   //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
 
@@ -238,9 +310,13 @@ chrome.runtime.onInstalled.addListener(function(details){
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
-        notify("GoodData Extension has been updated!", "Click here to see what is new",null,"install_96.png","gd_help.html#changelog");
+        notify("GoodData Extension has been updated!", "Check help to see what is new and enjoy!",null,"install_96.png","gd_help.html#changelog");
     }
 });
+
+chrome.notifications.onClicked.addListener(function (notID){
+          chrome.notifications.clear(notID,function(cleared){});
+        });
 
  
 //Export project

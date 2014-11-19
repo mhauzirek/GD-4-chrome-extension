@@ -203,10 +203,11 @@ text-decoration: none;
   margin-left: 5px;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 22px;
+  font-size: 16px;
   line-height: 18px;
   padding-bottom: 7px;
   color: white;
+  font-family: serif;
 }
 
 #navigation #something.disabled {

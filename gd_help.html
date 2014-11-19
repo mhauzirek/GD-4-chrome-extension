@@ -73,7 +73,7 @@
         <a href="#" id="model" title="Logical Data Model of a project (image)">LDM</a><sub><a class="subnav disabled" href="#">LAB</a></sub><span class="hlp_desc">Display generated Logical Data Model of a project (same as in Manage - Model)</span>
       </p>
       <p>
-        <a href="#" id="model" class="disabled">LDM</a><sub><a class="subnav" href="#" title="Logical Data Model of last UI selected project in new LABS application">LAB</a></sub><span class="hlp_desc">Display interactive Logical Data Model of last project accessed in UI within experimental LABS application<sup>(*)</sup>.</span>
+        <a href="#" id="model" class="disabled">LDM</a><sub><a class="subnav" href="#" title="Logical Data Model of last UI selected project in new LABS application">LAB</a></sub><span class="hlp_desc">Display interactive Logical Data Model of project in experimental LABS application<sup>(*)</sup>.</span>
       </p>
       
       <p>
@@ -105,18 +105,18 @@
         <a href="#" id="transformations" title="ETL processes within a project">ETL</a><span class="hlp_desc">Display ETL processes deployed to current project on gray page <span class="gp">/gdc/projects/PID/dataload/processes</span><sup>(*)</sup></span>
       </p>
       <p>
-        <a href="#" title="ETL Schedules within a project">Sch</a><sub><a class="disabled subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub><span class="hlp_desc">Display Schedules of ETL processes within current project in DISC<sup>(*)</sup></span>
+        <a href="#" title="ETL Schedules within a project">Sch</a><sub><a class="disabled subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub><span class="hlp_desc">Display Schedules of ETL processes within current project in Data Integration Console<sup>(*)</sup></span>
       </p>
       <p>
         <a href="#" title="ETL Schedules within a project" class="disabled">Sch</a><sub><a class="subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub><span class="hlp_desc">Display Schedules of ETL processes within current project on gray page <span class="gp">/gdc/projects/PID/schedules</span><sup>(*)</sup></span>
       </p>
 
       <p>
-        <a href="#" title="custom link">(custom)</a><span class="hlp_desc">Custom link can be added in the options. You can use placeholders ${SERVER}, ${PID} and ${OBJ} and they will be replaced by current values</span>
+        <a href="#" title="custom link">(custom)</a><span class="hlp_desc">Custom link can be added in the options. You can use placeholders ${SERVER}, ${PID} and ${OBJ} and they will be replaced by current values. To link specific Labs app with project context use <a class="dev_link" href="https://secure.gooddata.com/labs/apps/app_link">AppLink</a> app.</span>
       </p>
 
       <p>
-        <a href="#" id="something" title="Useful Project Information">ℹ</a><span class="hlp_desc">Display overlay with useful information about project (see below).</span>
+        <a href="#" id="something" title="Useful Project Information">i</a><span class="hlp_desc">Display overlay with useful information about project (see below).</span>
       </p>
 
       <p>
@@ -192,11 +192,13 @@
 <p class="help_div">In case of error it automatically scrolls to that line. Otherwise it scrolls to last line.</p>
 <p class="help_div">You can manually refresh the log with the Refresh link (it will keep your display settings).</p>
 <p class="help_div">By default the WatchDog process information (regular information each few seconds about what is running) is hidden. You can display it by clicking on the checkbox marked Watchdog. </p>
-<p class="help_div">By default the request_id part (present on each line) is hidden to make the log easier to read. To display the request_id click the RequestID link.</p>
+<p class="help_div">By default the request_id part (present on each line) is hidden to make the log easier to read. To display the request_id (useful when debuging with GoodData support) click the RequestID link.</p>
+<p class="help_div">You can click on the graph name to open this process within Data Integration Console</p>
 <p class="help_div">When the graph is still running, you can check the box next to Reload link to automatically refresh it every 5 minutes. If it then finishes and the window is not focused, you will be informed by desktop notification.</p>
 <p class="help_div">You can disable parsing of the log files in extension options (in case it is too slow on your computer or you just want to see the raw logs).</p> 
+<p class="help_div">The extension tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and size loaded to GoodData. Click on this information to open details about each dataset writer detected. Move your mouse to this area to expand it if the information does not fit in.</p> 
 
-<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i>[Graph Name]</i></span>    <span class="graph_run_time">runtime: [Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
+<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i>[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
 
 <h2>The Options</h2>
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
@@ -206,6 +208,15 @@
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
+
+<p>v0.76:
+  <ul>
+    <li>Parsing of Dataset Writers in CC log parser (with # of rows and file size)</li>
+    <li>Graph name in CC Log window now links to that process in Data Integration Console</li>
+    <li>Alt and Cmd keys are now behaving correctly when opening links in new window</li>
+    <li>Desktop notifications are back</li>
+</ul>
+</p>
 
 <p>v0.7505:
   <ul>
