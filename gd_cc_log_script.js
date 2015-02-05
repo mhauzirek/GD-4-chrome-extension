@@ -32,10 +32,6 @@ function numberWithCommas(x) {
     return parts.join(".");
 }
 
-function numberWithCommas1(x,decimals){
-  numberWithCommas1(x,0);
-}
-
 
 function numberWithCommas1(x,decimals) {
   var DecimalSeparator = Number("1.2").toLocaleString().substr(1,1);
@@ -49,23 +45,26 @@ function numberWithCommas1(x,decimals) {
 }
 
 
-function sizeWithCommas(x,decimals,unit){
+function sizeWithCommas(x,decimals,unit,show_unit){
   decimals = typeof decimals !== 'undefined' ? decimals : 0;
+  show_unit = typeof show_unit !== 'undefined' ? show_unit : true;  
   unit = typeof unit !== 'undefined' ? unit : 'auto';
   var factor = Math.pow(10,decimals);
 
-  if( (x/1000/1000>1000 && unit=='auto') || unit=='TB' ){
-    //TB
-    return numberWithCommas1(Math.round(x/1000/1000/1000*factor)/factor,decimals)+" TB";
-  }else if((x/1000>1000 && unit=='auto') || unit=='GB'){
-    //GB
-    return numberWithCommas1(Math.round(x/1000/1000*factor)/factor,decimals)+" GB";
-  }else if((x/1000>1 && unit=='auto') || unit=='MB'){
-    //MB
-    return numberWithCommas1(Math.round(x/1000*factor)/factor,decimals)+" MB";
+  if(isNaN(x)){
+    return "N/A";
+  }
+ 
+  if((x/1000/1000/1000>1000 && unit=='auto') || unit=='TB'){
+    return numberWithCommas1(Math.round(x/1000/1000/1000/1000*factor)/factor,decimals)+(show_unit ? " TB" : "");
+  }else if((x/1000/1000>1000 && unit=='auto') || unit=='GB'){
+    return numberWithCommas1(Math.round(x/1000/1000/1000*factor)/factor,decimals)+(show_unit ? " GB" : "");
+  }else if((x/1000>1000 && unit=='auto') || unit=='MB'){
+    return numberWithCommas1(Math.round(x/1000/1000*factor)/factor,decimals)+(show_unit ? " MB" : "");
+  }else if((x/1000>1 && unit=='auto') || unit=='KB'){
+    return numberWithCommas1(Math.round(x/1000*factor)/factor,decimals)+(show_unit ? " KB" : "");
   }else{
-    //KB
-    return numberWithCommas1(Math.round(x*factor)/factor,decimals)+" KB";
+    return numberWithCommas1(Math.round(x*factor)/factor,decimals)+(show_unit ? " B" : "");
   }
 }
 
@@ -104,7 +103,7 @@ chrome.extension.sendMessage({message: "wakeup_cc"});
 
 //https://www.gedanalytics.com/gdc/projects/pmlm2inqwz3s936lotjmvjysp8a6nita/dataload/processes/ab345373-f7db-4c82-8a7c-d781d07affd4/executions/54675d99e4b0f79524d31be1/log#last_line
 
-console.log(location.href);
+//console.log(location.href);
 //var url_regexp = /^.*[\.\/]log[^\/]*$/;
 var url_regexp = /^https:\/\/([^\/]*)\/gdc\/projects\/([^\/]*)\/dataload\/processes\/([^\/]*)\/.*[\.\/]log[^\/]*$/
 var url_matches = url_regexp.exec(location.href);
@@ -112,7 +111,7 @@ var url_matches = url_regexp.exec(location.href);
 var cc_server;
 var cc_process;
 var cc_project;
-
+var original_source;
 
 //console.log(url_matches);
 
@@ -201,7 +200,9 @@ function parseCClog(){
 var request_id=null;
 var graph_name="???";
 var run_from=null;
+var run_from_raw=null;
 var run_to=null;
+var run_to_raw=null;
 var run_hour=null;
 var run_min=null;
 var run_sec=null;
@@ -232,7 +233,12 @@ add_style("ERROR",(show.err == "0" ? "none" : "block"));
 //parse plaintext to divs with classes
 //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
 
-document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
+original_source = document.body.firstChild.textContent;
+
+//WORKING document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
+
+document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
+
 
 //find first error and tag it with id
 var first_error = document.querySelector('.ERROR');
@@ -247,22 +253,24 @@ var last_element = document.body.firstChild.children[document.body.firstChild.ch
 var pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
 
 //this line comes after last line with status
+if(last_element){
 if(/.*Unable to create helper class for driver unregistering.*/.exec(last_element.textContent)){
   last_element = pre_last_element;
 }
 
   last_element.id = "last_element";
   var last_line = last_element.textContent;
-  var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4})( \[WatchDog_?[0-9]*\] \[INFO\]: request_id=[^ ]+ WatchDog thread finished)?.*/;
+  var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript status=SCRIPT_OK)?.*/;
   var match_last = last_regexp.exec(last_line);
 
   if(match_last){
     run_to = Date.parse(match_last[1]);
+    run_to_raw = match_last[1];
+    if(match_last[2] || match_last[3]){
+      run_finished = true;
+    }
   }
-
-  if(match_last[2]){
-    run_finished = true;
-  }
+}
 
 
 //inject script with switch functions
@@ -279,15 +287,19 @@ s.onload = function() {
 
 var properties_element;
 var tested_line;
-var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph (.+grf) additional properties {([^}]+)}/;
+//WORKING var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph (.+grf) additional properties {([^}]+)}/;
+var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) ((Graph (.+grf) additional properties {([^}]+)})|(action=jvmscript status=SCRIPT_EXEC))/;
 var match;
   for(i=0;i<=10;i++){
-    tested_line = document.body.firstChild.children[i].textContent;
-    match = prop_regexp.exec(tested_line);
-    if(match){
-      properties_element = true;
-      console.log(tested_line);
-      break;
+    if(document.body.firstChild.children[i]){
+      tested_line = document.body.firstChild.children[i].textContent;
+      match = prop_regexp.exec(tested_line);
+
+      if(match){
+        properties_element = true;
+//        console.log(tested_line);
+        break;
+      }
     }
   }
 
@@ -296,11 +308,13 @@ var match;
   var properties;
   if(match){
     //found property line
+
+    run_from_raw = match[1];
     run_from = Date.parse(match[1]);
 
     request_id = match[2];
-    graph_name = match[3];
-    properties = match[4].split(", ");
+    graph_name = match[5] || "(unknown)";
+    //properties = (match[4] ? match[4].split(", ") : null );
 
 
   var run_diff = (run_to-run_from)/1000;
@@ -326,12 +340,11 @@ if(first_error){
   }
 }
 
-
 var toolbox = document.createElement('div');
 toolbox.id="cc_head";
 toolbox.innerHTML="\
     <span class='cc_head_links'><span class='graph_name'><a title='Open this process in Data Integration Console' href='https://"+cc_server+"/admin/disc/#/projects/"+cc_project+"/processes/"+cc_process+"/schedules'>"+graph_name+"</a></span>\
-    <span class='graph_run_time'>"+graph_run_string+"</span>"+goto_link+"\
+    <span class='graph_run_time' title='from:&#09;"+run_from_raw+"&#10;to:&#09;"+run_to_raw+"'>"+graph_run_string+"</span>"+goto_link+"\
     <a class='run_refresh' href='#' onclick='reload_refresh();return(false)'>Reload</a><input type='checkbox' "+(show.refresh=="1" ? "checked='checked'" : "")+" onclick='toggle_refresh()' title='Reload every 5 minutes' id='auto_refresh'/>\
     <a class='cc_head_link close' href='#' xtarget='_blank' title='Show original log' onclick='reload_hash();return(false)'>X</a>\
     </span>\
@@ -363,7 +376,7 @@ if(first_error){
   chrome.extension.sendMessage(
     {message: "showNotification",
      title:"ETL Process ERROR", 
-     text: "Graph '"+graph_name+"' finished with ERROR.",
+     text: "'"+graph_name+"' finished with ERROR.",
      img: "icons/gd_etl_error.png",
      only_other_tab: true
    });
@@ -373,7 +386,7 @@ if(first_error){
     chrome.extension.sendMessage(
     {message: "showNotification",
      title:"ETL Process FINISHED OK", 
-     text: "Graph '"+graph_name+"' finished successfully.",
+     text: "'"+graph_name+"' finished successfully.",
      img: "icons/gd_etl_ok.png",
      only_other_tab: true
    });
@@ -422,41 +435,98 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-var gdw_regexp =/([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER *FINISHED_OK\n.*In:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*Out:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*\[INFO\]:.*FINISHED_OK/g
-var gdw_match = document.body.firstChild.textContent.match(gdw_regexp);
+var gdw_regexp =/([A-Za-z0-9_]+)_GD_C[^ ]* *FINISHED_OK\n.*In:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*Out:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*\[INFO\]:.*FINISHED_OK/g
+var gdw_match = original_source.match(gdw_regexp);
 
 
-if(gdw_match!== null && gdw_match !== undefined){
+var gdw_rows_regexp = /\[[A-Za-z0-9_]+_GD_CSV_DATA_WRITER_[0-9]*\] \[DEBUG\]: request_id=[^ ]* Written [0-9]+ records to file .*/g
+var gdw_rows_match = original_source.match(gdw_rows_regexp);
 
-var gdw_length = gdw_match.length;
-var gdw_line_regexp = /([A-Za-z0-9_]*)_GD_CSV_DATA_WRITER *FINISHED_OK\n([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]*)\] \[INFO\]: request_id[^%]*%cpu.*In:0 *([0-9]*) *([0-9]*).*/
+var gdw_upload_regexp =/\[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* component_type=gd_dataset_writer action=data_file_stored file_name=[^ ]+ file_size=[0-9]+/g
+var gdw_upload_match = original_source.match(gdw_upload_regexp);
 
-console.log("we have some writers");
 
-var text="\
-    <table class='cc_head_writers' id='cc_head_writers'>\
-      <tr class='cc_head_writer cc_head_writer_total'><td class='cc_writer_name'>TOTAL</td><td id='cc_total_rows' class='cc_writer_rows'> </td><td id='cc_total_size' class='cc_writer_size'> MB</td></tr>\
-      <tr class='cc_head_writer cc_head_writer_header'><td class='cc_writer_name'>dataset writer id</td><td class='cc_writer_rows'>rows</td><td class='cc_writer_size'>size</td></tr>\
-";
 
+//console.log(gdw_rows_match);
+//console.log(gdw_upload_match);
+
+
+if(gdw_upload_match!== null && gdw_upload_match !== undefined && gdw_rows_match!== null && gdw_rows_match!== undefined ){
+var gdw_length = (gdw_upload_match.length >= gdw_rows_match ? gdw_upload_match.length : gdw_rows_match.length)
+//console.log("we have "+gdw_length+" writers");
+
+
+var gdw_rows_line_regexp = /\[([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER_[0-9]+\] \[DEBUG\]: request_id=[^ ]* Written ([0-9]+) records to file/
+
+var gdw_upload_line_regexp = /\[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* component_type=gd_dataset_writer action=data_file_stored file_name=([0-9a-zA-Z_.]+)\.csv file_size=([0-9]+)/
+
+var gdw_rows_line_match;
+var gdw_upload_line_match;
+
+
+var gdw_rows={};
+gdw_rows['*total*']=0;
+gdw_rows['*max*']=0;
+var gdw_sizes={};
+gdw_sizes['*total*']=0;
+gdw_sizes['*max*']=0;
+var gdw_datasets={};
 
 
 for (var i = 0; i < gdw_length; i++) {
-    gdw_line = gdw_match[i];
-    gdw_line_match = gdw_line.match(gdw_line_regexp);
+  if(gdw_upload_match[i] !== null && gdw_upload_match[i]!== undefined) {
+    gdw_upload_line_match = gdw_upload_match[i].match(gdw_upload_line_regexp);
+  }
+  if(gdw_rows_match[i] !== null && gdw_rows_match[i]!== undefined){
+    gdw_rows_line_match = gdw_rows_match[i].match(gdw_rows_line_regexp);
+  }
 
- if(writers.indexOf(gdw_line_match[1]) == -1){
-  //we've never seen this writer before
-  writers.push(gdw_line_match[1]);
-  text=text+"<tr class='cc_head_writer'><td class='cc_writer_name'>"+gdw_line_match[1]+"</td><td class='cc_writer_rows'>"+numberWithCommas1(Number(gdw_line_match[4]))+"</td><td class='cc_writer_size' title='"+sizeWithCommas(gdw_line_match[5],0,'KB')+"'>"+sizeWithCommas(gdw_line_match[5],1,'MB')+"</td></tr>\n";
+  //console.log(gdw_upload_line_match);
+  //console.log(gdw_rows_line_match);
 
-  cc_total_rows+=Number(gdw_line_match[4]);
-  cc_total_size+=Number(gdw_line_match[5]);
-  cc_total_count++;
+  if(gdw_upload_line_match!==undefined && gdw_upload_line_match !== null && !gdw_sizes.hasOwnProperty(gdw_upload_line_match[1])){
+    gdw_sizes[gdw_upload_line_match[1]]=Number(gdw_upload_line_match[3]);
+    gdw_sizes['*total*']+=Number(gdw_upload_line_match[3]);
+    if(Number(gdw_upload_line_match[3])>gdw_sizes['*max*']) {gdw_sizes['*max*']=Number(gdw_upload_line_match[3]);}
+    gdw_datasets[gdw_upload_line_match[1]]=gdw_upload_line_match[2];
+  }
+
+  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null &&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])){
+    //we've never seen this writer before
+    gdw_rows[gdw_rows_line_match[1]]=Number(gdw_rows_line_match[2]);
+    if(Number(gdw_rows_line_match[2])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[2]);}    
+    gdw_rows['*total*']+=Number(gdw_rows_line_match[2]);
+  }
 }
 
+var text="\
+    <table class='cc_head_writers' id='cc_head_writers'>\
+      <tr class='cc_head_writer cc_head_writer_total'><td class='cc_writer_name'>TOTAL</td><td id='cc_total_rows' class='cc_writer_rows'> </td><td id='cc_total_size' class='cc_writer_size'> MB</td><td class='cc_writer_bar'> </td></tr>\
+      <tr class='cc_head_writer cc_head_writer_header'><td class='cc_writer_name'>dataset writer id</td><td class='cc_writer_rows'>rows</td><td class='cc_writer_size'>size (MB)</td><td class='cc_writer_bar'>relative</td></tr>\
+";
+
+for (var key in gdw_rows) {
+  if (gdw_rows.hasOwnProperty(key) && key!='*total*' && key!='*max*') {
+      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+gdw_datasets[key]+"'>"+key+"</td>";
+      text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0)+"</td><td class='cc_writer_size' ";
+      text=text+"title='"+sizeWithCommas(gdw_sizes[key],0,'KB')+"'>"+sizeWithCommas(gdw_sizes[key],0,'MB',false)+"</td>";
+      text=text+"<td class='cc_writer_bar' title='"+gdw_datasets[key]+"&#10;"+(!isNaN(gdw_rows[key]) ? Math.round(gdw_rows[key]/gdw_rows['*total*']*100) : "N/A")+"% rows, "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*total*']*100) : "N/A")+"% of volume'>";
+      text=text+"<div class='cc_writer_bar_rows' style=\"width: "+(!isNaN(gdw_rows[key]) ? Math.round(gdw_rows[key]/gdw_rows['*max*']*50) : "0")+"px\"> </div>";
+      text=text+"<div class='cc_writer_bar_sizes' style=\"width: "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*max*']*50) : "0")+"px\"> </div>"; 
+      text=text+"<td>";
+
+      text=text+"</tr>\n";
+      cc_total_count++;
+
+
+  }
 }
+
 text=text+"</table>";
+
+cc_total_rows=gdw_rows['*total*'];
+cc_total_size=gdw_sizes['*total*'];
+
 
 toolbox2.innerHTML=text;
 
@@ -490,12 +560,11 @@ document.getElementById('cc_total_size').title=sizeWithCommas(cc_total_size,1,'M
 
 
 }else{
-  console.log("we have NONE");
+//  console.log("we have NONE");
   hider.classList.add("hider_inactive");
   hider.innerText="No Dataset Writers detected.";
 }
 console.log("looking for Dataset Writers finished");
-
 
 }
 
@@ -509,11 +578,3 @@ function async(fn, callback) {
 function sync(fn) {
     fn();
 }
-function foo(){
-    console.log('foo');
-}
-
-
-
-
-

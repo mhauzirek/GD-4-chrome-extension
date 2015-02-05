@@ -6,6 +6,10 @@ html {
         pre {
             line-height: 130%;
         }
+        body {
+            font-family: monospace;
+            font-size: 12px;
+        }
 
         html body div.form {
             padding: 3px;

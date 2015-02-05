@@ -60,7 +60,7 @@
 <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
 <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
         <option value="" disabled>Old GoodData "G"</option>
-<option value="icons/gd19_blue.png">GoodBlue</option>
+<option value="icons/gd19_blue_old.png">GoodBlue</option>
 <option value="icons/gd19_green.png">GoodGreen</option>
 <option value="icons/gd19_lblue.png">GoodLightBblue</option> 
 <option value="icons/gd19_orange.png">GoodOrange</option>
@@ -91,8 +91,45 @@
 <option value="icons/gd19_wait.png">Wait for it...</option>
 <option value="icons/gd19_transparent.png">None (stealth mode)</option>
         </select>
+        <img id="default_icon_view" style="vertical-align: bottom" src="icons/default.png" width="19" height="19">
     </fieldset>
+
     <fieldset>
+      <legend>CloudConnect logs:</legend>
+      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs (use if the parsing is causing slownes or other problems)</label>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Whitelabeled hostnames:</legend>
+      <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
+      <input type="text" id="add_wl_domain">
+      <input type="button" id="add_wl" value="Add new">
+      <br>
+      <select multiple="multiple" id="wl_domains">
+      </select>
+      <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
+   
+
+
+    </fieldset>
+
+    <fieldset>
+        <legend>Magic button:</legend>
+        <div class="detail">You can add custom button and use wildcards ${SERVER}, ${PID}, ${OBJ}:</div>
+        <div>Click on the examples below to set magic button or create your own.</div>
+        <div>
+          <a id="magic_validate" href="#">Validation</a>
+          <a id="magic_clone" href="#">Clone project</a>
+          <a id="magic_params" href="#">ETL Params</a>
+        </div>
+        <br>
+        <label for="magic_title">Title: </label><input type="text" id="magic_title" maxlength="6"><br>
+        <label for="magic_help">Popup help: </label><input type="text" id="magic_help"><br>
+        <label for="magic_link">Link: </label><input type="text" id="magic_link" size="90"><br>
+    </fieldset>
+
+        <fieldset>
       <legend>Alternative Icon for host:</legend>
       <span class="detail">hostname regexp</span><br>
       <input id="alt_host_regexp1" value="" />
@@ -450,38 +487,6 @@
         </select>
         <br>    
       </fieldset>   
-
-    <fieldset>
-      <legend>CloudConnect logs:</legend>
-      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs</label>
-
-    </fieldset>
-
-    <fieldset>
-      <legend>Whitelabeled hostnames:</legend>
-      <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
-      <input type="text" id="add_wl_domain">
-      <input type="button" id="add_wl" value="Add new">
-      <br>
-      <select multiple="multiple" id="wl_domains">
-      </select>
-      <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
-   
-
-
-    </fieldset>
-
-    <fieldset>
-        <legend>Magic button:</legend>
-        <div class="detail">You can add custom button and use wildcards ${SERVER}, ${PID}, ${OBJ} - e.g.:<br>
-            &emsp; Title: Valid<br>
-            &emsp; Popup help: Validation of project<br>
-            &emsp; Link: https://${SERVER}/gdc/md/${PID}/validate
-        </div><br>
-        <label for="magic_title">Title: </label><input type="text" id="magic_title" maxlength="6"><br>
-        <label for="magic_help">Popup help: </label><input type="text" id="magic_help"><br>
-        <label for="magic_link">Link: </label><input type="text" id="magic_link"><br>
-    </fieldset>
 
 </div>
 

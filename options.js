@@ -23,6 +23,20 @@
 
 // Saves options to localStorage.
 
+function set_magic(title, help, link){
+  document.getElementById("magic_title").value=title;
+  document.getElementById("magic_help").value=help;
+  document.getElementById("magic_link").value=link;
+  event.preventDefault();
+  return false;
+}
+
+function default_icon_changed(){
+  new_icon = document.getElementById("default_icon").value;
+  console.log(new_icon);
+  document.getElementById("default_icon_view").src=chrome.extension.getURL(new_icon);
+}
+
  function remove_wl_domains(){
   var select = document.getElementById("wl_domains");
   for(i=0; i<select.length; i++){
@@ -359,6 +373,8 @@ function restore_options() {
   }
 
   read_wl_domains();
+
+  default_icon_changed();
 }
 
 document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
@@ -367,5 +383,28 @@ restore_options();
 document.querySelector('#save').addEventListener('click', save_options);
 document.querySelector('#remove_wl_domains_button').addEventListener('click', remove_wl_domains);  
 document.querySelector('#add_wl').addEventListener('click', add_wl_domain);
+
+
+document.getElementById("default_icon").addEventListener('change',default_icon_changed);
+document.getElementById("magic_validate").addEventListener('click', function(){
+  var title='Valid';
+  var help='Validation of project';
+  var link='https://${SERVER}/gdc/md/${PID}/validate';
+  set_magic(title,help,link);
+},false);
+
+document.getElementById("magic_clone").addEventListener('click', function(){
+  var title='Clone';
+  var help='Clone project';
+  var link='https://${SERVER}/labs/apps/app_link?pid=${PID}&app=clone_project';
+  set_magic(title,help,link);
+},false);
+
+document.getElementById("magic_params").addEventListener('click', function(){
+  var title='Par';
+  var help='ETL Params (metadata)';
+  var link='https://${SERVER}/gdc/projects/${PID}/dataload/metadata';
+  set_magic(title,help,link);
+},false);
 
 

@@ -196,9 +196,15 @@
 <p class="help_div">You can click on the graph name to open this process within Data Integration Console</p>
 <p class="help_div">When the graph is still running, you can check the box next to Reload link to automatically refresh it every 5 minutes. If it then finishes and the window is not focused, you will be informed by desktop notification.</p>
 <p class="help_div">You can disable parsing of the log files in extension options (in case it is too slow on your computer or you just want to see the raw logs).</p> 
-<p class="help_div">The extension tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and size loaded to GoodData. Click on this information to open details about each dataset writer detected. Move your mouse to this area to expand it if the information does not fit in.</p> 
+<p class="help_div">The extension now tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and data volume loaded to GoodData. Click on this information to open details about each dataset writer detected.</p> 
+<p class="help_div">For each dataset Writer you can see its code name (put mouse over it to see the dataset identifier), number of rows, data volume in MBs and relative ratio of these metrics to the other dataset loaded so far. This allows you to easily detect the largest datasets</p>
+<p class="help_div">Red bar is for rows, green bar for volume (put mouse over it to see exact percentages).</p>
 
-<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i>[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
+<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i title="Click to go to deployed proces within DIC">[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
+<div id="cc_head_writers_hider" class="hider_closed blink_me" title="overall statistics for data uploaded so far. Click to see details per dataset.">X Dataset Writers, Y rows, Z MB. Click for details</div>
+
+<p class="help_div">The extension tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and data volume loaded to GoodData. Click on this information to open details about each dataset writer detected. Move your mouse to this area to expand it if the information does not fit in.</p> 
+
 
 <h2>The Options</h2>
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
@@ -209,12 +215,14 @@
 <a name="changelog"></a>
 <h2>What's new</h2>
 
-<p>v0.76:
+<p>v0.9002:
   <ul>
-    <li>Parsing of Dataset Writers in CC log parser (with # of rows and file size)</li>
+    <li>Parsing of Dataset Writers in CC log parser (with # of rows, file size and relative bars)</li>
     <li>Graph name in CC Log window now links to that process in Data Integration Console</li>
     <li>Alt and Cmd keys are now behaving correctly when opening links in new window</li>
     <li>Desktop notifications are back</li>
+    <li>Rearanged options page + icon preview + added examples for Magic button</li>
+    <li>Other minor fixes</li>
 </ul>
 </p>
 

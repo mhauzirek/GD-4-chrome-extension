@@ -161,6 +161,7 @@ span.graph_name a:hover {
 #cc_head_writers_hider.hider_inactive, #cc_head_writers_hider.hider_inactive:hover{
 	background-color: #000;
 	color: #777;
+	display: none;
 }
 
 
@@ -171,6 +172,12 @@ tr.cc_head_writer{
 	margin-bottom: 0px;
 	font-size: 12px;
 	margin: 0em;
+	background-color: #000;
+}
+
+
+tr.cc_head_writer:hover{
+	background-color: #333;
 }
 
 tr.cc_head_writer_header td{
@@ -186,6 +193,10 @@ text-transform: uppercase;
 color: #fff;
 }
 
+tr.cc_head_writer_header td.cc_writer_name{
+	text-align: center;
+}
+
 .cc_head_writer_total {
 	border-bottom: 1px solid #999;
 	color: #999;
@@ -195,24 +206,24 @@ color: #fff;
 .cc_writer_name {
 	color: #999;
 	padding-left: 10px;
-	width: 100px;
-	background-color: #000000;
+	width: 260px;
+	xbackground-color: #000000;
 	text-align: left;
 }
 
 .cc_writer_rows {
 	color: #999;
 	padding-left: 20px;
-	width: 80px;
-	background-color: #000000;
+	width: 110px;
+	xbackground-color: #000000;
 	text-align: right;
 }
 
 .cc_writer_size {
 	color: #999;
 	padding-left: 20px;
-	width: 80px;
-	background-color: #000000;
+	width: 90px;
+	xbackground-color: #000000;
 	text-align: right;
 }
 
@@ -227,7 +238,7 @@ color: #fff;
 	font-weight: bold;
 	height: auto;
 	xbackground-color: #39414d;
-	background-color: #000000;
+	xbackground-color: #000000;
 	width: auto;
 	padding-bottom: 4px;
 	padding-left: 0px;
@@ -461,4 +472,60 @@ margin-right: 50px;
 	right: 2px;
 	width: 16px;
 	height: 16px;
+}
+
+
+.cc_writer_bar { 
+	height: 10px;
+	width: 50px;
+	padding-left: 10px;
+}
+
+
+.cc_writer_bar > div {
+	display: block;
+	height: 40%;
+	resize: none;
+
+
+	position: relative;
+	overflow: hidden;
+}
+
+
+.cc_writer_bar > div.cc_writer_bar_sizes{
+	background-color: rgb(43,194,83);
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, rgb(43,194,83)),
+	  color-stop(1, rgb(84,240,84))
+	 );
+	background-image: -webkit-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	resize: none;
+	padding-top: 2px
+}
+
+
+.cc_writer_bar > div.cc_writer_bar_rows{
+	background-color: rgb(194,43,83);
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, rgb(194,43,83)),
+	  color-stop(1, rgb(240,84,84))
+	 );
+	background-image: -webkit-linear-gradient(
+	  center bottom,
+	  rgb(194,43,83) 37%,
+	  rgb(240,84,84) 69%
+	 );
+	resize: none;
+	padding-bottom: 2px
 }

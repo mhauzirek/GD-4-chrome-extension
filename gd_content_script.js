@@ -286,7 +286,7 @@ function get_etl_info(pid,server){
       }
 
       cur_next_date = new Date(schedule.nextExecutionTime);
-      if((no_schedule_states || schedule.state =="ENABLED") && (nextrun==null || cur_next_date<nextrun) && (schedule.lastExecution.execution.status!="RUNNING") ) {
+      if((no_schedule_states || schedule.state =="ENABLED" && schedule.nextExecutionTime!=null) && (nextrun==null || cur_next_date<nextrun) && (schedule.lastExecution.execution.status!="RUNNING") ) {
         nextrun=cur_next_date;
         nextExecution = schedule;
       }
