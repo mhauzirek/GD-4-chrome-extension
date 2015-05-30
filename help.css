@@ -700,7 +700,50 @@ p {
   cursor: hand;
 }
 
-#cc_head_writers_hider:hover {
+#cc_head_writers_hider{
+  width: 239px;
+  height: 20px;
+  font-family: Avenir,sans-serif;
+  font-size: 13px;
+  color: #999;
+  background-color: #000;
+  z-index: 5005;
+
+  margin-left: 280px;
+  xmargin-top: 5px;
+  text-align: center;
+  border-top: 1px #777 dashed;
+  border-left: 1px #777 dashed;
+  cursor: hand;
+  display: inline-block;
+
+}
+
+
+#cc_head_phases_hider{
+  width: 249;
+  height: 20px;
+  font-family: Avenir,sans-serif;
+  font-size: 13px;
+  color: #999;
+  background-color: #000;
+  z-index: 5000;
+  display: inline-block;
+
+  margin-left: 30px;
+  xmargin-top: 5px;
+  text-align: center;
+  border-top: 1px #777 dashed;
+  cursor: hand;
+  float: left;
+}
+
+#cc_head_writers_hider.visible, #cc_head_phases_hider.visible, #cc_head_writers_hider.visible:hover, #cc_head_phases_hider.visible:hover{
+  display: block;
+}
+
+
+#cc_head_writers_hider:hover, #cc_head_phases_hider:hover {
   color: #fff;
   background-color: #777;
 }

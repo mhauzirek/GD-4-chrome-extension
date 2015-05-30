@@ -48,7 +48,11 @@
   }
   </pre>
   <hr>
-<div class='form'><a name='settings'></a>
+<div class='form'>
+<div class="submit">
+<input type="button" id="save2" class="save" value="Save options" /> <span id="status2" class="status"></span>  
+</div>
+<a name='settings'></a>
 <form>
 <div class="fields">
     <fieldset>
@@ -95,12 +99,6 @@
     </fieldset>
 
     <fieldset>
-      <legend>CloudConnect logs:</legend>
-      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs (use if the parsing is causing slownes or other problems)</label>
-
-    </fieldset>
-
-    <fieldset>
       <legend>Whitelabeled hostnames:</legend>
       <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
       <input type="text" id="add_wl_domain">
@@ -110,8 +108,6 @@
       </select>
       <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
    
-
-
     </fieldset>
 
     <fieldset>
@@ -128,6 +124,15 @@
         <label for="magic_help">Popup help: </label><input type="text" id="magic_help"><br>
         <label for="magic_link">Link: </label><input type="text" id="magic_link" size="90"><br>
     </fieldset>
+
+    <fieldset>
+      <legend>CloudConnect logs:</legend>
+      (use if the parsing is causing slownes or other problems)<br>
+      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs AT ALL</label><br>
+      &nbsp;<label><input type="checkbox" id="dont_parse_cc_datasets" value="1">Do NOT parse Dataset Writers in CloudConnect logs</label><br>
+      &nbsp;<label><input type="checkbox" id="dont_parse_cc_phases" value="1">Do NOT parse Phases in CloudConnect logs</label><br>
+      
+    </fieldset>    
 
         <fieldset>
       <legend>Alternative Icon for host:</legend>
@@ -495,7 +500,7 @@
 </div>
 </form>
 
-<input type="button" id="save" value="Save options" /> <span id="status"></span>
+<input type="button" id="save" class="save" value="Save options" /> <span id="status" class="status"></span>  
 </div>
 
 </body>

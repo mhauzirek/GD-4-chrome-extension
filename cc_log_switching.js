@@ -183,6 +183,11 @@ function switch_gd_writers(){
   }
 }
 
+function scroll_to(hash){
+  location.hash="#"+hash;
+  return false;
+}
+
 var timed_refresh = null;
 var is_error = document.getElementById('first_error');
 var is_finished = document.getElementById('finished_ok');
@@ -196,5 +201,6 @@ if(is_error || is_finished){
     document.getElementById('auto_refresh').disabled=true;
     stop_refresh();
   }
+
 
 

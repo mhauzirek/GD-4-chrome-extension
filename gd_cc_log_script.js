@@ -26,6 +26,17 @@
  * it is embeded to GD pages and sends message to wakeup extension
  */
 
+function formatTime(x){
+  var run_diff = x
+  run_hour = Math.floor(run_diff/(60*60));
+  run_min = Math.floor((run_diff%(60*60))/60);
+  run_sec = Math.ceil(run_diff%60);
+
+  graph_run_string=(run_hour>0 ? run_hour+"h " : "")+(run_min>0 ? run_min+"m " : "")+run_sec+"s";
+
+  return graph_run_string;
+}
+
 function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -116,71 +127,63 @@ var original_source;
 //console.log(url_matches);
 
 if(url_matches){
-  console.log("we are in some log file!");
+  //console.log("we are in some log file!");
   if(location.hash=="#no_parse"){
-    console.log("...but there is #no_parse - U Can't Touch This!");
+    console.log("there is #no_parse - U Can't Touch This!");
   }else{
     chrome.extension.sendMessage({message: "canParseCcLog"}, function(response) {
-      if(response){
-        console.log("Settings say, we can parse it.");
+
+      //console.log(response);
+      if(response.logs){
+        //console.log("Settings say, we can parse it.");
         cc_server=url_matches[1];
         cc_project=url_matches[2];
         cc_process=url_matches[3];
 
-//document.getElementById('foo');
-var loader = document.createElement('div');
-var tmp = document.createElement('div');
-loader.classList.add('loader_on');
-document.body.appendChild(loader);
-document.body.appendChild(tmp);
-
-
+        //document.getElementById('foo');
+        var loader = document.createElement('div');
+        var tmp = document.createElement('div');
+        //loader.classList.add('loader_on');
+        document.body.appendChild(loader);
+        document.body.appendChild(tmp);
 
 //toolbox.id="cc_head";
 
-//synchronous
-//        parseCClog();
-//        parseGdw();
-//        loader.style.display='none';
+/* /synchronous
+        parseCClog();
+        parsePhases();
+        parseGdw();
+*/
 
 //asynchronous
+        async(parseCClog, function(){ 
+          //console.log('parseCClog finished');
+        if(response.phases) {async(parsePhases, function(){
+            document.getElementById('cc_head_phases_hider').classList.add('visible');          
+            //console.log('parsePhase finished');
+          });
+        }else{
+          document.getElementById('cc_head_under1').innerText="phases parsing disabled";
+        }
 
-async(parseCClog, function(){ 
-  //loader.style.display='none';
-    console.log('parseCClog finished');
-});
+        if(response.datasets) {async(parseGdw, function(){ 
+            document.getElementById('cc_head_writers_hider').classList.add('visible');
+            //console.log('parseGdw finished');
+          });
+        }else{
+          document.getElementById('cc_head_under2').innerText="writers parsing disabled";
+        }
 
-async(parseGdw, function(){ 
-    loader.style.display='none';
-    console.log('parseGdw finished');
-});
+      });
 
 
-      }else{
-        console.log("Parsing of logs disabled in settings");
-      }
 
-    });
-  }
-}
-
-/*
-if(url_matches){
-  console.log("we are in some log file!");
-  if(location.hash=="#no_parse"){
-    console.log("...but there is #no_parse - U Can't Touch This!");
-  }else{
-    chrome.extension.sendMessage({message: "canParseCcLog"}, function(response) {
-      if(response){
-        console.log("Settings say, we can parse it.");
-        parseCClog();
       }else{
         console.log("Parsing of logs disabled in settings");
       }
     });
   }
 }
-*/
 
 function parse_query(query){
   result = {};
@@ -197,99 +200,96 @@ function parse_query(query){
 
 function parseCClog(){
 
-var request_id=null;
-var graph_name="???";
-var run_from=null;
-var run_from_raw=null;
-var run_to=null;
-var run_to_raw=null;
-var run_hour=null;
-var run_min=null;
-var run_sec=null;
-var run_finished = false;
-var graph_run_string = "?";
+  var request_id=null;
+  var graph_name="???";
+  var run_from=null;
+  var run_from_raw=null;
+  var run_to=null;
+  var run_to_raw=null;
+  var run_hour=null;
+  var run_min=null;
+  var run_sec=null;
+  var run_finished = false;
+  var graph_run_string = "?";
+
+  //hide everything to speed up redraw
+  document.body.firstChild.display = "none";
+  document.body.firstChild.className = "shifted_log";
+
+  //create objects for switching styles
 
 
+  show = parse_query(location.search);
+  //hidden by default
+  add_style("request_id",(show.rid == "1" ? "inline" : "none") );
+  add_style("WatchDog",(show.wdg == "1" ? "block" : "none"),"ERROR");
+  //visible by default
+  add_style("DEBUG",(show.dbg == "0" ? "none" : "block"),"WatchDog");
+  add_style("INFO",(show.inf == "0" ? "none" : "block"),"WatchDog");
+  add_style("WARN",(show.wrn == "0" ? "none" : "block"),"WatchDog");
+  add_style("ERROR",(show.err == "0" ? "none" : "block"));
 
-//hide everything to speed up redraw
-document.body.firstChild.display = "none";
-document.body.firstChild.className = "shifted_log";
+  //parse plaintext to divs with classes
+  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
 
-//create objects for switching styles
+  original_source = document.body.firstChild.textContent;
 
+  //WORKING document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
 
-show = parse_query(location.search);
-//hidden by default
-add_style("request_id",(show.rid == "1" ? "inline" : "none") );
-add_style("WatchDog",(show.wdg == "1" ? "block" : "none"),"ERROR");
-//visible by default
-add_style("DEBUG",(show.dbg == "0" ? "none" : "block"),"WatchDog");
-add_style("INFO",(show.inf == "0" ? "none" : "block"),"WatchDog");
-add_style("WARN",(show.wrn == "0" ? "none" : "block"),"WatchDog");
-add_style("ERROR",(show.err == "0" ? "none" : "block"));
+  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
 
+  ///([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
 
+  document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
 
-//parse plaintext to divs with classes
-//document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[([A-Za-z0-9_]+)\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $2 $3'>$1<span class='request_id'>$4</span>$5");
+  //OLD
+  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "1:$1\n 2:$2\n 3:$3\n 4:$4\n 5:$5\n 6:$6\n 7:$7\n 8:$8\n 9:$9\n 10:$10\n 11:$11\n 12:$12\n 13:$13\n 14:$14\n 15:$15\n");//"</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
 
-original_source = document.body.firstChild.textContent;
-
-//WORKING document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
-
-document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
-
-
-//find first error and tag it with id
-var first_error = document.querySelector('.ERROR');
-if(first_error){
-  first_error.id="first_error";
-}
+  //find first error and tag it with id
+  var first_error = document.querySelector('.ERROR');
+  if(first_error){
+    first_error.id="first_error";
+  }
 
 
-//add tool with checkboxes
+  //add tool with checkboxes
+  var last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
+  var pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
 
-var last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
-var pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
+  //this line comes after last line with status
+  if(last_element){
+    if(/.*Unable to create helper class for driver unregistering.*/.exec(last_element.textContent)){
+      last_element = pre_last_element;
+    }
 
-//this line comes after last line with status
-if(last_element){
-if(/.*Unable to create helper class for driver unregistering.*/.exec(last_element.textContent)){
-  last_element = pre_last_element;
-}
+    last_element.id = "last_element";
+    var last_line = last_element.textContent;
+    var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript status=SCRIPT_OK)?.*/;
+    var match_last = last_regexp.exec(last_line);
 
-  last_element.id = "last_element";
-  var last_line = last_element.textContent;
-  var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript status=SCRIPT_OK)?.*/;
-  var match_last = last_regexp.exec(last_line);
-
-  if(match_last){
-    run_to = Date.parse(match_last[1]);
-    run_to_raw = match_last[1];
-    if(match_last[2] || match_last[3]){
-      run_finished = true;
+    if(match_last){
+      run_to = Date.parse(match_last[1]);
+      run_to_raw = match_last[1];
+      if(match_last[2] || match_last[3]){
+        run_finished = true;
+      }
     }
   }
-}
 
-
-//inject script with switch functions
-var s = document.createElement('script');
-s.src = chrome.extension.getURL("cc_log_switching.js");
-s.onload = function() {
+  //inject script with switch functions
+  var s = document.createElement('script');
+  s.src = chrome.extension.getURL("cc_log_switching.js");
+  s.onload = function() {
     this.parentNode.removeChild(this);
-};
-(document.head||document.documentElement).appendChild(s);
+  };
+  (document.head||document.documentElement).appendChild(s);
 
-
-
-//check first 10 rows to find "additional properties"
-
-var properties_element;
-var tested_line;
-//WORKING var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph (.+grf) additional properties {([^}]+)}/;
-var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) ((Graph (.+grf) additional properties {([^}]+)})|(action=jvmscript status=SCRIPT_EXEC))/;
-var match;
+  //check first 10 rows to find "additional properties"
+  var properties_element;
+  var tested_line;
+  //WORKING var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph (.+grf) additional properties {([^}]+)}/;
+  var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) ((Graph (.+grf) additional properties {([^}]+)})|(action=jvmscript script=([^\/]*\/)?([^ ]*) status=SCRIPT_EXEC))/;
+  var match;
   for(i=0;i<=10;i++){
     if(document.body.firstChild.children[i]){
       tested_line = document.body.firstChild.children[i].textContent;
@@ -297,52 +297,47 @@ var match;
 
       if(match){
         properties_element = true;
-//        console.log(tested_line);
+        //console.log(tested_line);
         break;
       }
     }
   }
 
   if(properties_element){
+    var properties;
+    if(match){
+      //console.log(match);
+      //found property line
+      run_from_raw = match[1];
+      run_from = Date.parse(match[1]);
 
-  var properties;
-  if(match){
-    //found property line
-
-    run_from_raw = match[1];
-    run_from = Date.parse(match[1]);
-
-    request_id = match[2];
-    graph_name = match[5] || "(unknown)";
-    //properties = (match[4] ? match[4].split(", ") : null );
-
-
-  var run_diff = (run_to-run_from)/1000;
-
-  run_hour = Math.floor(run_diff/(60*60));
-  run_min = Math.floor((run_diff%(60*60))/60);
-  run_sec = Math.ceil(run_diff%60);
-
-  graph_run_string=(run_hour>0 ? run_hour+"h " : "")+(run_min>0 ? run_min+"m " : "")+run_sec+"s";
+      request_id = match[2];
+      graph_name = match[5] || match[9] || "(unknown)";
+      //properties = (match[4] ? match[4].split(", ") : null );
+      var run_diff = (run_to-run_from)/1000;
+      run_hour = Math.floor(run_diff/(60*60));
+      run_min = Math.floor((run_diff%(60*60))/60);
+      run_sec = Math.ceil(run_diff%60);
+      graph_run_string=(run_hour>0 ? run_hour+"h " : "")+(run_min>0 ? run_min+"m " : "")+run_sec+"s";
+    }
   }
-}
 
-
-var goto_link;
-if(first_error){
-  var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
-  goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Get Data</a>";
-}else{
-  if(run_finished){
-    goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Go to last line</a>";
+  var goto_link;
+  if(first_error){
+    //var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
+    var err_data_url = '';//location.href.replace(/\/log[^\/]*/,"/data");
+    goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Get Data</a>";
   }else{
-    goto_link="<a class='cc_head_link goto_running' href='#last_line'>Go to last line</a>";
+    if(run_finished){
+      goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Go to last line</a>";
+    }else{
+      goto_link="<a class='cc_head_link goto_running' href='#last_line'>Go to last line</a>";
+    }
   }
-}
 
-var toolbox = document.createElement('div');
-toolbox.id="cc_head";
-toolbox.innerHTML="\
+  var toolbox = document.createElement('div');
+  toolbox.id="cc_head";
+  toolbox.innerHTML="\
     <span class='cc_head_links'><span class='graph_name'><a title='Open this process in Data Integration Console' href='https://"+cc_server+"/admin/disc/#/projects/"+cc_project+"/processes/"+cc_process+"/schedules'>"+graph_name+"</a></span>\
     <span class='graph_run_time' title='from:&#09;"+run_from_raw+"&#10;to:&#09;"+run_to_raw+"'>"+graph_run_string+"</span>"+goto_link+"\
     <a class='run_refresh' href='#' onclick='reload_refresh();return(false)'>Reload</a><input type='checkbox' "+(show.refresh=="1" ? "checked='checked'" : "")+" onclick='toggle_refresh()' title='Reload every 5 minutes' id='auto_refresh'/>\
@@ -358,61 +353,57 @@ toolbox.innerHTML="\
     </div>\
     </div>\
     </div>\
+    <div id='cc_head_under1'> </div><div id='cc_head_under2'> </div>\
 ";
 
 
-var last_line = document.createElement('div');
-last_line.id="last_line";
+  var last_line = document.createElement('div');
+  last_line.id="last_line";
 
-//everything is set, show it;
+  //everything is set, show it;
 
-document.body.firstChild.appendChild(toolbox);
-document.body.firstChild.appendChild(last_line);
+  document.body.firstChild.appendChild(toolbox);
+  document.body.firstChild.appendChild(last_line);
 
-//autoscroll
-if(first_error){
-  location.hash="#first_error";
+  //autoscroll
+  if(first_error){
+    location.hash="#first_error";
 
-  chrome.extension.sendMessage(
-    {message: "showNotification",
-     title:"ETL Process ERROR", 
-     text: "'"+graph_name+"' finished with ERROR.",
-     img: "icons/gd_etl_error.png",
-     only_other_tab: true
-   });
-
-}else{
-  if(run_finished){
     chrome.extension.sendMessage(
-    {message: "showNotification",
-     title:"ETL Process FINISHED OK", 
-     text: "'"+graph_name+"' finished successfully.",
-     img: "icons/gd_etl_ok.png",
-     only_other_tab: true
-   });
+      {message: "showNotification",
+       title:"ETL Process ERROR", 
+       text: "'"+graph_name+"' finished with ERROR.",
+       img: "icons/gd_etl_error.png",
+       only_other_tab: true
+     });
 
-  }
-
+  }else{
+    if(run_finished){
+    chrome.extension.sendMessage(
+      {message: "showNotification",
+      title:"ETL Process FINISHED OK", 
+      text: "'"+graph_name+"' finished successfully.",
+      img: "icons/gd_etl_ok.png",
+      only_other_tab: true
+    });
+    }
 
   location.hash="#last_line"; 
+  }
 
-}
-
-
-
-if(location.hash=="#last_line" || location.hash=="#first_error"){
-  console.log("scrolling...");
-  location.href=location.hash;
-}
+  if(location.hash=="#last_line" || location.hash=="#first_error"){
+    //console.log("scrolling...");
+    location.href=location.hash;
+  }
   document.body.firstChild.display = "block";
 }
 
-// dev - parse GD Writers
+
 
 function parseGdw(){
 //--------------
 
-console.log("looking for Dataset Writers");
+//console.log("looking for Dataset Writers");
 
 var gd_writers = new Array();
 var gd_writer;
@@ -435,8 +426,9 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-var gdw_regexp =/([A-Za-z0-9_]+)_GD_C[^ ]* *FINISHED_OK\n.*In:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*Out:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*\[INFO\]:.*FINISHED_OK/g
-var gdw_match = original_source.match(gdw_regexp);
+/*uugh, that was the old implementation that was wrong, slow and not used at all!!*/
+//var gdw_regexp =/([A-Za-z0-9_]+)_GD_C[^ ]* *FINISHED_OK\n.*In:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*Out:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*\[INFO\]:.*FINISHED_OK/g
+//var gdw_match = original_source.match(gdw_regexp);
 
 
 var gdw_rows_regexp = /\[[A-Za-z0-9_]+_GD_CSV_DATA_WRITER_[0-9]*\] \[DEBUG\]: request_id=[^ ]* Written [0-9]+ records to file .*/g
@@ -532,21 +524,21 @@ toolbox2.innerHTML=text;
 
   hider.classList.add("hider_closed");
   hider.classList.remove("hider_inactive");
-  hider.innerText=cc_total_count+" Dataset Writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+". Click for details";
+  hider.innerText=cc_total_count+" writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
   hider.addEventListener('click',function (){
   var gdw = document.getElementById('cc_head_writers_box');
   var hdw_hid = document.getElementById('cc_head_writers_hider');
 
   if(gdw.style.display=="none"){
     hdw_hid.classList.remove('hider_open','hider_inactive');
-    hdw_hid.classList.add('hider_closed');
-    hdw_hid.innerText="Click again to hide details.";
+    hdw_hid.classList.add('hider_closed','hider_clicked');
+    //hdw_hid.innerText="Dataset Writers: Click again to hide details.";
     gdw.style.display='inline';
   }else{
-    hdw_hid.classList.remove('hider_closed','hider_inactive');
+    hdw_hid.classList.remove('hider_closed','hider_inactive','hider_clicked');
     hdw_hid.classList.add('hider_open');
     gdw.style.display='none';
-    hdw_hid.innerText=cc_total_count+" Dataset Writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+". Click for details";
+    //hdw_hid.innerText=cc_total_count+" Writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
   }
 });
   
@@ -555,18 +547,238 @@ document.getElementById('cc_total_rows').title=numberWithCommas(cc_total_rows);
 document.getElementById('cc_total_size').innerText=sizeWithCommas(cc_total_size,1);
 document.getElementById('cc_total_size').title=sizeWithCommas(cc_total_size,1,'MB');
 
-  hider.classList.add("blink_me");
+  //hider.classList.add("blink_me");
 
 
 
 }else{
 //  console.log("we have NONE");
   hider.classList.add("hider_inactive");
-  hider.innerText="No Dataset Writers detected.";
+  hider.innerText="no dataset writers detected";
 }
-console.log("looking for Dataset Writers finished");
+//console.log("looking for Dataset Writers finished");
 
 }
+
+
+function parsePhases(){
+//--------------
+
+//console.log("looking for Phases");
+
+var current_time = new Date();
+
+var gd_phases = new Array();
+var gd_phase;
+var gdp_line_match
+var gdp_line;
+var phases_start = new Array();
+var phases_end = new Array();
+var phases_obj_arr = new Array();
+var phases_count = 0;
+var main_phases_count=0;
+var max_phase_duration=0;
+var max_unfinished_duration=0;
+var min_phase_start=Number.MAX_VALUE;
+var max_phase_end=0;
+var unfinished_phases=0;
+var phases_with_error=0;
+
+
+var toolbox2 = document.createElement('div');
+toolbox2.id="cc_head_phases_box";
+toolbox2.style.display="none";
+
+var hider=document.createElement('div');
+hider.id="cc_head_phases_hider";
+hider.innerText="Loading...";
+hider.classList.add("hider_inactive");
+
+document.body.lastChild.appendChild(hider);
+document.body.lastChild.appendChild(toolbox2);
+
+var gdp_start_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/g
+var gdp_start_match = original_source.match(gdp_start_regexp);
+
+var gdp_end_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Execution of phase \[([0-9]+)\] [a-zA-Z ]*finished.*/g
+var gdp_end_match = original_source.match(gdp_end_regexp);
+//Execution of phase [0] finished with error - elapsed time(sec): 4
+
+//console.log(gdp_start_match);
+//console.log(gdp_end_match);
+
+// && gdp_end_match!== null && gdp_end_match!== undefined
+if(gdp_start_match!== null && gdp_start_match !== undefined ){
+  var gdp_length = gdp_start_match.length;
+
+  //console.log("we have "+gdp_length+" starts of phases");
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
+  var gdp_start_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_start_match[i] !== null && gdp_start_match[i]!== undefined) {
+      gdp_start_line_match = gdp_start_match[i].match(gdp_start_line_regexp);
+    }
+    var phase_name = gdp_start_line_match[2]+"_"+gdp_start_line_match[3];
+    var unfinished_duration = current_time.getTime() - Date.parse(gdp_start_line_match[1]);
+
+    var new_phase = {phase_name: phase_name, top_process: (gdp_start_line_match[2]=="0" ? true : false), process_id:gdp_start_line_match[2], phase_id: gdp_start_line_match[3], start_time:Date.parse(gdp_start_line_match[1]), status: "RUNNING", end_time: null, duration: null};
+    unfinished_phases++;
+    phases_count++;
+
+    phases_obj_arr[phase_name]=new_phase;
+
+    if(new_phase.start_time < min_phase_start){
+      min_phase_start = new_phase.start_time;
+    }
+    if(unfinished_duration > max_unfinished_duration){
+      max_unfinished_duration = unfinished_duration;
+    }
+
+
+    phases_start[phase_name]=gdp_start_line_match[1];
+  }
+}
+
+if(gdp_end_match!== null && gdp_end_match !== undefined ){
+  var gdp_length = gdp_end_match.length;
+  //console.log("we have "+gdp_length+" ends of phases");
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Execution of phase \[([0-9]+)\] ([a-zA-Z ]*)finished.*/
+  var gdp_end_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_end_match[i] !== null && gdp_end_match[i]!== undefined) {
+      gdp_end_line_match = gdp_end_match[i].match(gdp_end_line_regexp);
+    }
+    var phase_name = gdp_end_line_match[2]+"_"+gdp_end_line_match[3];
+
+    update_phase = phases_obj_arr[phase_name]
+    update_phase.end_time = Date.parse(gdp_end_line_match[1]);
+    if(gdp_end_line_match[4] == "successfully "){
+      update_phase.status="OK";
+    }else{
+      update_phase.status="ERROR";
+      phases_with_error++;
+    }
+    unfinished_phases--;
+    update_phase.duration = update_phase.end_time - update_phase.start_time;
+    if(update_phase.duration > max_phase_duration){
+      max_phase_duration = update_phase.duration;
+    }
+    if(update_phase.end_time > max_phase_end){
+      max_phase_end = update_phase.end_time;
+    }
+
+
+    phases_end[phase_name]=gdp_end_line_match[1];
+  }
+}
+
+if(phases_count>0){
+
+if(unfinished_phases>0 && phases_with_error==0){
+  //some phase does not have end and is still running...
+  max_phase_end = current_time.getTime();
+  max_phase_duration = max_unfinished_duration;
+}
+
+//console.log(phases_obj_arr);
+//console.log(max_phase_duration);
+
+
+var time_span = max_phase_end - min_phase_start;
+var w_pixels = 290;
+var px_per_ms = w_pixels / time_span;
+
+  var text="\
+    <table class='cc_head_phases' id='cc_head_phases'>\
+      <tr class='cc_head_phase cc_head_phase_total'><td colspan='2' class='cc_phase_name'>ALL PHASES</td><td class='cc_phase_duration'> "+formatTime(Math.round(time_span/1000))+"</td><td class='cc_writer_bar'> </td></tr>\
+      <tr class='cc_head_phase cc_head_phase_header'><td colspan='2' class='cc_phase_name'>Phase</td><td class='cc_phase_duration'>Duration</td><td class='cc_phase_bar'>relative</td></tr>\
+";
+
+  for (var key in phases_obj_arr) {
+      var this_phase = phases_obj_arr[key];
+      var phase_start = phases_obj_arr[key].start_time;
+      var phase_end = phases_obj_arr[key].end_time;
+      var phase_duration = phases_obj_arr[key].duration;
+      var phase_status = phases_obj_arr[key].status;
+
+      if(this_phase.status=="RUNNING"){
+        //this phase is running...or some other has failed and we never got end of this one...
+        if(phases_with_error>0){
+          //some phase failed, this one was probably killed
+          phase_end = max_phase_end;
+          phase_duration = max_phase_end-phase_start;
+        }else{
+          //no error in the graph, we expect it is still running and use current time as phase end
+          phase_end = current_time.getTime();
+          phase_duration = phase_end-phase_start;
+        }
+      }else{
+        //this phase has already finished... we are OK
+        
+      }
+
+      text=text+"<tr class='cc_head_phase'><td class='cc_phase_name' title='"+key+"'><a href='#ph_"+key+"'>"+(this_phase.top_process==true ? key : "&nbsp;"+key)+"</a></td>";
+
+text=text+"<td title='from:&#09;"+new Date(phase_start).toString()+"&#10;to:&#09;"+new Date(phase_end).toString()+"' class='cc_phase_timeline'>";
+text=text+"<a href='#ph_"+key+"'><div class='cc_phase_bar_timeline cc_phase_bar_timeline_"+phase_status+" "+(this_phase.top_process == true ? "" : "cc_phase_bar_timeline_NOTOP")+"' style=\"width: "+(Math.round(phase_duration*px_per_ms)>0 ? Math.round(phase_duration*px_per_ms) : 1) +"px; margin-left: "+Math.round((phase_start-min_phase_start)*px_per_ms)+"px;\"></div>";
+
+      text=text+"</a></td>";
+      text=text+"<td class='cc_phase_duration' title='";
+
+      
+      text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTime(Math.round(phase_duration/1000))+"</td>";  
+      text=text+"<td class='cc_phase_bar' title='"+Math.round(phase_duration/time_span*100)+"% of total runtime "+formatTime(Math.round(time_span/1000))+"'>";
+      text=text+"<div class='cc_phase_bar_durations"+(phases_obj_arr[key].top_process ? "" : " cc_phase_bar_durations_NOTOP")+"' style=\"width: "+(!isNaN(phase_duration) ? Math.round(phase_duration/max_phase_duration*50) : "0")+"px\"></div>";
+
+
+
+
+
+//      text=text+"<div class='cc_writer_bar_sizes' style=\"width: "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*max*']*50) : "0")+"px\"> </div>"; 
+      text=text+"<td>";
+      text=text+"</tr>\n";
+      //phases_count++;
+      if(this_phase.top_process) main_phases_count++;
+  }
+
+text=text+"</table>";
+
+//cc_total_rows=gdw_rows['*total*'];
+//cc_total_size=gdw_sizes['*total*'];
+
+
+toolbox2.innerHTML=text;
+
+  hider.classList.add("hider_closed");
+  hider.classList.remove("hider_inactive");
+  hider.innerText=phases_count+" phases, "+(main_phases_count<phases_count ? main_phases_count+" in main graph" : "no subgraphs");
+  hider.addEventListener('click',function (){
+  var gdw = document.getElementById('cc_head_phases_box');
+  var hdw_hid = document.getElementById('cc_head_phases_hider');
+
+  if(gdw.style.display=="none"){
+    hdw_hid.classList.remove('hider_open','hider_inactive');
+    hdw_hid.classList.add('hider_closed','hider_clicked');
+    //hdw_hid.innerText="Phase details: Click again to hide.";
+    gdw.style.display='inline';
+  }else{
+    hdw_hid.classList.remove('hider_closed','hider_inactive', 'hider_clicked');
+    hdw_hid.classList.add('hider_open');
+    gdw.style.display='none';
+    //hdw_hid.innerText=phases_count+" Phases";
+  }
+});
+
+}else{
+//  console.log("we have NONE");
+  hider.classList.add("hider_inactive");
+  hider.innerText="no phases detected";
+}
+
+//console.log("looking for Phases finished");
+
+}
+
 
 
 function async(fn, callback) {

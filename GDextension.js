@@ -65,11 +65,15 @@ chrome.extension.onMessage.addListener(
         break;
 
         case "canParseCcLog":
-            console.log("can we parse CC log?");
-            if(localStorage['dont_parse_cc_logs']=="1"){
-                sendResponse(false);
+          var can_parse_cc_datasets=true;
+          var can_parse_cc_phases=true;
+          console.log("can we parse CC log?");
+          if(localStorage['dont_parse_cc_logs']=="1"){
+            sendResponse({logs: false});
             }else{
-                sendResponse(true);
+              if(localStorage['dont_parse_cc_datasets']=="1"){can_parse_cc_datasets = false;}
+              if(localStorage['dont_parse_cc_phases']=="1"){can_parse_cc_phases = false;}
+                sendResponse({logs:true, datasets: can_parse_cc_datasets, phases: can_parse_cc_phases})
             }
         break;
 
@@ -271,6 +275,7 @@ var parsed = parse_gd_url(tab.url);
 
 
     var icon = default_icon;
+    var retina_icon = default_icon;
 //    var title = "";
 
     if (alt_host_regexp1 && server.match(alt_host_regexp1)) icon = alt_host_icon1;
@@ -285,11 +290,21 @@ var parsed = parse_gd_url(tab.url);
     if (alt_pid4 && alt_pid4 == pid) icon = alt_pid_icon4;
     if (alt_pid5 && alt_pid5 == pid) icon = alt_pid_icon5;
 
+    //list of retina-ready icons here
+    if (icon == "icons/gd19_rebrand_black.png" || icon == "icons/gd19_rebrand_gray.png" || icon == "icons/default.png") {
+       retina_icon = "retina/"+icon;
+    }else{
+      retina_icon = icon;
+    }
+
     console.log("changing icon to "+icon);
 
     chrome.pageAction.setIcon({
         'tabId': tab.id,
-        'path': icon
+        'path': {
+          '19' : icon,
+          '38' : retina_icon
+        }
     });
     }else{
       console.log("no server found in URL ");

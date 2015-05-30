@@ -47,7 +47,8 @@ xtop: 10px;
 xleft: 10px;
 xheight: 19px;
 xborder: 0;
-background: url("logo_new.png") no-repeat 0 0;
+background: url("logo_new@1x.png") no-repeat 0 0;
+
 xwidth: 121px;
 
 float: left;
@@ -57,8 +58,16 @@ cursor: pointer;
 transition: .2s;
 
 width: 30px;
-height: 29px;
+height: 30px;
 
+}
+
+/*CSS for serving the retina image to devices with a high "device-pixel-ratio":*/
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-devicepixel-ratio: 1.5), only screen and (min-resolution: 1.5dppx) {
+.appHeader .logoButton{
+    background-image: url("logo_new@2x.png");
+    background-size: 30px 30px;
+  }
 }
 
 .appHeader .logoButton:hover {

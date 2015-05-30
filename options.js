@@ -33,7 +33,7 @@ function set_magic(title, help, link){
 
 function default_icon_changed(){
   new_icon = document.getElementById("default_icon").value;
-  console.log(new_icon);
+  //console.log(new_icon);
   document.getElementById("default_icon_view").src=chrome.extension.getURL(new_icon);
 }
 
@@ -73,7 +73,7 @@ function default_icon_changed(){
   var select = document.getElementById("wl_domains");
   chrome.storage.local.get("wl_domains", function(items)
           {
-            console.log(items.wl_domains);
+            //console.log(items.wl_domains);
             for(i=0; i<items.wl_domains.length; i++){
               var opt = document.createElement('option');
               opt.value = items.wl_domains[i];
@@ -150,6 +150,22 @@ function save_options() {
     localStorage.removeItem("dont_parse_cc_logs");
   }
 
+  select = document.getElementById("dont_parse_cc_datasets");
+  if(select.checked){
+    localStorage["dont_parse_cc_datasets"]="1";
+  }else{
+    localStorage.removeItem("dont_parse_cc_datasets");
+  }
+
+  select = document.getElementById("dont_parse_cc_phases");
+  if(select.checked){
+    localStorage["dont_parse_cc_phases"]="1";
+  }else{
+    localStorage.removeItem("dont_parse_cc_phases");
+  }  
+
+
+
   //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
 
   write_wl_domains();
@@ -159,12 +175,16 @@ function save_options() {
   localStorage["magic_link"] = document.getElementById("magic_link").value;
 
   console.log("Options saved");
+  var statuses = document.querySelectorAll('.status')
+  for (var i=0; i<statuses.length; i++){
+    statuses[i].innerHTML = "Options Saved.";
+    setTimeout(clear_html, 750, statuses[i]);
+  }
+}
 
-  var status = document.getElementById("status");
-  status.innerHTML = "Options Saved.";
-  setTimeout(function() {
-    status.innerHTML = "";
-  }, 750);
+
+function clear_html(x){
+  x.innerHTML="";
 }
 
 // Restores select box state to saved value from localStorage.
@@ -194,6 +214,8 @@ function restore_options() {
   var alt_pid_icon5 = localStorage["alt_pid_icon5"];
 
   var dont_parse_cc_logs = localStorage["dont_parse_cc_logs"];
+  var dont_parse_cc_datasets = localStorage["dont_parse_cc_datasets"];
+  var dont_parse_cc_phases = localStorage["dont_parse_cc_phases"];
 
   var magic_title = localStorage["magic_title"];
   var magic_help = localStorage["magic_help"];
@@ -360,7 +382,18 @@ function restore_options() {
 
   if(dont_parse_cc_logs=="1"){
     document.getElementById("dont_parse_cc_logs").checked=true;
+    document.getElementById("dont_parse_cc_phases").disabled=true;
+    document.getElementById("dont_parse_cc_datasets").disabled=true;    
   }
+
+if(dont_parse_cc_datasets=="1"){
+    document.getElementById("dont_parse_cc_datasets").checked=true;
+  }
+if(dont_parse_cc_phases=="1"){
+    document.getElementById("dont_parse_cc_phases").checked=true;
+  }  
+
+
 
   if (magic_title) {
       document.getElementById("magic_title").value = magic_title;
@@ -380,7 +413,11 @@ function restore_options() {
 document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
 
 restore_options();
-document.querySelector('#save').addEventListener('click', save_options);
+var saves = document.querySelectorAll('.save')
+for (var i=0; i<saves.length; i++){
+  saves[i].addEventListener('click', save_options);
+}
+
 document.querySelector('#remove_wl_domains_button').addEventListener('click', remove_wl_domains);  
 document.querySelector('#add_wl').addEventListener('click', add_wl_domain);
 
@@ -407,4 +444,12 @@ document.getElementById("magic_params").addEventListener('click', function(){
   set_magic(title,help,link);
 },false);
 
-
+document.getElementById("dont_parse_cc_logs").addEventListener('change', function(){
+    if(this.checked){
+      document.getElementById("dont_parse_cc_phases").disabled=true;
+      document.getElementById("dont_parse_cc_datasets").disabled=true;
+    }else{
+      document.getElementById("dont_parse_cc_phases").disabled=false;
+      document.getElementById("dont_parse_cc_datasets").disabled=false;
+    }
+});
