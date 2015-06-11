@@ -188,6 +188,44 @@ function scroll_to(hash){
   return false;
 }
 
+
+function switch_tab(tab_display, tab_hide){
+  var display = document.getElementById(tab_display+'_box');
+  var display_hid = document.getElementById(tab_display+'_hider');
+  
+  var hide = document.getElementById(tab_hide+'_box');
+  var hide_hid = document.getElementById(tab_hide+'_hider');
+
+  if(display){
+    if(display.style.display == 'none'){
+      //we are showing this tab
+      display_hid.classList.remove('hider_open','hider_not_active','hider_open_other');
+      display_hid.classList.add('hider_closed','hider_clicked');
+      display.style.display='inline';
+      if(hide){
+        //and hiding others
+        hide_hid.classList.remove('hider_closed','hider_clicked');
+        hide_hid.classList.add('hider_open','hider_open_other');    
+        hide.style.display='none';
+      }
+    }else{
+      //we are hiding this tab
+      display_hid.classList.remove('hider_closed','hider_clicked');
+      display_hid.classList.add('hider_open','hider_not_active');
+      display.style.display='none';
+      if(hide){
+        hide_hid.classList.remove('hider_open_other');
+      }
+    }
+  }else{
+    console.log(display+" not found to display");
+  }
+
+
+
+}
+
+
 var timed_refresh = null;
 var is_error = document.getElementById('first_error');
 var is_finished = document.getElementById('finished_ok');

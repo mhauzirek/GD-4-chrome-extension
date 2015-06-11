@@ -56,6 +56,7 @@ pre.shifted_log {
 	z-index: 5001;
     -webkit-touch-callout: none;
     -webkit-user-select: none;	
+	xborder-bottom: 1px #777 dashed;	    
 }
 
 
@@ -76,7 +77,7 @@ pre.shifted_log {
 	margin-left: 0px;
 	margin-right: 0px;
 	margin-top: 0px;
-	padding-top: 1px;
+	padding-top: 10px;
 	padding-bottom: 0px;
 	position: fixed;
 	right: 20px;
@@ -105,25 +106,19 @@ pre.shifted_log {
 	background-color: #777;
 }
 
-#cc_head_phases_hider.hider_open{
-	background-color: #000;
-}
-
-#cc_head_phases_hider.hider_closed{
-	background-color: #000;
-}
-
 #cc_head_phases_hider.hider_clicked, #cc_head_writers_hider.hider_clicked{
-	width: 500;
-	right: 20px;
-	z-index: 5005;
+	xwidth: 500;
+	xright: 20px;
+	xz-index: 5005;
+	xbackground-color: silver;
+	xborder-bottom: 1px #000 dashed;
 }
 
-#cc_head_phases_hider.hider_inactive, #cc_head_phases_hider.hider_inactive:hover {
-	background-color: #000;
-	color: #777;
-	display: none;
+
+#cc_head_phases_hider.hider_open_other, #cc_head_writers_hider.hider_open_other{
+	border-bottom: 1px #777 dashed;
 }
+
 
 tr.cc_head_phase{
 	padding-top: 1px;
@@ -262,6 +257,7 @@ div.cc_phase_bar_timeline_OK{
 
 div.cc_phase_bar_timeline_RUNNING{
 	background-color: #b0b0b0;
+	xbackground-color: #5CC8F2;
 }
 
 div.cc_phase_bar_timeline_ERROR{
@@ -374,7 +370,7 @@ span.graph_name a:hover {
 	margin-left: 0px;
 	margin-right: 0px;
 	margin-top: 0px;
-	padding-top: 1px;
+	padding-top: 10px;
 	padding-bottom: 0px;
 	position: fixed;
 	right: 20px;
@@ -416,6 +412,7 @@ span.graph_name a:hover {
 	cursor: hand;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+	xborder-bottom: 1px #777 dashed;	    
 }
 
 #cc_head_writers_hider:hover {
@@ -423,18 +420,22 @@ span.graph_name a:hover {
 	background-color: #777;
 }
 
-#cc_head_writers_hider.hider_open{
+#cc_head_writers_hider.hider_open, #cc_head_phases_hider.hider_open {
 	background-color: #000;
+	xborder-bottom: 1px #777 dashed;	
 }
 
-#cc_head_writers_hider.hider_closed{
+#cc_head_writers_hider.hider_closed, #cc_head_phases_hider.hider_closed{
 	background-color: #000;
+	xborder-bottom: 1px #000 dashed;		
 }
 
-#cc_head_writers_hider.hider_inactive, #cc_head_writers_hider.hider_inactive:hover{
+#cc_head_writers_hider.hider_inactive, #cc_head_writers_hider.hider_inactive:hover, #cc_head_phases_hider.hider_inactive, #cc_head_phases_hider.hider_inactive:hover{
 	background-color: #000;
 	color: #777;
-	display: none;
+	xdisplay: none;
+	pointer-events: none;
+	xborder-bottom: 1px #777 dashed;		
 }
 
 #cc_head_writers_hider.visible, #cc_head_phases_hider.visible, #cc_head_writers_hider.visible:hover, #cc_head_phases_hider.visible:hover{
@@ -612,7 +613,7 @@ a.goto_error:link, a.goto_error:visited, a.goto_error:hover{
 a.goto_err_data:link, a.goto_err_data:visited, a.goto_err_data:hover{
 	color: #FF8000;
 
-	right: 190px;
+	right: 210px;
 	position: fixed;
 
 	padding-left: 15px;
@@ -624,6 +625,7 @@ a.goto_err_data:link, a.goto_err_data:visited, a.goto_err_data:hover{
 
 a.goto_running:link, a.goto_running:visited, a.goto_running:hover{
 	color: #b0b0b0;
+	xcolor: #5CC8F2;
 	right: 120px;
 	position: fixed;
 	font-weight: normal;

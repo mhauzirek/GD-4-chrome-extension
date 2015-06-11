@@ -200,13 +200,13 @@
 <p class="help_div">For each dataset Writer you can see its code name (put mouse over it to see the dataset identifier), number of rows, data volume in MBs and relative ratio of these metrics to the other dataset loaded so far. This allows you to easily detect the largest datasets</p>
 <p class="help_div">Red bar is for rows, green bar for volume (put mouse over it to see exact percentages).</p>
 
-<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i title="Click to go to deployed proces within DIC">[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Go to error</a> <a class="cc_head_link goto_err_data" href="#">Get Data</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
+<div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i title="Click to go to deployed proces within DIC">[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Error found</a> <a class="cc_head_link goto_err_data" href="#">Download</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
 <div id="cc_head_phases_hider" class="visible hider_open">X phases, no subgraphs</div>
 <div id="cc_head_writers_hider" class="visible hider_open">Y writers, Z rows, W GB</div>
 
 <br>
 
-<p class="help_div">The extension tries to detect CloudConnect Phases that have been already finished or are already running.It distinguishes phases in the main graph and any sub-graph.
+<p class="help_div">The extension tries to detect CloudConnect Phases that have been already finished or are running. It distinguishes phases in the main graph and any sub-graph.
   Click on this information to open details about phases and display a timeline. Number after the underscore identifies the phase. Number before underscore defines a graph execution. 0 is allways the main graph. Further levels (subgraph within subgraph) are partially supported - you acn tell which phases are from the same graph, but you cannot tell the level of nesting. Green lines are for sucessfully finished phases, gray for currently running, red for failed. The length of the bar is relative to the other phases duration. Move your mouse to this area to expand it if the information does not fit in.</p> 
 
 
@@ -223,13 +223,13 @@
 <h2>What's new</h2>
 
 
-<p>v0.9006:
+<p>v0.9007:
   <ul>
     <li>Added parsing of CloudConnect phases from log</li>
     <li>Improved log parsing for ruby scripts</li>
     <li>Optimized CloudConnect log parsing</li>
     <li>Rearanged options page + additional save button on the top</li>
-    <li>Main icons support retina displays now</li>
+    <li>Main icons support hi-res retina displays now</li>
     <li>Other minor fixes</li>
 </ul>
 </p>

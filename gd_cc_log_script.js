@@ -324,14 +324,14 @@ function parseCClog(){
 
   var goto_link;
   if(first_error){
-    //var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
-    var err_data_url = '';//location.href.replace(/\/log[^\/]*/,"/data");
-    goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Go to error</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Get Data</a>";
+    var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
+    //var err_data_url = '';//location.href.replace(/\/log[^\/]*/,"/data");
+    goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Error found</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Download</a>";
   }else{
     if(run_finished){
-      goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Go to last line</a>";
+      goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Finished OK</a>";
     }else{
-      goto_link="<a class='cc_head_link goto_running' href='#last_line'>Go to last line</a>";
+      goto_link="<a class='cc_head_link goto_running' href='#last_line'>Running...</a>";
     }
   }
 
@@ -418,7 +418,15 @@ var toolbox2 = document.createElement('div');
 toolbox2.id="cc_head_writers_box";
 toolbox2.style.display="none";
 
-var hider=document.createElement('div');
+
+//not nice at all but needed to add that onclick for switching tabs
+var s = "<div onclick=\"switch_tab('cc_head_writers', 'cc_head_phases')\"></div>";
+var s2 = document.createElement('div');
+s2.innerHTML = s;
+var hider = s2.firstChild;
+
+
+//var hider=document.createElement('div');
 hider.id="cc_head_writers_hider";
 hider.innerText="Loading...";
 hider.classList.add("hider_inactive");
@@ -525,6 +533,7 @@ toolbox2.innerHTML=text;
   hider.classList.add("hider_closed");
   hider.classList.remove("hider_inactive");
   hider.innerText=cc_total_count+" writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
+/*
   hider.addEventListener('click',function (){
   var gdw = document.getElementById('cc_head_writers_box');
   var hdw_hid = document.getElementById('cc_head_writers_hider');
@@ -541,7 +550,8 @@ toolbox2.innerHTML=text;
     //hdw_hid.innerText=cc_total_count+" Writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
   }
 });
-  
+*/
+
 document.getElementById('cc_total_rows').innerText=rowsWithCommas(cc_total_rows,1);
 document.getElementById('cc_total_rows').title=numberWithCommas(cc_total_rows);
 document.getElementById('cc_total_size').innerText=sizeWithCommas(cc_total_size,1);
@@ -589,7 +599,13 @@ var toolbox2 = document.createElement('div');
 toolbox2.id="cc_head_phases_box";
 toolbox2.style.display="none";
 
-var hider=document.createElement('div');
+//not nice at all but needed to add that onclick for switching tabs
+var s = "<div onclick=\"switch_tab('cc_head_phases', 'cc_head_writers')\"></div>";
+var s2 = document.createElement('div');
+s2.innerHTML = s;
+var hider = s2.firstChild;
+
+//var hider=document.createElement('div');
 hider.id="cc_head_phases_hider";
 hider.innerText="Loading...";
 hider.classList.add("hider_inactive");
@@ -752,7 +768,10 @@ toolbox2.innerHTML=text;
   hider.classList.add("hider_closed");
   hider.classList.remove("hider_inactive");
   hider.innerText=phases_count+" phases, "+(main_phases_count<phases_count ? main_phases_count+" in main graph" : "no subgraphs");
-  hider.addEventListener('click',function (){
+
+
+/*
+  addEventListener('click',function (){
   var gdw = document.getElementById('cc_head_phases_box');
   var hdw_hid = document.getElementById('cc_head_phases_hider');
 
@@ -768,7 +787,7 @@ toolbox2.innerHTML=text;
     //hdw_hid.innerText=phases_count+" Phases";
   }
 });
-
+*/
 }else{
 //  console.log("we have NONE");
   hider.classList.add("hider_inactive");
