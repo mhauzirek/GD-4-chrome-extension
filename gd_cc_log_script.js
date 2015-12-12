@@ -283,7 +283,7 @@ function parseCClog(){
 
     last_element.id = "last_element";
     var last_line = last_element.textContent;
-    var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript status=SCRIPT_OK)?.*/;
+    var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript.* status=SCRIPT_OK)?.*/;
     var match_last = last_regexp.exec(last_line);
 
     if(match_last){
@@ -545,14 +545,18 @@ for (var i = 0; i < gdw_length; i++) {
   if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null &&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])){
     //we've never seen this writer before
     gdw_rows[gdw_rows_line_match[1]]=Number(gdw_rows_line_match[2]);
-    if(Number(gdw_rows_line_match[2])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[2]);}    
-    gdw_rows['*total*']+=Number(gdw_rows_line_match[2]);
+
+    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
+      //we have also dataset record for this - it is not Eventstore or some other file...
+      if(Number(gdw_rows_line_match[2])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[2]);}    
+      gdw_rows['*total*']+=Number(gdw_rows_line_match[2]);
+    }
   }
 }
 
   if(gdw_sli_start_match && gdw_sli_start_match !== null && gdw_sli_start_match!== undefined){
     for (var i = 0; i < gdw_sli_start_match.length; i++) {
-      console.log(gdw_sli_start_match[i]);
+      //console.log(gdw_sli_start_match[i]);
       gdw_sli_start_line_match = gdw_sli_start_match[i].match(gdw_sli_start_line_regexp); 
       if(gdw_sli_start_line_match!==undefined && gdw_sli_start_line_match !== null){
         var gdw_current_sli;
@@ -583,6 +587,7 @@ for (var i = 0; i < gdw_length; i++) {
 
 console.log(gdw_sli);
 console.log(gdw_rows);
+console.log(gdw_datasets);
 
 var text="\
     <table class='cc_head_writers' id='cc_head_writers'>\
@@ -591,7 +596,7 @@ var text="\
 ";
 
 for (var key in gdw_rows) {
-  if (gdw_rows.hasOwnProperty(key) && key!='*total*' && key!='*max*') {
+  if (gdw_rows.hasOwnProperty(key) && key!='*total*' && key!='*max*' && gdw_datasets.hasOwnProperty(key) /*avoid Eventstore and other non GDW files*/) {
       var sli_duration = null;
       if(gdw_sli[key]) sli_duration=gdw_sli[key].duration;
 
