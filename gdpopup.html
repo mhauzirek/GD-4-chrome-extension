@@ -22,28 +22,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 -->
-<html style="width: 730px; height: 44px;" width="730" height="44">
+<html style="width: 685px; height: 44px;" width="685" height="44">
   <head>
     <meta charset="UTF-8">
     <title>GD Extension</title>
     <script src="popup.js"></script>
     <link rel="stylesheet" type="text/css" href="popup_new.css" /> 
   </head>
-  <body  style="width: 730px; height: 40px; margin: 0px;" width="730" height="40">
-    <div class="appHeader">
+  <body  style="width: 685px; height: 40px; margin: 0px;" width="685" height="40">
+    <div class="appHeader">  
       <div class="footer"><a href="http://www.gooddata.com" id="hiddenLink">GoodData</a></div>
       <div class="options"><a href="#" id="optLink" target="_new" title="Configure this extension"> + </a></div>
-      <div class="options options2"><a href="#" id="hlpLink" target="_new">?</a></div>
-      <div class="options options3" id="console"><a href="https://${SERVER}/admin/disc/" id="dataload" title="Go to Data Integration Service Console">DL</a></div> 
+      <div class="options options2"><a href="#" id="hlpLink" target="_new" title="Help for this extension">?</a></div>
+      <!--div class="options options3" id="console"><a href="https://${SERVER}/admin/disc/" id="dataload" title="Go to Data Integration Service Console">DL</a></div!--> 
 
       <a id="dashboard" href="https://${SERVER}/#s=/gdc/projects/${PID}|projectDashboardPage|" class="logoButton" title="Go to project dashboard"></a>
       <!--div>Project ${PID}</div-->
       <div id="navigation">
+<span id="std_buttons">        
       <a href="https://${SERVER}/gdc/projects/" id="new_project" title="Create new project">New</a>
       <a href="https://${SERVER}/gdc/md/" id="project_list" title="Show list of all projects available to current user">List</a>
       <span class="spacer"></span>      
       <a class="needpid needobj" href="https://${SERVER}${OBJURL}" id="object" title="Toggle between GUI and API display of objects">Obj</a><sub><a class="subnav" href="https://${SERVER}${OBJURL}/explain2?type=oqt_dot&amp;format=html&amp;submit=submit" id="explain" title="Explain calculation of report">EX</a></sub>
-      <span class="spacer"></span>
+      <!--span class="spacer"></span-->
       <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/" id="project" title="Basic project information">Proj</a>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/" id="md" title="Project Metadata">MD</a>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/query" id="query" title="Listing resources within project by type">Query</a>
@@ -54,9 +55,11 @@
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/export" id="export" title="Export project to create a copy">Exp</a><sub><a class="needpid subnav" href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdexport" id="md_export" title="Export dashboard/metric/report to import it to another project">MD</a></sub>
       <a class="needpid" href="https://${SERVER}/gdc/md/${PID}/maintenance/import" id="import" title="Import previously exported project to blank project">Imp</a><sub><a class="needpid subnav" href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdimport" id="md_import" title="Import previously exported dashboard/metric/report">MD</a></sub>
       <span class="spacer"></span>  
-      <a class="needpid" href="${WEBDAV_PATH}" id="data" title="Go to project-specific WebDav directory">Data</a>
+      <!--a class="needpid" href="${WEBDAV_PATH}" id="data" title="Go to project-specific WebDav directory">Data</a-->
+      <a class="needpid" href="https://${SERVER}/gdc/dataload/projects/${PID}/outputStage/" id="data" title="Setup Database Output Stage">DB</a>
       <a class="needpid" href="https://${SERVER}/gdc/projects/${PID}/dataload/processes" id="transformations" title="ETL processes within a project">ETL</a>
       <a class="needpid" href="https://${SERVER}/admin/disc/#/projects/${PID}" id="schedules" title="ETL Schedules within a project">Sch</a><sub><a class="needpid subnav" href="https://${SERVER}/gdc/projects/${PID}/schedules" id="schedules_gp" title="ETL Schedules within a project (show in Gray Pages)">GP</a></sub>
+</span>      
       <span class="spacer" id="last-spacer"></span>
       <a class="needpid" href="#" id="something" title="Useful Project Information">i</a>
     </div>

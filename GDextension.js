@@ -49,7 +49,7 @@ chrome.extension.onMessage.addListener(
         chrome.tabs.onUpdated.addListener(
           function( tabid , info , tab) {
             if ( info.status == "complete" && info.url != lastURL ) {
-              console.log("url changed from "+lastURL+" to "+info.url+"- calling set_icon");
+              //console.log("url changed from "+lastURL+" to "+info.url+"- calling set_icon");
               set_icon(tab);
               lastURL=info.url;
             }
@@ -67,7 +67,7 @@ chrome.extension.onMessage.addListener(
         case "canParseCcLog":
           var can_parse_cc_datasets=true;
           var can_parse_cc_phases=true;
-          console.log("can we parse CC log?");
+          //console.log("can we parse CC log?");
           if(localStorage['dont_parse_cc_logs']=="1"){
             sendResponse({logs: false});
             }else{
@@ -85,7 +85,7 @@ chrome.extension.onMessage.addListener(
             if(request.only_other_tab==false || current_window.focused==false || sender.tab.id!=activeTab[0].id){
               notify(request.title, request.text, sender.tab.id, request.img);  
             }else{
-              console.log("NOT NOTIFYING ON SAME TAB");
+              //console.log("NOT NOTIFYING ON SAME TAB");
             }
           });
         })                                     
@@ -96,14 +96,14 @@ chrome.extension.onMessage.addListener(
 
 //notification event
       function clicked(tab,link){
-console.log("CLICKED");
-        console.log("tab: "+tab);
-        console.log("link: "+link);
+        //console.log("CLICKED");
+        //console.log("tab: "+tab);
+        //console.log("link: "+link);
 
-        console.log(typeof link);
+        //console.log(typeof link);
 
         if (typeof link !== 'undefined'){
-            console.log("CREATING NEW TAB FROM NOTIFICATION "+notID);
+            //console.log("CREATING NEW TAB FROM NOTIFICATION "+notID);
             chrome.tabs.create({url: link});
           }else{
             if(typeof tab !== 'undefined'){
@@ -131,10 +131,10 @@ function notify(title, text, tab, img, link) {
       };
       
       chrome.notifications.create("id"+notID++, notOptions, function(notID){
-        console.log("created notification "+notID+" with title "+title);
+        //console.log("created notification "+notID+" with title "+title);
       });
     }else{
-      console.log("GD4Chrome cannot display notification");
+      console.log("GD4Chrome cannot display notification:");
       console.log(permissionLevel);
     }
   });
@@ -145,13 +145,13 @@ function notify(title, text, tab, img, link) {
 function creationCallback(notID) {
     setTimeout(function() {
       chrome.notifications.clear(notID, function(wasCleared) {
-        console.log("Notification " + notID + " cleared: " + wasCleared);
+        //console.log("Notification " + notID + " cleared: " + wasCleared);
       });
     }, 10000);
   }
 
 function notificationClicked(notID) {
-  console.log("The notification '" + notID + "' was clicked");
+  //console.log("The notification '" + notID + "' was clicked");
 
 if (typeof link !== 'undefined' && typeof tab !== 'undefined'){
         chrome.tabs.create({url: link});
@@ -199,10 +199,13 @@ function notify_old(title, text, tab, img, link) {
 //change icon depending on current PID, hostname and settings
 
 function parse_gd_url(url){
-console.log("parsing "+url);
+//console.log("parsing "+url);
 //var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc/)?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#|dashboards/#/p)/([^/|%]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
+
 
 var response = {
     server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
@@ -210,14 +213,14 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-console.log(response);
+//console.log(response);
 return response;
 }
 
 
 function set_icon(tab) {
 
-console.log("called set_icon");
+//console.log("called set_icon");
 
 var parsed = parse_gd_url(tab.url);
 
@@ -297,7 +300,7 @@ var parsed = parse_gd_url(tab.url);
       retina_icon = icon;
     }
 
-    console.log("changing icon to "+icon);
+    //console.log("changing icon to "+icon);
 
     chrome.pageAction.setIcon({
         'tabId': tab.id,
@@ -307,7 +310,7 @@ var parsed = parse_gd_url(tab.url);
         }
     });
     }else{
-      console.log("no server found in URL ");
+      //console.log("no server found in URL ");
     }
 
 }
@@ -354,10 +357,10 @@ function CreateGDProject(server,authToken){
   if (proj_call.status==201)
     {
       resp = JSON.parse(proj_call.responseText);
-      console.log(resp.uri);
+      //console.log(resp.uri);
     }else{
-      console.log("ERROR creating new project");
-      console.log(proj_call.responseText);
+      //console.log("ERROR creating new project");
+      //console.log(proj_call.responseText);
     }
   }
   proj_call.open("POST", "https://"+server+"/gdc/projects/"+pid);

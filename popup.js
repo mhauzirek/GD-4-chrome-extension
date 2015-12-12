@@ -47,7 +47,9 @@ function replacer() {
 
 function parse_gd_url(url) {
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");    
+    //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");    
+    //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
+    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/p)/([^/|%]*))?.*");
     var objParse = url.match("https://.*/obj/([0-9]+).*");
 
     return {
@@ -134,16 +136,29 @@ function addListeners(){
 
   document.getElementById("object").addEventListener('click', clickBtn);
 
-  document.getElementById("console").addEventListener('click', clickBtn);
+  //document.getElementById("console").addEventListener('click', clickBtn);
 
   document.getElementById("something").addEventListener('click', clickInfo);
   document.getElementById("explain").addEventListener('click', clickBtn);
+
+  document.getElementById("data").addEventListener('click', clickBtn);  
   
   var magic = document.getElementById("magic");
   if(magic != null){
     magic.addEventListener('click', clickBtn);
-  }else{
   }
+
+  var magic2 = document.getElementById("magic2");
+  if(magic2 != null){
+    magic2.addEventListener('click', clickBtn);
+  }
+
+  var magic3 = document.getElementById("magic3");
+  if(magic3 != null){
+    magic3.addEventListener('click', clickBtn);
+  }
+
+
 }
 
 function clickBtn(e) {
@@ -223,7 +238,7 @@ function loader(){
 
     if(pid!=null){
         //console.log("Found PID "+pid);
-        get_webdav_info(pid,server);
+        //get_webdav_info(pid,server);
 
         needPidEnabler(); 
         if(obj!=null){

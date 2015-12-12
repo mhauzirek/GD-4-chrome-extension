@@ -43,7 +43,8 @@ chrome.extension.onMessage.addListener(
 function set_icon(tab){
     var tabId= tab.id;
     var url = tab.url;
-    var pidParse = url.match("https://([^\./]*\.[^\./]*\.[^\./]*(/#s=)?.*/gdc/(projects|md)/([^/\|]*)[/\|]?.*");
+    //var pidParse = url.match("https://([^\./]*\.[^\./]*\.[^\./]*(/#s=)?.*/gdc/(projects|md|admin/disc/#/projects|dataload/projects)/([^/\|]*)[/\|]?.*");
+    var pidParse = url.match("https://([^\./]*\.[^\./]*\.[^\./]*(/#s=)?.*/gdc/(projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/p)/([^/\|]*)[/\|]?.*");
     var pid;
     var server;
 

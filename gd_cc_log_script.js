@@ -37,6 +37,25 @@ function formatTime(x){
   return graph_run_string;
 }
 
+function formatTimeCompact(x){
+  var run_diff = x
+  run_hour = Math.floor(run_diff/(60*60));
+  run_min = Math.floor((run_diff%(60*60))/60);
+  run_sec = Math.ceil(run_diff%60);
+
+  if(run_hour>0){
+    graph_run_string=run_hour+"h "+(run_min<10 ? "0" : "")+run_min;
+  }else if(run_min>0){
+    graph_run_string=run_min+"m "+(run_sec<10 ? "0" : "")+run_sec;
+  }else{
+     graph_run_string=run_sec+"s";
+  }
+
+  return graph_run_string;
+}
+
+
+
 function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -439,11 +458,36 @@ document.body.lastChild.appendChild(toolbox2);
 //var gdw_match = original_source.match(gdw_regexp);
 
 
-var gdw_rows_regexp = /\[[A-Za-z0-9_]+_GD_CSV_DATA_WRITER_[0-9]*\] \[DEBUG\]: request_id=[^ ]* Written [0-9]+ records to file .*/g
+var gdw_rows_regexp = /\[[A-Za-z0-9_]+_GD_CSV_DATA_WRITER_[0-9]*\] \[DEBUG\]: request_id=[^ ]+ Written [0-9]+ records to file .*/g
 var gdw_rows_match = original_source.match(gdw_rows_regexp);
 
-var gdw_upload_regexp =/\[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* component_type=gd_dataset_writer action=data_file_stored file_name=[^ ]+ file_size=[0-9]+/g
+var gdw_upload_regexp =/\[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]+ component_type=gd_dataset_writer action=data_file_stored file_name=[^ ]+ file_size=[0-9]+/g
 var gdw_upload_match = original_source.match(gdw_upload_regexp);
+
+
+//action=data_file_stored = approx. time of start upload(?)
+
+
+//2015-11-06 05:34:54.613+0100 [GD_GROUP_MEMBER_PARTICIPATION_0] [INFO]: request_id=knqqnS7Gl3YgJvgi action=etl_pull_polling status=finished time=336550
+
+//var gdw_sli_start_regexp = /[0-9\- :\.\+ ]+ \[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* action=((upload loading data)|(etl_pull_polling)).*/g
+
+var gdw_sli_start_regexp = /[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[A-Za-z0-9_]+_[0-9]+\] \[INFO\]: request_id=[^ ]+ action=((upload loading data to platform to dataset=[^ ]+ from remote WebDAV directory=[^ ]+)|(etl_pull_polling)) status=[a-zA-Z]+/g
+var gdw_sli_start_match = original_source.match(gdw_sli_start_regexp);
+
+//var gdw_sli_finish_regexp = /[0-9\- :\.\+ ]+ \[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* action=((upload loading data to platform.*)|(etl_pull_polling)) status=((FINISHED)|(finished)).*/g
+//var gdw_sli_finish_match = original_source.match(gdw_sli_finish_regexp);
+
+
+
+//console.log(gdw_sli_start_match);
+//console.log(gdw_sli_finish_match);
+
+//non-batch upload start
+//2015-11-06 12:21:50.427+0100 [GD_WRITE_USER_CREATED_585] [INFO]: request_id=OOMRFI9yfiEf0QN5:MUstWq3Sx2chHk16 action=upload loading data to platform to dataset=dataset.usercreated from remote WebDAV directory=qaenhinz2mn98ci20w3d5szshl50w63i/2015-11-06_12-21-15_NIE0a status=STARTED.
+
+//non-batch upload finish
+//2015-11-06 12:21:55.499+0100 [GD_WRITE_USER_CREATED_585] [INFO]: request_id=OOMRFI9yfiEf0QN5:MUstWq3Sx2chHk16 action=upload loading data to platform to dataset=dataset.usercreated from remote WebDAV directory=qaenhinz2mn98ci20w3d5szshl50w63i/2015-11-06_12-21-15_NIE0a status=FINISHED.
 
 
 
@@ -456,13 +500,22 @@ var gdw_length = (gdw_upload_match.length >= gdw_rows_match ? gdw_upload_match.l
 //console.log("we have "+gdw_length+" writers");
 
 
-var gdw_rows_line_regexp = /\[([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER_[0-9]+\] \[DEBUG\]: request_id=[^ ]* Written ([0-9]+) records to file/
+var gdw_rows_line_regexp = /\[([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER_[0-9]+\] \[DEBUG\]: request_id=[^ ]* Written ([0-9]+) records to file.*/
 
 var gdw_upload_line_regexp = /\[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* component_type=gd_dataset_writer action=data_file_stored file_name=([0-9a-zA-Z_.]+)\.csv file_size=([0-9]+)/
+
+var gdw_sli_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* action=([^ ]*) .*status=((finished)|(FINISHED)|(start)|(STARTED)).*/
+//var gdw_sli_finish_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* action=([^ ]*) .*/
+
+
+//2015-11-06 05:34:54.613+0100 [GD_GROUP_MEMBER_PARTICIPATION_0] [INFO]: request_id=knqqnS7Gl3YgJvgi action=etl_pull_polling status=finished time=336550
 
 var gdw_rows_line_match;
 var gdw_upload_line_match;
 
+
+var gdw_sli_start_line_match;
+var gdw_sli_finish_line_match;
 
 var gdw_rows={};
 gdw_rows['*total*']=0;
@@ -472,6 +525,7 @@ gdw_sizes['*total*']=0;
 gdw_sizes['*max*']=0;
 var gdw_datasets={};
 
+var gdw_sli={};
 
 for (var i = 0; i < gdw_length; i++) {
   if(gdw_upload_match[i] !== null && gdw_upload_match[i]!== undefined) {
@@ -480,9 +534,6 @@ for (var i = 0; i < gdw_length; i++) {
   if(gdw_rows_match[i] !== null && gdw_rows_match[i]!== undefined){
     gdw_rows_line_match = gdw_rows_match[i].match(gdw_rows_line_regexp);
   }
-
-  //console.log(gdw_upload_line_match);
-  //console.log(gdw_rows_line_match);
 
   if(gdw_upload_line_match!==undefined && gdw_upload_line_match !== null && !gdw_sizes.hasOwnProperty(gdw_upload_line_match[1])){
     gdw_sizes[gdw_upload_line_match[1]]=Number(gdw_upload_line_match[3]);
@@ -499,20 +550,67 @@ for (var i = 0; i < gdw_length; i++) {
   }
 }
 
+  if(gdw_sli_start_match && gdw_sli_start_match !== null && gdw_sli_start_match!== undefined){
+    for (var i = 0; i < gdw_sli_start_match.length; i++) {
+      console.log(gdw_sli_start_match[i]);
+      gdw_sli_start_line_match = gdw_sli_start_match[i].match(gdw_sli_start_line_regexp); 
+      if(gdw_sli_start_line_match!==undefined && gdw_sli_start_line_match !== null){
+        var gdw_current_sli;
+        if(!gdw_sli.hasOwnProperty(gdw_sli_start_line_match[2])){
+          gdw_current_sli={};
+          gdw_current_sli.duration = null;
+          gdw_current_sli.finish_date = null;
+          gdw_current_sli.start_date = null;
+          gdw_current_sli.batch=false;
+          gdw_sli[gdw_sli_start_line_match[2]]=gdw_current_sli;
+        }else{
+          gdw_current_sli=gdw_sli[gdw_sli_start_line_match[2]];
+        }
+
+        if("etl_pull_polling"==gdw_sli_start_line_match[3]){
+          gdw_current_sli.batch=true;
+        }
+        if(gdw_sli_start_line_match[4]=="STARTED" || gdw_sli_start_line_match[4]=="start"){
+          gdw_current_sli.start_date = Date.parse(gdw_sli_start_line_match[1]);
+        }else if(gdw_sli_start_line_match[4]=="FINISHED" || gdw_sli_start_line_match[4]=="finished"){
+          gdw_current_sli.finish_date = Date.parse(gdw_sli_start_line_match[1]);
+          gdw_current_sli.duration = gdw_current_sli.finish_date - gdw_current_sli.start_date;
+        }      
+      }
+    }
+
+  }
+
+console.log(gdw_sli);
+console.log(gdw_rows);
+
 var text="\
     <table class='cc_head_writers' id='cc_head_writers'>\
-      <tr class='cc_head_writer cc_head_writer_total'><td class='cc_writer_name'>TOTAL</td><td id='cc_total_rows' class='cc_writer_rows'> </td><td id='cc_total_size' class='cc_writer_size'> MB</td><td class='cc_writer_bar'> </td></tr>\
-      <tr class='cc_head_writer cc_head_writer_header'><td class='cc_writer_name'>dataset writer id</td><td class='cc_writer_rows'>rows</td><td class='cc_writer_size'>size (MB)</td><td class='cc_writer_bar'>relative</td></tr>\
+      <tr class='cc_head_writer cc_head_writer_total'><td class='cc_writer_name'>TOTAL</td><td id='cc_total_rows' class='cc_writer_rows'> </td><td id='cc_total_size' class='cc_writer_size'> MB</td><td class='cc_writer_sli'> </td><td class='cc_writer_bar'> </td></tr>\
+      <tr class='cc_head_writer cc_head_writer_header'><td class='cc_writer_name'>dataset writer id</td><td class='cc_writer_rows'>rows</td><td class='cc_writer_size'>size</td><td class='cc_writer_sli'>Loadtime</td><td class='cc_writer_bar'>rel</td></tr>\
 ";
 
 for (var key in gdw_rows) {
   if (gdw_rows.hasOwnProperty(key) && key!='*total*' && key!='*max*') {
+      var sli_duration = null;
+      if(gdw_sli[key]) sli_duration=gdw_sli[key].duration;
+
       text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+gdw_datasets[key]+"'>"+key+"</td>";
+      
       text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0)+"</td><td class='cc_writer_size' ";
       text=text+"title='"+sizeWithCommas(gdw_sizes[key],0,'KB')+"'>"+sizeWithCommas(gdw_sizes[key],0,'MB',false)+"</td>";
+
+      if(!sli_duration){
+        text=text+"<td class='cc_writer_sli_none'>&nbsp;</td>";
+      }else{
+        text=text+"<td class='cc_writer_sli"+(gdw_sli[key].batch ? "_batch" : "")+"' title='"+(gdw_sli[key].batch ? "batch SLI upload used!\r" : "");
+        text=text+numberWithCommas1(sli_duration,0)+" ms'>";
+        text=text+formatTimeCompact(Math.round(sli_duration/1000))+"</td>";  
+      }
+
       text=text+"<td class='cc_writer_bar' title='"+gdw_datasets[key]+"&#10;"+(!isNaN(gdw_rows[key]) ? Math.round(gdw_rows[key]/gdw_rows['*total*']*100) : "N/A")+"% rows, "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*total*']*100) : "N/A")+"% of volume'>";
-      text=text+"<div class='cc_writer_bar_rows' style=\"width: "+(!isNaN(gdw_rows[key]) ? Math.round(gdw_rows[key]/gdw_rows['*max*']*50) : "0")+"px\"> </div>";
-      text=text+"<div class='cc_writer_bar_sizes' style=\"width: "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*max*']*50) : "0")+"px\"> </div>"; 
+      text=text+"<div class='cc_writer_bar_rows' style=\"width: "+(!isNaN(gdw_rows[key]) ? Math.round(gdw_rows[key]/gdw_rows['*max*']*30) : "0")+"px\"> </div>";
+      text=text+"<div class='cc_writer_bar_sizes' style=\"width: "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*max*']*30) : "0")+"px\"> </div>"; 
       text=text+"<td>";
 
       text=text+"</tr>\n";
@@ -554,8 +652,8 @@ toolbox2.innerHTML=text;
 
 document.getElementById('cc_total_rows').innerText=rowsWithCommas(cc_total_rows,1);
 document.getElementById('cc_total_rows').title=numberWithCommas(cc_total_rows);
-document.getElementById('cc_total_size').innerText=sizeWithCommas(cc_total_size,1);
-document.getElementById('cc_total_size').title=sizeWithCommas(cc_total_size,1,'MB');
+document.getElementById('cc_total_size').innerText=sizeWithCommas(cc_total_size,0);
+document.getElementById('cc_total_size').title=sizeWithCommas(cc_total_size,0,'KB');
 
   //hider.classList.add("blink_me");
 
@@ -613,10 +711,11 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-var gdp_start_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/g
+//var gdp_start_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\] \[INFO\]: request_id=[^ ]+ Starting up all nodes in phase \[[0-9]+\]/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 
-var gdp_end_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Execution of phase \[([0-9]+)\] [a-zA-Z ]*finished.*/g
+var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\].*request_id=[^ ]+ Execution of phase \[[0-9]+\] [a-zA-Z ]*finished.*/g
 var gdp_end_match = original_source.match(gdp_end_regexp);
 //Execution of phase [0] finished with error - elapsed time(sec): 4
 
@@ -706,7 +805,7 @@ var px_per_ms = w_pixels / time_span;
 
   var text="\
     <table class='cc_head_phases' id='cc_head_phases'>\
-      <tr class='cc_head_phase cc_head_phase_total'><td colspan='2' class='cc_phase_name'>ALL PHASES</td><td class='cc_phase_duration'> "+formatTime(Math.round(time_span/1000))+"</td><td class='cc_writer_bar'> </td></tr>\
+      <tr class='cc_head_phase cc_head_phase_total'><td colspan='2' class='cc_phase_name'>ALL PHASES</td><td class='cc_phase_duration'> "+formatTimeCompact(Math.round(time_span/1000))+"</td><td class='cc_writer_bar'> </td></tr>\
       <tr class='cc_head_phase cc_head_phase_header'><td colspan='2' class='cc_phase_name'>Phase</td><td class='cc_phase_duration'>Duration</td><td class='cc_phase_bar'>relative</td></tr>\
 ";
 
@@ -742,7 +841,7 @@ text=text+"<a href='#ph_"+key+"'><div class='cc_phase_bar_timeline cc_phase_bar_
       text=text+"<td class='cc_phase_duration' title='";
 
       
-      text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTime(Math.round(phase_duration/1000))+"</td>";  
+      text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";  
       text=text+"<td class='cc_phase_bar' title='"+Math.round(phase_duration/time_span*100)+"% of total runtime "+formatTime(Math.round(time_span/1000))+"'>";
       text=text+"<div class='cc_phase_bar_durations"+(phases_obj_arr[key].top_process ? "" : " cc_phase_bar_durations_NOTOP")+"' style=\"width: "+(!isNaN(phase_duration) ? Math.round(phase_duration/max_phase_duration*50) : "0")+"px\"></div>";
 

@@ -23,13 +23,14 @@
 
 // Saves options to localStorage.
 
-function set_magic(title, help, link){
-  document.getElementById("magic_title").value=title;
-  document.getElementById("magic_help").value=help;
-  document.getElementById("magic_link").value=link;
+function set_magic(magic_name,title, help, link){
+  document.getElementById(magic_name+"_title").value=title;
+  document.getElementById(magic_name+"_help").value=help;
+  document.getElementById(magic_name+"_link").value=link;
   event.preventDefault();
   return false;
 }
+
 
 function default_icon_changed(){
   new_icon = document.getElementById("default_icon").value;
@@ -174,6 +175,23 @@ function save_options() {
   localStorage["magic_help"] = document.getElementById("magic_help").value;
   localStorage["magic_link"] = document.getElementById("magic_link").value;
 
+  localStorage["magic2_title"] = document.getElementById("magic2_title").value;
+  localStorage["magic2_help"] = document.getElementById("magic2_help").value;
+  localStorage["magic2_link"] = document.getElementById("magic2_link").value;
+
+  localStorage["magic3_title"] = document.getElementById("magic3_title").value;
+  localStorage["magic3_help"] = document.getElementById("magic3_help").value;
+  localStorage["magic3_link"] = document.getElementById("magic3_link").value;
+
+  localStorage["magic4_title"] = document.getElementById("magic4_title").value;
+  localStorage["magic4_help"] = document.getElementById("magic4_help").value;
+  localStorage["magic4_link"] = document.getElementById("magic4_link").value;
+
+  localStorage["magic5_title"] = document.getElementById("magic5_title").value;
+  localStorage["magic5_help"] = document.getElementById("magic5_help").value;
+  localStorage["magic5_link"] = document.getElementById("magic5_link").value;
+
+
   console.log("Options saved");
   var statuses = document.querySelectorAll('.status')
   for (var i=0; i<statuses.length; i++){
@@ -220,6 +238,22 @@ function restore_options() {
   var magic_title = localStorage["magic_title"];
   var magic_help = localStorage["magic_help"];
   var magic_link = localStorage["magic_link"];
+
+  var magic2_title = localStorage["magic2_title"];
+  var magic2_help = localStorage["magic2_help"];
+  var magic2_link = localStorage["magic2_link"];
+
+  var magic3_title = localStorage["magic3_title"];
+  var magic3_help = localStorage["magic3_help"];
+  var magic3_link = localStorage["magic3_link"];
+
+  var magic4_title = localStorage["magic4_title"];
+  var magic4_help = localStorage["magic4_help"];
+  var magic4_link = localStorage["magic4_link"];
+
+  var magic5_title = localStorage["magic5_title"];
+  var magic5_help = localStorage["magic5_help"];
+  var magic5_link = localStorage["magic5_link"];
 
   if(default_icon){
     var select = document.getElementById("default_icon");
@@ -405,6 +439,46 @@ if(dont_parse_cc_phases=="1"){
       document.getElementById("magic_link").value = magic_link;
   }
 
+if (magic2_title) {
+      document.getElementById("magic2_title").value = magic2_title;
+  }
+  if (magic2_help) {
+      document.getElementById("magic2_help").value = magic2_help;
+  }
+  if (magic2_link) {
+      document.getElementById("magic2_link").value = magic2_link;
+  }
+
+if (magic3_title) {
+      document.getElementById("magic3_title").value = magic3_title;
+  }
+  if (magic3_help) {
+      document.getElementById("magic3_help").value = magic3_help;
+  }
+  if (magic3_link) {
+      document.getElementById("magic3_link").value = magic3_link;
+  }
+
+if (magic4_title) {
+      document.getElementById("magic4_title").value = magic4_title;
+  }
+  if (magic4_help) {
+      document.getElementById("magic4_help").value = magic4_help;
+  }
+  if (magic4_link) {
+      document.getElementById("magic4_link").value = magic4_link;
+  }
+
+if (magic5_title) {
+      document.getElementById("magic5_title").value = magic5_title;
+  }
+  if (magic5_help) {
+      document.getElementById("magic5_help").value = magic5_help;
+  }
+  if (magic5_link) {
+      document.getElementById("magic5_link").value = magic5_link;
+  }            
+
   read_wl_domains();
 
   default_icon_changed();
@@ -427,21 +501,21 @@ document.getElementById("magic_validate").addEventListener('click', function(){
   var title='Valid';
   var help='Validation of project';
   var link='https://${SERVER}/gdc/md/${PID}/validate';
-  set_magic(title,help,link);
+  set_magic("magic",title,help,link);
 },false);
 
 document.getElementById("magic_clone").addEventListener('click', function(){
   var title='Clone';
   var help='Clone project';
   var link='https://${SERVER}/labs/apps/app_link?pid=${PID}&app=clone_project';
-  set_magic(title,help,link);
+  set_magic("magic",title,help,link);
 },false);
 
 document.getElementById("magic_params").addEventListener('click', function(){
   var title='Par';
   var help='ETL Params (metadata)';
   var link='https://${SERVER}/gdc/projects/${PID}/dataload/metadata';
-  set_magic(title,help,link);
+  set_magic("magic",title,help,link);
 },false);
 
 document.getElementById("dont_parse_cc_logs").addEventListener('change', function(){

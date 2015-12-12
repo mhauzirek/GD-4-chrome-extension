@@ -485,28 +485,42 @@ tr.cc_head_writer_header td.cc_writer_name{
 .cc_writer_name {
 	color: #999;
 	padding-left: 10px;
-	width: 260px;
+	width: 250px;
 	xbackground-color: #000000;
 	text-align: left;
 }
 
 .cc_writer_rows {
 	color: #999;
-	padding-left: 20px;
-	width: 110px;
+	padding-left: 5px;
+	width: 90px;
 	xbackground-color: #000000;
 	text-align: right;
 }
 
 .cc_writer_size {
 	color: #999;
-	padding-left: 20px;
-	width: 90px;
+	padding-left: 5px;
+	width: 120px;
 	xbackground-color: #000000;
 	text-align: right;
 }
 
+.cc_writer_sli {
+	color: #999;
+	padding-left: 5px;
+	width: 70px;
+	xbackground-color: #000000;
+	text-align: right;
+}
 
+.cc_writer_sli_batch {
+	color: #99FF99;
+	padding-left: 5px;
+	width: 70px;
+	xbackground-color: #000000;
+	text-align: right;
+}
 
 
 /*
@@ -770,7 +784,7 @@ margin-right: 50px;
 
 .cc_writer_bar { 
 	height: 10px;
-	width: 50px;
+	width: 30px;
 	padding-left: 10px;
 }
 

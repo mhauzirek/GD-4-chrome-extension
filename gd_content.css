@@ -32,11 +32,11 @@ font-weight: bold;
 height: 23px;
 margin-bottom: 2px;
 margin-left: 10px;
-margin-right: 10px;
+margin-right: 0px;
 margin-top: 3px;
 padding-bottom: 1px;
 padding-left: 0px;
-padding-right: 0px;
+padding-right: 10px;
 padding-top: 0px;
 background: auto !important;
 overflow: hidden;
@@ -105,9 +105,17 @@ overflow: hidden;
     color: #b0b0b0;
 }
 
+.gd4chrome_etl_status_CANCELED, a.gd4chrome_etl_status_CANCELED:link, a.gd4chrome_etl_status_CANCELED:visited, a.gd4chrome_etl_status_CANCELED:hover{
+    color: #ff9933;
+}
+
+.gd4chrome_etl_status_TIMEOUT, a.gd4chrome_etl_status_TIMEOUT:link, a.gd4chrome_etl_status_TIMEOUT:visited, a.gd4chrome_etl_status_TIMEOUT:hover{
+    color: #d92ba8;
+    #ff33cc;
+}
 
 
-a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_etl_status_RUNNING:hover, {
+a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_etl_status_RUNNING:hover,a.gd4chrome_etl_status_CANCELED:hover. a.gd4chrome_etl_status_TIMEOUT:hover {
     text-decoration: underline;
 }
 
@@ -164,5 +172,9 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     background: rgb(0,0,0);
     border-radius: 5px;
     font-size: 110%;
+  }
+
+  .gd4chrome_close {
+    left: -5px;
   }
 

@@ -98,7 +98,7 @@
       </p>
 
       <p>
-        <a href="#" id="data" title="Go to project-specific WebDav directory">Data</a><span class="hlp_desc">Go to project-specific WebDav directory of current project as described in article <a class="dev_link" href="https://developer.gooddata.com/article/project-specific-storage">Project Specific Storage</a><sup>(*)</sup>. This opens the directory in browser in read only mode.</span>
+        <a href="#" id="data" title="Setup Database Output Stage">DB</a><span class="hlp_desc">Setup project output stage for Data Explorer on <span class="gp">/gdc/dataload/projects/PID/outputStage/</span>. Details can be found in <a class="dev_link" href="https://developer.gooddata.com/article/set-up-data-explorer-for-project">Setup Data Explorer for Project</a><sup>(*)</sup>.</span>
       </p>
 
       <p>
@@ -112,7 +112,7 @@
       </p>
 
       <p>
-        <a href="#" title="custom link">(custom)</a><span class="hlp_desc">Custom link can be added in the options. You can use placeholders ${SERVER}, ${PID} and ${OBJ} and they will be replaced by current values. To link specific Labs app with project context use <a class="dev_link" href="https://secure.gooddata.com/labs/apps/app_link">AppLink</a> app.</span>
+        <a href="#" title="custom link">(magic 1-5)</a><span class="hlp_desc">Up to 5 custom "magic" buttons can be added in the options (see below). </span>
       </p>
 
       <p>
@@ -124,9 +124,6 @@
       </p>
       <p>
         <a href="#" id="hlpLink" class="options" title="Display help to extension">?</a><span class="hlp_desc">Display this help.</span>
-      </p>      
-      <p><a href="#" id="dataload" class="options" title="Go to Data Integration Service Console">DL</a><span class="hlp_desc">Display Data Integration Service Console<sup>(*)</sup>.</span>
-      </p>
     </div>
 
   <h2>The Overlay</h2>
@@ -217,11 +214,24 @@
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
 <p class="help_div">You can set alternate icons for different projects or hostnames.</p>
 <p class="help_div">To enable the extension od hostnames other than *.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section.</p>
-<p class="help_div">You can add custom magic button for your favourite GoodData resource. E.g. title = "Valid", popup help = "Validation of project", link = "https://${SERVER}/gdc/md/${PID}/validate"). Possible placeholders are: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object. Link with ${OBJ} will only be active when object is displayed, link with ${PID} will only be active if project is selected.</p>
+<p class="help_div">You can add up to five custom "magic" buttons. You can use GoodData resource or any other outside URL and to which you can pass the PID. You can use following placeholders: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object. Example: https://${SERVER}/gdc/md/${PID}/validate.
+<p class="help_div">
+You can also target any specific <a class="dev_link" href="https://secure.gooddata.com/labs/apps" target="_blank">GoodData Labs</a> application from your "magic" button. To link it with context of current project, use URL like this: https://${SERVER}/labs/apps/app_link?pid=${PID}&app=APP_NAME where APP_NAME is the name of the Labs App (it is part of its URL i.e. "clone_project").</p>
+<p class="help_div">The extension toolbar total width is limited to 800px and if needed it will make some of the standard link titles shorter to fit your custom buttons. If they would still not fit, it will shorten the longest titles of your magic buttons.</p>
+
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
 
+
+<p>v0.9008:
+  <ul>
+    <li>Up to 5 magic buttons with improved fit algorithm</li>
+    <li>Data link (project WebDav) replaced with DB (Data Explorer setup)</li>
+    <li>Fix for some urlencoded links when detecting PID</li>
+    <li>Removed DL link and slight toolbar visual tuning</li>
+</ul>
+</p>
 
 <p>v0.9007:
   <ul>

@@ -39,7 +39,12 @@ function array_contains(a, obj) {
 function parse_gd_url(url){
 //console.log("parsing "+url);
 //var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
+//var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc/)?((projects|md)/([^/|%]*))?.*");
+//var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc/)?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
+
+
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/p)/([^/|%]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 var response = {
@@ -48,7 +53,7 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-//console.log(response);
+//console.log(pidParse);
 return response;
 }
 
@@ -402,7 +407,7 @@ function showProjectInfo2(pid, server){
               <span class='gd4chrome_proj gd4chrome_title' id='gd4chrome_title'>...</span>\
               <span class='gd4chrome_det gd4chrome_summary' id='gd4chrome_summary'></span>\
             </td>\
-            <td width='10' valign='top'>\
+            <td width='20' valign='top'>\
               <span class='gd4chrome_close' onclick='document.getElementById(\"gd4chrome_overlay\").parentNode.removeChild(document.getElementById(\"gd4chrome_overlay\"));'>X</span>\
             </td>\
             </tr>\
