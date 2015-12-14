@@ -158,6 +158,15 @@ function addListeners(){
     magic3.addEventListener('click', clickBtn);
   }
 
+  var magic4 = document.getElementById("magic4");
+  if(magic4 != null){
+    magic4.addEventListener('click', clickBtn);
+  }
+
+  var magic5 = document.getElementById("magic5");
+  if(magic5 != null){
+    magic5.addEventListener('click', clickBtn);
+  }  
 
 }
 

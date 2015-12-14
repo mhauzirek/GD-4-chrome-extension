@@ -259,8 +259,9 @@ function parseCClog(){
 
   ///([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
 
-  document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
-
+  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
+  
+  document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|(.*(Final) tracking Log for phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10$13$12'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
   //OLD
   //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "1:$1\n 2:$2\n 3:$3\n 4:$4\n 5:$5\n 6:$6\n 7:$7\n 8:$8\n 9:$9\n 10:$10\n 11:$11\n 12:$12\n 13:$13\n 14:$14\n 15:$15\n");//"</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
 
@@ -345,7 +346,7 @@ function parseCClog(){
   if(first_error){
     var err_data_url = location.href.replace(/\/log[^\/]*/,"/data");
     //var err_data_url = '';//location.href.replace(/\/log[^\/]*/,"/data");
-    goto_link = "<a class='cc_head_link goto_error' href='#first_error'>Error found</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Download</a>";
+    goto_link = "<a class='cc_head_link goto_error' href='#first_error' ondblclick='location.href=\"#last_line\"'>Error found</a> <a class='cc_head_link goto_err_data' href='"+err_data_url+"'>Download</a>";
   }else{
     if(run_finished){
       goto_link="<a class='cc_head_link goto_success' id='finished_ok' href='#last_line'>Finished OK</a>";
@@ -808,6 +809,8 @@ var time_span = max_phase_end - min_phase_start;
 var w_pixels = 290;
 var px_per_ms = w_pixels / time_span;
 
+var code = "";
+
   var text="\
     <table class='cc_head_phases' id='cc_head_phases'>\
       <tr class='cc_head_phase cc_head_phase_total'><td colspan='2' class='cc_phase_name'>ALL PHASES</td><td class='cc_phase_duration'> "+formatTimeCompact(Math.round(time_span/1000))+"</td><td class='cc_writer_bar'> </td></tr>\
@@ -837,10 +840,12 @@ var px_per_ms = w_pixels / time_span;
         
       }
 
-      text=text+"<tr class='cc_head_phase'><td class='cc_phase_name' title='"+key+"'><a href='#ph_"+key+"'>"+(this_phase.top_process==true ? key : "&nbsp;"+key)+"</a></td>";
+      text=text+"<tr class='cc_head_phase'><td class='cc_phase_name' title='"+key+"'><a href='#ph_"+key+"' ondblclick='"+code+"'>"+(this_phase.top_process==true ? key : "&nbsp;"+key)+"</a></td>";
+
+code = "location.href=&apos;#ph_"+key+"Final&apos;";
 
 text=text+"<td title='from:&#09;"+new Date(phase_start).toString()+"&#10;to:&#09;"+new Date(phase_end).toString()+"' class='cc_phase_timeline'>";
-text=text+"<a href='#ph_"+key+"'><div class='cc_phase_bar_timeline cc_phase_bar_timeline_"+phase_status+" "+(this_phase.top_process == true ? "" : "cc_phase_bar_timeline_NOTOP")+"' style=\"width: "+(Math.round(phase_duration*px_per_ms)>0 ? Math.round(phase_duration*px_per_ms) : 1) +"px; margin-left: "+Math.round((phase_start-min_phase_start)*px_per_ms)+"px;\"></div>";
+text=text+"<a href='#ph_"+key+"' ondblclick='"+code+"'><div class='cc_phase_bar_timeline cc_phase_bar_timeline_"+phase_status+" "+(this_phase.top_process == true ? "" : "cc_phase_bar_timeline_NOTOP")+"' style=\"width: "+(Math.round(phase_duration*px_per_ms)>0 ? Math.round(phase_duration*px_per_ms) : 1) +"px; margin-left: "+Math.round((phase_start-min_phase_start)*px_per_ms)+"px;\"></div>";
 
       text=text+"</a></td>";
       text=text+"<td class='cc_phase_duration' title='";
