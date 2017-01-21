@@ -163,7 +163,7 @@ tr.cc_head_phase_header td.cc_phase_name{
 }
 
 
-.cc_phase_name a, a:visited {
+.cc_phase_name,.cc_phase_name a, .cc_phase_name a:visited {
 	color: #999;
 	width: 70px;
 	xbackground-color: #000000;
@@ -192,14 +192,62 @@ tr.cc_head_phase_header td.cc_phase_name{
 	text-align: right;
 }
 
+.cc_phase_duration_sql {
+	color: #999;
+	padding-left: 2px;
+	width: 40px;
+	xbackground-color: #000000;
+	text-align: right;
+}
+
+.cc_phase_timeline_sql {
+	color: #999;
+	padding-left: 1px;
+	width: 200px;
+	xbackground-color: #000000;
+	text-align: left;
+}
+
+.cc_phase_name_sql, .cc_phase_name_sql a, .cc_phase_name_sql a:visited {
+	color: #999;
+	width: 190px;
+	xbackground-color: #000000;
+	text-align: left;
+	text-decoration: none;
+	padding-left: 10px;	
+}
+
+.cc_phase_name_PLANNED, .cc_phase_name_PLANNED a, .cc_phase_name_PLANNED {
+	color: #666;
+}
+
+.cc_phase_name_RUNNING, .cc_phase_name_RUNNING a, .cc_phase_name_RUNNING {
+	color: #FFF;
+}
+
+.cc_phase_name_OK, .cc_phase_name_OK a, .cc_phase_name_OK {
+	color: #999;
+}
+
+.cc_phase_name_ERROR, .cc_phase_name_ERROR a, .cc_phase_name_ERROR {
+	color: #F55;
+}
+
+
 .cc_phase_bar { 
 	height: 10px;
 	width: 50px;
 	padding-left: 10px;
 }
 
+.cc_phase_bar_sql { 
+	height: 10px;
+	width: 30px;
+	padding-left: 5px;
+}
 
-.cc_phase_bar > div {
+
+.cc_phase_bar > div, .cc_phase_bar_sql > div {
 	display: block;
 	height: 40%;
 	resize: none;
@@ -210,7 +258,7 @@ tr.cc_head_phase_header td.cc_phase_name{
 }
 
 
-.cc_phase_bar > div.cc_phase_bar_durations{
+.cc_phase_bar > div.cc_phase_bar_durations, .cc_phase_bar_sql > div.cc_phase_bar_durations{
 	background-color: #4680BA;
 	background-image: -webkit-gradient(
 	  linear,
@@ -715,7 +763,7 @@ margin-right: 50px;
 .logline {
 	display: block;
 	font-family: monospace;
-	white-space: pre;
+	white-space: pre-wrap;
 }
 
 .FATAL {

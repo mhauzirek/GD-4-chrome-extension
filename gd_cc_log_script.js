@@ -26,6 +26,63 @@
  * it is embeded to GD pages and sends message to wakeup extension
  */
 
+
+function prettyDate(date_str,tz_offset){
+  // from http://webdesign.onyou.ch/2010/08/04/javascript-time-ago-pretty-date/
+
+  if(!tz_offset) tz_offset = 0;
+
+  var time_formats = [
+  [60, 'seconds', 1], // 60
+  [120, '1 minute ago', '1 minute from now'], // 60*2
+  [7200, 'minutes', 60], // 60*60, 60
+  [7200, '1 hour ago', '1 hour from now'], // 60*60*2
+  [86400, 'hours', 3600], // 60*60*24, 60*60
+  [172800, 'yesterday', 'tomorrow'], // 60*60*24*2
+  [604800, 'days', 86400], // 60*60*24*7, 60*60*24
+  [1209600, 'last week', 'next week'], // 60*60*24*7*4*2
+  [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+  [4838400, 'last month', 'next month'], // 60*60*24*7*4*2
+  [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+  [58060800, 'last year', 'next year'], // 60*60*24*7*4*12*2
+  [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+  [5806080000, 'last century', 'next century'], // 60*60*24*7*4*12*100*2
+  [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+  ];
+  var time = ('' + date_str).replace(/-/g,"/").replace(/[TZ]/g," ").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+  if(time.substr(time.length-4,1)==".") time =time.substr(0,time.length-4);
+  
+  //convert here&now to UTC
+  var now_loc = new Date();
+  var now = new Date(now_loc.getTime() + now_loc.getTimezoneOffset()*60*1000);
+
+  //convert there&then to UTC
+  var then_loc = new Date(time);
+  var then = new Date(then_loc.getTime() + tz_offset*60*1000);
+  
+  
+  //var seconds = (new Date() - new Date(time)) / 1000;
+  //be timezone "aware"
+  var seconds = (now - then) / 1000;
+  var token = 'ago', list_choice = 1;
+  if (seconds < 0) {
+    seconds = Math.abs(seconds);
+    token = 'from now';
+    list_choice = 2;
+  }
+  var i = 0, format;
+  while (format = time_formats[i++]) 
+    if (seconds < format[0]) {
+      if (typeof format[2] == 'string')
+        return format[list_choice];
+      else
+        return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+    }
+  return time;
+};
+
+
+
 function formatTime(x){
   var run_diff = x
   run_hour = Math.floor(run_diff/(60*60));
@@ -50,7 +107,6 @@ function formatTimeCompact(x){
   }else{
      graph_run_string=run_sec+"s";
   }
-
   return graph_run_string;
 }
 
@@ -126,15 +182,9 @@ function add_style(name, display, none){
   document.head.appendChild(obj);
 }
 
-//alert(Date.getTimezoneOffset());
-
 console.log("content script for CloudConnect logs executed, sending wakeup message");
 chrome.extension.sendMessage({message: "wakeup_cc"});
 
-//https://www.gedanalytics.com/gdc/projects/pmlm2inqwz3s936lotjmvjysp8a6nita/dataload/processes/ab345373-f7db-4c82-8a7c-d781d07affd4/executions/54675d99e4b0f79524d31be1/log#last_line
-
-//console.log(location.href);
-//var url_regexp = /^.*[\.\/]log[^\/]*$/;
 var url_regexp = /^https:\/\/([^\/]*)\/gdc\/projects\/([^\/]*)\/dataload\/processes\/([^\/]*)\/.*[\.\/]log[^\/]*$/
 var url_matches = url_regexp.exec(location.href);
 
@@ -142,6 +192,9 @@ var cc_server;
 var cc_process;
 var cc_project;
 var original_source;
+
+ var ruby_parsing = false;
+ var ruby_specific = "";
 
 //console.log(url_matches);
 
@@ -177,25 +230,27 @@ if(url_matches){
 //asynchronous
         async(parseCClog, function(){ 
           //console.log('parseCClog finished');
-        if(response.phases) {async(parsePhases, function(){
+        if(response.rubysql && ruby_parsing==true && ruby_specific=="SQL EXECUTOR BRICK") {async(parseRubySql, function(){
+            document.getElementById('cc_head_phases_hider').classList.add('visible');          
+            //console.log('parsePhase finished');
+          });
+        }else if(response.phases && ruby_parsing==false) {async(parsePhases, function(){
             document.getElementById('cc_head_phases_hider').classList.add('visible');          
             //console.log('parsePhase finished');
           });
         }else{
-          document.getElementById('cc_head_under1').innerText="phases parsing disabled";
+          document.getElementById('cc_head_under1').innerText="phases parsing not available";
         }
 
-        if(response.datasets) {async(parseGdw, function(){ 
+        if(response.datasets && ruby_parsing==false) {async(parseGdw, function(){ 
             document.getElementById('cc_head_writers_hider').classList.add('visible');
             //console.log('parseGdw finished');
           });
         }else{
-          document.getElementById('cc_head_under2').innerText="writers parsing disabled";
+          document.getElementById('cc_head_under2').innerText="writers parsing not available";
         }
 
       });
-
-
 
       }else{
         console.log("Parsing of logs disabled in settings");
@@ -217,18 +272,19 @@ function parse_query(query){
   return result;
 }
 
-function parseCClog(){
+  var run_finished = false;
+  var run_to=null;
 
+function parseCClog(){
   var request_id=null;
   var graph_name="???";
   var run_from=null;
   var run_from_raw=null;
-  var run_to=null;
   var run_to_raw=null;
   var run_hour=null;
   var run_min=null;
   var run_sec=null;
-  var run_finished = false;
+
   var graph_run_string = "?";
 
   //hide everything to speed up redraw
@@ -253,23 +309,50 @@ function parseCClog(){
 
   original_source = document.body.firstChild.textContent;
 
-  //WORKING document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
 
-  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
-
-  ///([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
-
-  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
+  //console.log("looking for ruby");
   
-  document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|(.*(Final) tracking Log for phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10$13$12'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
-  //OLD
-  //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_[0-9]+|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "1:$1\n 2:$2\n 3:$3\n 4:$4\n 5:$5\n 6:$6\n 7:$7\n 8:$8\n 9:$9\n 10:$10\n 11:$11\n 12:$12\n 13:$13\n 14:$14\n 15:$15\n");//"</div><div class='logline $4 $5'>$1<span class='request_id'>$6</span>$7");
-
-  //find first error and tag it with id
-  var first_error = document.querySelector('.ERROR');
-  if(first_error){
-    first_error.id="first_error";
+  var ruby_regexp_basic = / action=jvmscript /
+  var ruby_match_basic = ruby_regexp_basic.exec(document.body.firstChild.textContent);
+  if(ruby_match_basic){
+    console.log("some ruby found");
+    ruby_parsing = true;
   }
+
+  var ruby_regexp = / \[main\] \[INFO\]: request_id=[^ ]* RUBY[- ]*([A-Z ]*)/
+  var ruby_match = ruby_regexp.exec(document.body.firstChild.textContent);
+  if(ruby_match){
+    console.log("ruby found with specific flavour: "+ruby_match[1]);
+    //console.log(ruby_match);
+    ruby_parsing = true;
+    ruby_specific = ruby_match[1];
+  }else{
+    console.log("no specific ruby flavor found");
+    //ruby_parsing = false;
+  }
+
+
+if(!ruby_parsing){
+    //general parsing for CloudConnect
+    //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
+    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|(.*(Final) tracking Log for phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10$13$12'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
+}else{
+  //ruby specific parsing for SQL executor
+  if(ruby_specific=="SQL EXECUTOR BRICK"){
+    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");
+
+      
+  }else{
+    //generic ruby parsing
+    //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
+    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");
+  }
+
+
+}
+
+
+
 
 
   //add tool with checkboxes
@@ -284,16 +367,28 @@ function parseCClog(){
 
     last_element.id = "last_element";
     var last_line = last_element.textContent;
-    var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=[^ ]+ (WatchDog thread finished)?(action=jvmscript.* status=SCRIPT_OK)?.*/;
+    //console.log(last_line);
+    //var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]+\] \[[^\]]+\]: request_id=[^ ]+ (WatchDog thread finished .*)?(action=jvmscript script=[^ ]* status=(SCRIPT_ERROR)|(SCRIPT_OK).*)?/;
+    var last_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]+\] \[[^\]]+\]: request_id=[^ ]+ (WatchDog thread finished .*)?(action=jvmscript script=[^ ]* status=SCRIPT_[OE][KR].*)?(.*The execution has been terminated by user.*)?/;
     var match_last = last_regexp.exec(last_line);
 
+console.log(match_last);
+
     if(match_last){
+      //console.log(match_last);
       run_to = Date.parse(match_last[1]);
       run_to_raw = match_last[1];
-      if(match_last[2] || match_last[3]){
+      if(match_last[2] || match_last[3] || match_last[4]){
         run_finished = true;
       }
     }
+  }
+
+//find first error and tag it with id
+var first_error = document.querySelector('.ERROR');
+
+  if(first_error){
+    first_error.id="first_error";
   }
 
   //inject script with switch functions
@@ -308,7 +403,7 @@ function parseCClog(){
   var properties_element;
   var tested_line;
   //WORKING var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) Graph (.+grf) additional properties {([^}]+)}/;
-  var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+) ((Graph (.+grf) additional properties {([^}]+)})|(action=jvmscript script=([^\/]*\/)?([^ ]*) status=SCRIPT_EXEC))/;
+  var prop_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}).*request_id=([^ ]+)[ ]+((Graph (.+grf) additional properties {([^}]+)})|(action=jvmscript script=([^\/]*\/)?([^ ]*) status=SCRIPT_EXEC))/;
   var match;
   for(i=0;i<=10;i++){
     if(document.body.firstChild.children[i]){
@@ -359,7 +454,7 @@ function parseCClog(){
   toolbox.id="cc_head";
   toolbox.innerHTML="\
     <span class='cc_head_links'><span class='graph_name'><a title='Open this process in Data Integration Console' href='https://"+cc_server+"/admin/disc/#/projects/"+cc_project+"/processes/"+cc_process+"/schedules'>"+graph_name+"</a></span>\
-    <span class='graph_run_time' title='from:&#09;"+run_from_raw+"&#10;to:&#09;"+run_to_raw+"'>"+graph_run_string+"</span>"+goto_link+"\
+    <span class='graph_run_time' title='started "+prettyDate(run_from_raw,0)+"&#10;from:&#09;"+run_from_raw+"&#10;to:&#09;"+run_to_raw+"'>"+graph_run_string+"</span>"+goto_link+"\
     <a class='run_refresh' href='#' onclick='reload_refresh();return(false)'>Reload</a><input type='checkbox' "+(show.refresh=="1" ? "checked='checked'" : "")+" onclick='toggle_refresh()' title='Reload every 5 minutes' id='auto_refresh'/>\
     <a class='cc_head_link close' href='#' xtarget='_blank' title='Show original log' onclick='reload_hash();return(false)'>X</a>\
     </span>\
@@ -454,10 +549,6 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-/*uugh, that was the old implementation that was wrong, slow and not used at all!!*/
-//var gdw_regexp =/([A-Za-z0-9_]+)_GD_C[^ ]* *FINISHED_OK\n.*In:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*Out:0 *[0-9]* *[0-9]* *[0-9]* *[0-9]*\n.*\[INFO\]:.*FINISHED_OK/g
-//var gdw_match = original_source.match(gdw_regexp);
-
 
 var gdw_rows_regexp = /\[[A-Za-z0-9_]+_GD_CSV_DATA_WRITER_[0-9]*\] \[DEBUG\]: request_id=[^ ]+ Written [0-9]+ records to file .*/g
 var gdw_rows_match = original_source.match(gdw_rows_regexp);
@@ -466,34 +557,9 @@ var gdw_upload_regexp =/\[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]+ component_t
 var gdw_upload_match = original_source.match(gdw_upload_regexp);
 
 
-//action=data_file_stored = approx. time of start upload(?)
-
-
-//2015-11-06 05:34:54.613+0100 [GD_GROUP_MEMBER_PARTICIPATION_0] [INFO]: request_id=knqqnS7Gl3YgJvgi action=etl_pull_polling status=finished time=336550
-
-//var gdw_sli_start_regexp = /[0-9\- :\.\+ ]+ \[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* action=((upload loading data)|(etl_pull_polling)).*/g
 
 var gdw_sli_start_regexp = /[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[A-Za-z0-9_]+_[0-9]+\] \[INFO\]: request_id=[^ ]+ action=((upload loading data to platform to dataset=[^ ]+ from remote WebDAV directory=[^ ]+)|(etl_pull_polling)) status=[a-zA-Z]+/g
 var gdw_sli_start_match = original_source.match(gdw_sli_start_regexp);
-
-//var gdw_sli_finish_regexp = /[0-9\- :\.\+ ]+ \[[A-Za-z0-9_]+\] \[INFO\]: request_id=[^ ]* action=((upload loading data to platform.*)|(etl_pull_polling)) status=((FINISHED)|(finished)).*/g
-//var gdw_sli_finish_match = original_source.match(gdw_sli_finish_regexp);
-
-
-
-//console.log(gdw_sli_start_match);
-//console.log(gdw_sli_finish_match);
-
-//non-batch upload start
-//2015-11-06 12:21:50.427+0100 [GD_WRITE_USER_CREATED_585] [INFO]: request_id=OOMRFI9yfiEf0QN5:MUstWq3Sx2chHk16 action=upload loading data to platform to dataset=dataset.usercreated from remote WebDAV directory=qaenhinz2mn98ci20w3d5szshl50w63i/2015-11-06_12-21-15_NIE0a status=STARTED.
-
-//non-batch upload finish
-//2015-11-06 12:21:55.499+0100 [GD_WRITE_USER_CREATED_585] [INFO]: request_id=OOMRFI9yfiEf0QN5:MUstWq3Sx2chHk16 action=upload loading data to platform to dataset=dataset.usercreated from remote WebDAV directory=qaenhinz2mn98ci20w3d5szshl50w63i/2015-11-06_12-21-15_NIE0a status=FINISHED.
-
-
-
-//console.log(gdw_rows_match);
-//console.log(gdw_upload_match);
 
 
 if(gdw_upload_match!== null && gdw_upload_match !== undefined && gdw_rows_match!== null && gdw_rows_match!== undefined ){
@@ -501,15 +567,11 @@ var gdw_length = (gdw_upload_match.length >= gdw_rows_match ? gdw_upload_match.l
 //console.log("we have "+gdw_length+" writers");
 
 
-var gdw_rows_line_regexp = /\[([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER_[0-9]+\] \[DEBUG\]: request_id=[^ ]* Written ([0-9]+) records to file.*/
+var gdw_rows_line_regexp = /\[([A-Za-z0-9_]+)_GD_CSV_DATA_WRITER_[0-9]+\] \[DEBUG\]: request_id=[^ ]* Written ([0-9]+) records to file.*\/(dataset\.[^\/]+).csv/
 
 var gdw_upload_line_regexp = /\[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* component_type=gd_dataset_writer action=data_file_stored file_name=([0-9a-zA-Z_.]+)\.csv file_size=([0-9]+)/
 
 var gdw_sli_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* action=([^ ]*) .*status=((finished)|(FINISHED)|(start)|(STARTED)).*/
-//var gdw_sli_finish_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[([A-Za-z0-9_]+)_[0-9]+\] \[INFO\]: request_id=[^ ]* action=([^ ]*) .*/
-
-
-//2015-11-06 05:34:54.613+0100 [GD_GROUP_MEMBER_PARTICIPATION_0] [INFO]: request_id=knqqnS7Gl3YgJvgi action=etl_pull_polling status=finished time=336550
 
 var gdw_rows_line_match;
 var gdw_upload_line_match;
@@ -547,11 +609,12 @@ for (var i = 0; i < gdw_length; i++) {
     //we've never seen this writer before
     gdw_rows[gdw_rows_line_match[1]]=Number(gdw_rows_line_match[2]);
 
-    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
+//    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
       //we have also dataset record for this - it is not Eventstore or some other file...
+      //removed due to race condition between gd_rows_line_match and gdw_datasets, replaced by 'dataset.' in the regexp to avoid eventstore files
       if(Number(gdw_rows_line_match[2])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[2]);}    
       gdw_rows['*total*']+=Number(gdw_rows_line_match[2]);
-    }
+//    }
   }
 }
 
@@ -586,9 +649,9 @@ for (var i = 0; i < gdw_length; i++) {
 
   }
 
-console.log(gdw_sli);
-console.log(gdw_rows);
-console.log(gdw_datasets);
+//console.log(gdw_sli);
+//console.log(gdw_rows);
+//console.log(gdw_datasets);
 
 var text="\
     <table class='cc_head_writers' id='cc_head_writers'>\
@@ -601,10 +664,12 @@ for (var key in gdw_rows) {
       var sli_duration = null;
       if(gdw_sli[key]) sli_duration=gdw_sli[key].duration;
 
-      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+gdw_datasets[key]+"'>"+key+"</td>";
+/*      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+gdw_datasets[key]+"'>"+key+"</td>";*/
+
+      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+key+"'>"+gdw_datasets[key]+"</td>";
       
       text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0)+"</td><td class='cc_writer_size' ";
-      text=text+"title='"+sizeWithCommas(gdw_sizes[key],0,'KB')+"'>"+sizeWithCommas(gdw_sizes[key],0,'MB',false)+"</td>";
+      text=text+"title='"+sizeWithCommas(gdw_sizes[key],0,'KB')+"'>"+sizeWithCommas(gdw_sizes[key],0,'KB',false)+"</td>";
 
       if(!sli_duration){
         text=text+"<td class='cc_writer_sli_none'>&nbsp;</td>";
@@ -637,24 +702,7 @@ toolbox2.innerHTML=text;
   hider.classList.add("hider_closed");
   hider.classList.remove("hider_inactive");
   hider.innerText=cc_total_count+" writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
-/*
-  hider.addEventListener('click',function (){
-  var gdw = document.getElementById('cc_head_writers_box');
-  var hdw_hid = document.getElementById('cc_head_writers_hider');
 
-  if(gdw.style.display=="none"){
-    hdw_hid.classList.remove('hider_open','hider_inactive');
-    hdw_hid.classList.add('hider_closed','hider_clicked');
-    //hdw_hid.innerText="Dataset Writers: Click again to hide details.";
-    gdw.style.display='inline';
-  }else{
-    hdw_hid.classList.remove('hider_closed','hider_inactive','hider_clicked');
-    hdw_hid.classList.add('hider_open');
-    gdw.style.display='none';
-    //hdw_hid.innerText=cc_total_count+" Writers, "+rowsWithCommas(cc_total_rows,0)+" rows, "+sizeWithCommas(cc_total_size,0)+"";
-  }
-});
-*/
 
 document.getElementById('cc_total_rows').innerText=rowsWithCommas(cc_total_rows,1);
 document.getElementById('cc_total_rows').title=numberWithCommas(cc_total_rows);
@@ -673,6 +721,7 @@ document.getElementById('cc_total_size').title=sizeWithCommas(cc_total_size,0,'K
 //console.log("looking for Dataset Writers finished");
 
 }
+
 
 
 function parsePhases(){
@@ -723,10 +772,7 @@ var gdp_start_match = original_source.match(gdp_start_regexp);
 
 var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\].*request_id=[^ ]+ Execution of phase \[[0-9]+\] [a-zA-Z ]*finished.*/g
 var gdp_end_match = original_source.match(gdp_end_regexp);
-//Execution of phase [0] finished with error - elapsed time(sec): 4
 
-//console.log(gdp_start_match);
-//console.log(gdp_end_match);
 
 // && gdp_end_match!== null && gdp_end_match!== undefined
 if(gdp_start_match!== null && gdp_start_match !== undefined ){
@@ -879,24 +925,6 @@ toolbox2.innerHTML=text;
   hider.innerText=phases_count+" phases, "+(main_phases_count<phases_count ? main_phases_count+" in main graph" : "no subgraphs");
 
 
-/*
-  addEventListener('click',function (){
-  var gdw = document.getElementById('cc_head_phases_box');
-  var hdw_hid = document.getElementById('cc_head_phases_hider');
-
-  if(gdw.style.display=="none"){
-    hdw_hid.classList.remove('hider_open','hider_inactive');
-    hdw_hid.classList.add('hider_closed','hider_clicked');
-    //hdw_hid.innerText="Phase details: Click again to hide.";
-    gdw.style.display='inline';
-  }else{
-    hdw_hid.classList.remove('hider_closed','hider_inactive', 'hider_clicked');
-    hdw_hid.classList.add('hider_open');
-    gdw.style.display='none';
-    //hdw_hid.innerText=phases_count+" Phases";
-  }
-});
-*/
 }else{
 //  console.log("we have NONE");
   hider.classList.add("hider_inactive");
@@ -917,4 +945,400 @@ function async(fn, callback) {
 }
 function sync(fn) {
     fn();
+}
+
+
+
+
+
+function parseRubySql(){
+  console.log("PARSING RUBY SQL EXECUTOR PHASES");
+//plan - name, order
+//start, end, running, finished, to be executed, error
+
+var current_time = new Date();
+var gd_phases = new Array();
+var gd_phase;
+var gdp_line_match
+var gdp_line;
+var phases_start = new Array();
+var phases_end = new Array();
+var phases_obj_arr = new Array();
+var phases_count = 0;
+var main_phases_count=0;
+var max_phase_duration=0;
+var max_unfinished_duration=0;
+var min_phase_start=Number.MAX_VALUE;
+var max_phase_end=0;
+var unfinished_phases=0;
+var phases_with_error=0;
+var groups_count=0;
+
+var toolbox2 = document.createElement('div');
+toolbox2.id="cc_head_phases_box";
+toolbox2.style.display="none";
+
+//not nice at all but needed to add that onclick for switching tabs
+var s = "<div onclick=\"switch_tab('cc_head_phases', 'cc_head_writers')\"></div>";
+var s2 = document.createElement('div');
+s2.innerHTML = s;
+var hider = s2.firstChild;
+
+hider.id="cc_head_phases_hider";
+hider.innerText="Loading...";
+hider.classList.add("hider_inactive");
+
+document.body.lastChild.appendChild(hider);
+document.body.lastChild.appendChild(toolbox2);
+
+var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
+var gdp_plan_match = original_source.match(gdp_plan_regexp);
+//console.log(gdp_plan_match);
+
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql/g
+var gdp_start_match = original_source.match(gdp_start_regexp);
+//console.log(gdp_start_match);
+
+var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* took: [0-9\.]*/g
+var gdp_end_match = original_source.match(gdp_end_regexp);
+//console.log(gdp_end_match);
+
+
+var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file .* has failed.*/g
+var gdp_err_match = original_source.match(gdp_err_regexp);
+//console.log(gdp_err_match);
+
+
+
+if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
+  var gdp_length = gdp_plan_match.length;
+
+  console.log("we have "+gdp_length+" scripts in execution plan");
+  var gdp_plan_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[INFO\]: request_id=[^ ]+    File: (([0-9]*)_.*sql)/
+  var gdp_plan_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_plan_match[i] !== null && gdp_plan_match[i]!== undefined) {
+      gdp_plan_line_match = gdp_plan_match[i].match(gdp_plan_line_regexp);
+    }
+    var phase_name = gdp_plan_line_match[2]
+    var phase_step = gdp_plan_line_match[3];
+
+//console.log(gdp_plan_line_match);
+
+
+console.log("looking for Group "+phase_step+": "+ phases_obj_arr.hasOwnProperty("Group "+phase_step));
+
+
+    if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
+      //we've never seen this phase_step yet create it
+      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_plan_line_match[3], phase_id: gdp_plan_line_match[3], status: "PLANNED", end_time: null, duration: null};
+      //unfinished_phases++;
+      //phases_count++;
+      console.log("adding new group "+phase_step);
+      phases_obj_arr["Group "+phase_step]=new_group_phase;
+      groups_count++
+    }
+
+    var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_plan_line_match[3], phase_id: gdp_plan_line_match[2], status: "PLANNED", end_time: null, duration: null};
+    unfinished_phases++;
+    phases_count++;
+    
+    phases_obj_arr[phase_name]=new_phase;
+
+
+  }
+}
+console.log(phases_obj_arr);
+
+
+  var previous_phase_step="";
+if(gdp_start_match!== null && gdp_start_match !== undefined ){
+  var gdp_length = gdp_start_match.length;
+
+
+  console.log("we have "+gdp_length+" starts of phases");
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: (([0-9]*)_.*sql)/
+  var gdp_start_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_start_match[i] !== null && gdp_start_match[i]!== undefined) {
+      gdp_start_line_match = gdp_start_match[i].match(gdp_start_line_regexp);
+    }
+    var phase_name = gdp_start_line_match[2];
+    var phase_step = gdp_start_line_match[3];
+    var unfinished_duration = current_time.getTime() - Date.parse(gdp_start_line_match[1]);
+
+    update_phase = phases_obj_arr[phase_name];
+    update_group = phases_obj_arr["Group "+phase_step];
+
+    update_phase.start_time = Date.parse(gdp_start_line_match[1]);
+    update_phase.status = "RUNNING";    
+
+    if(phase_step!=previous_phase_step && previous_phase_step!=""){
+      //we have new phase_step, the previous one already finished
+      console.log("STARTING NEW PHASE, previous phase "+previous_phase_step);
+      var previous_phase =  phases_obj_arr["Group "+previous_phase_step];
+      previous_phase.end_time=update_phase.start_time;
+      previous_phase.duration=previous_phase.end_time-previous_phase.start_time;
+      previous_phase.status="OK";
+console.log(previous_phase);      
+    }
+    previous_phase_step = phase_step;
+
+
+    if(update_group.start_time === null || update_group.start_time === undefined){
+      update_group.start_time = update_phase.start_time;
+      update_group.status = "RUNNING";
+
+    }
+
+
+    if(update_phase.start_time < min_phase_start){
+      min_phase_start = update_phase.start_time;
+    }
+    if(unfinished_duration > max_unfinished_duration){
+      max_unfinished_duration = unfinished_duration;
+    }
+
+
+    phases_start[phase_name]=gdp_start_line_match[1];
+  }
+}
+
+if(run_finished && phases_with_error==0 && phases_count>0){
+  //we have finished the script - finish the last phase
+      console.log("finishing latest phase "+previous_phase_step);
+      var previous_phase =  phases_obj_arr["Group "+previous_phase_step];
+      previous_phase.end_time=run_to;
+      previous_phase.duration=previous_phase.end_time-previous_phase.start_time;
+      previous_phase.status="OK";
+}
+
+console.log(phases_obj_arr);
+
+
+if(gdp_end_match!== null && gdp_end_match !== undefined ){
+  var gdp_length = gdp_end_match.length;
+
+  console.log("we have "+gdp_length+" ends of phases");
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command (([0-9]*)_.*sql) took: ([0-9\.]*)/
+  var gdp_end_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_end_match[i] !== null && gdp_end_match[i]!== undefined) {
+      gdp_end_line_match = gdp_end_match[i].match(gdp_end_line_regexp);
+    }
+    var phase_name = gdp_end_line_match[2];
+    var phase_step = gdp_end_line_match[3];
+
+//TODO parse errors in files - Exception: The execution of file 02_insert_data_3.sql has failed.
+
+    update_phase = phases_obj_arr[phase_name]
+    update_group = phases_obj_arr["Group "+phase_step];
+
+    update_phase.end_time = Date.parse(gdp_end_line_match[1]);
+    update_phase.status="OK";
+    unfinished_phases--;
+
+
+    update_phase.duration = update_phase.end_time - update_phase.start_time;
+    if(update_phase.duration > max_phase_duration){
+      max_phase_duration = update_phase.duration;
+    }
+    if(update_phase.end_time > max_phase_end){
+      max_phase_end = update_phase.end_time;
+console.log("max phase end set to "+max_phase_end);
+    }
+    phases_end[phase_name]=gdp_end_line_match[1];
+  }
+}
+
+
+if(gdp_err_match!== null && gdp_err_match !== undefined ){
+  var gdp_length = gdp_err_match.length;
+
+  console.log("we have "+gdp_length+" errors");
+  var gdp_err_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file (([0-9]*)_.*sql) has failed.*/
+  var gdp_err_line_match;
+  for (var i = 0; i < gdp_length; i++) {
+    if(gdp_err_match[i] !== null && gdp_err_match[i]!== undefined) {
+      gdp_err_line_match = gdp_err_match[i].match(gdp_err_line_regexp);
+    }
+    var phase_name = gdp_err_line_match[2]
+    var phase_step = gdp_err_line_match[3];
+
+    update_phase = phases_obj_arr[phase_name]
+    update_group = phases_obj_arr["Group "+phase_step];
+
+    update_phase.end_time = Date.parse(gdp_err_line_match[1]);
+    update_phase.status="ERROR";
+
+    update_group.end_time = Date.parse(gdp_err_line_match[1]);
+    update_group.status="ERROR";
+
+    unfinished_phases--;
+    phases_with_error++;
+
+    update_phase.duration = update_phase.end_time - update_phase.start_time;
+    update_group.duration = update_group.end_time - update_group.start_time;    
+    if(update_phase.duration > max_phase_duration){
+      max_phase_duration = update_phase.duration;
+    }
+    if(update_phase.end_time > max_phase_end){
+      max_phase_end = update_phase.end_time;
+    }
+
+    if(update_group.duration > max_phase_duration){
+      max_phase_duration = update_group.duration;
+    }
+    if(update_group.end_time > max_phase_end){
+      max_phase_end = update_group.end_time;
+    }
+
+    phases_end[phase_name]=gdp_err_line_match[1];
+
+  }
+}
+console.log(phases_obj_arr);
+
+
+if(phases_count>0){
+
+if(unfinished_phases>0 && phases_with_error==0){
+  //some phase does not have end and is still running...
+  max_phase_end = current_time.getTime();
+  max_phase_duration = max_unfinished_duration;
+console.log("because of unfinished phases - max phase end set to "+max_phase_end);  
+}
+
+//console.log(phases_obj_arr);
+//console.log(max_phase_duration);
+
+
+
+
+var time_span = max_phase_end - min_phase_start;
+var w_pixels = 190;
+var px_per_ms = w_pixels / time_span;
+
+
+console.log(max_phase_end+" - "+min_phase_start+" - "+time_span);
+
+var code = "";
+
+  var text="\
+    <table class='cc_head_phases' id='cc_head_phases'>\
+      <tr class='cc_head_phase cc_head_phase_total'><td colspan='2' class='cc_phase_name_sql'>ALL PHASES</td><td class='cc_phase_duration'> "+formatTimeCompact(Math.round(time_span/1000))+"</td><td class='cc_writer_bar'> </td></tr>\
+      <tr class='cc_head_phase cc_head_phase_header'><td colspan='2' class='cc_phase_name_sql'>Phase</td><td class='cc_phase_duration'>Duration</td><td class='cc_phase_bar'>relative</td></tr>\
+";
+
+  for (var key in phases_obj_arr) {
+      var this_phase = phases_obj_arr[key];
+      var phase_start = phases_obj_arr[key].start_time;
+      var phase_end = phases_obj_arr[key].end_time;
+      var phase_duration = phases_obj_arr[key].duration;
+      var phase_status = phases_obj_arr[key].status;
+
+      var short_name_length = 24;
+
+      var short_name = this_phase.phase_name.substring(0,short_name_length)+(this_phase.phase_name.length>short_name_length ? "»" : "");
+
+      if(this_phase.status=="RUNNING"){
+        //this phase is running...or some other has failed and we never got end of this one...
+        if(phases_with_error>0){
+          //some phase failed, this one was probably killed
+          phase_end = max_phase_end;
+          phase_duration = max_phase_end-phase_start;
+        }else{
+          //no error in the graph, we expect it is still running and use current time as phase end
+          phase_end = current_time.getTime();
+          phase_duration = phase_end-phase_start;
+        }
+      }else if(this_phase.status=="PLANNED"){
+        //this phase has not started yet
+        
+        if(phases_with_error>0){
+          //some phase failed, this one will never start
+          phase_end = max_phase_end;
+          phase_start = max_phase_end;
+          phase_duration = 0
+        }else{
+          phase_end = current_time.getTime();
+          phase_start = current_time.getTime();
+          phase_duration = 0;
+        }
+
+      }else{
+        //this phase has already finished... we are OK
+        
+      }
+
+      text=text+"<tr class='cc_head_phase'><td class='cc_phase_name cc_phase_name_"+this_phase.status+"' title='"+this_phase.phase_name+"'>"+(this_phase.top_process==true ? short_name : "&nbsp;"+short_name)+"</td>";
+
+//code = "location.href=&apos;#ph_"+key+"Final&apos;";
+/*
+console.log("phase_name: "+this_phase.phase_name);
+console.log("phase_status: "+this_phase.status);
+console.log("phase_duration: "+phase_duration);
+console.log("px_per_ms: "+px_per_ms);
+console.log("phase_start: "+phase_start);
+console.log("min_phase_start: "+min_phase_start);
+*/
+
+text=text+"<td title='File:&#09;"+this_phase.phase_name;
+if(this_phase.status=="PLANNED"){
+  text=text+"&#10;(not started yet)' class='cc_phase_timeline_sql'>";
+  }else{
+    text=text+"&#10;from:&#09;"+new Date(phase_start).toString()+"&#10;to:&#09;"+new Date(phase_end).toString()+"' class='cc_phase_timeline_sql'>";
+  }
+text=text+"<div class='cc_phase_bar_timeline cc_phase_bar_timeline_"+phase_status+" "+(this_phase.top_process == true ? "" : "cc_phase_bar_timeline_NOTOP")+"' style=\"width: "+(Math.round(phase_duration*px_per_ms)>0 ? Math.round(phase_duration*px_per_ms) : 1) +"px; margin-left: "+Math.round((phase_start-min_phase_start)*px_per_ms)+"px;\"></div>";
+
+      text=text+"</td>";
+      text=text+"<td class='cc_phase_duration_sql' title='";
+
+      
+      if(this_phase.status=="PLANNED"){
+        text=text+"not started yet'>&nbsp;</td>";
+      }
+      else{
+        text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";
+      }
+
+
+      text=text+"<td class='cc_phase_bar' title='";
+
+      if(this_phase.status=="PLANNED"){
+        text=text+"'>&nbsp;";
+      }else{
+        text=text+Math.round(phase_duration/time_span*100)+"% of total runtime "+formatTime(Math.round(time_span/1000))+"'>";
+        text=text+"<div class='cc_phase_bar_durations"+(phases_obj_arr[key].top_process ? "" : " cc_phase_bar_durations_NOTOP")+"' style=\"width: "+(!isNaN(phase_duration) ? Math.round(phase_duration/max_phase_duration*35) : "0")+"px\"></div>";
+      }
+
+
+
+//      text=text+"<div class='cc_writer_bar_sizes' style=\"width: "+(!isNaN(gdw_sizes[key]) ? Math.round(gdw_sizes[key]/gdw_sizes['*max*']*50) : "0")+"px\"> </div>"; 
+      text=text+"<td>";
+      text=text+"</tr>\n";
+      //phases_count++;
+      if(this_phase.top_process) main_phases_count++;
+  }
+
+text=text+"</table>";
+
+
+toolbox2.innerHTML=text;
+
+  hider.classList.add("hider_closed");
+  hider.classList.remove("hider_inactive");
+  hider.innerText=phases_count+" SQL scripts in "+groups_count+" group"+(groups_count>1 ? "s" : ""); //TODO display number of total/finished/running
+
+
+
+}else{
+//  console.log("we have NONE");
+  hider.classList.add("hider_inactive");
+  hider.innerText="no scripts detected";
+}
+
+//console.log("looking for Phases finished");
+
+
 }

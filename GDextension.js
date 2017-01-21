@@ -67,13 +67,15 @@ chrome.extension.onMessage.addListener(
         case "canParseCcLog":
           var can_parse_cc_datasets=true;
           var can_parse_cc_phases=true;
+          var can_parse_ruby_sql=true;          
           //console.log("can we parse CC log?");
           if(localStorage['dont_parse_cc_logs']=="1"){
             sendResponse({logs: false});
             }else{
               if(localStorage['dont_parse_cc_datasets']=="1"){can_parse_cc_datasets = false;}
               if(localStorage['dont_parse_cc_phases']=="1"){can_parse_cc_phases = false;}
-                sendResponse({logs:true, datasets: can_parse_cc_datasets, phases: can_parse_cc_phases})
+              if(localStorage['dont_parse_ruby_sql']=="1"){can_parse_ruby_sql = false;}              
+                sendResponse({logs:true, datasets: can_parse_cc_datasets, phases: can_parse_cc_phases, rubysql: can_parse_ruby_sql})
             }
         break;
 

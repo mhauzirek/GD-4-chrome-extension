@@ -145,9 +145,9 @@ function fadeIn(el, display){
 
 
 function set_refresh(){
-  console.log("setting auto reload to 5 minutes");
+  console.log("setting auto reload to 2 minutes");
   show_int.refresh="1";
-  timed_refresh = setTimeout(reload_refresh, 300000);
+  timed_refresh = setTimeout(reload_refresh, 120000);
 
 
 }

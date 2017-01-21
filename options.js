@@ -32,6 +32,39 @@ function set_magic(magic_name,title, help, link){
 }
 
 
+function import_options(){
+    console.log("importing options");
+    try{
+      opt = JSON.parse(document.getElementById("options_json").value);
+      for (i in opt){
+        console.log("importing "+i+":"+opt[i]);
+        localStorage[i] = opt[i];
+      }
+      restore_options();
+    }
+    catch(err){
+      console.log("error importing options");
+    }
+}
+
+function import_wl_domains(){
+  try{
+    var wl_domains = JSON.parse(document.getElementById("wl_domains_json").value);
+    chrome.storage.local.set(wl_domains);
+    read_wl_domains();
+  }
+  catch(err){
+    console.log("error importing whitelabeled hostnames");
+  }
+}
+
+
+function read_chrome_storage(){
+  chrome.storage.local.get(null,function(items){
+    document.getElementById("options_json").value = JSON.stringify(items);
+  });
+}
+
 function default_icon_changed(){
   new_icon = document.getElementById("default_icon").value;
   //console.log(new_icon);
@@ -72,6 +105,12 @@ function default_icon_changed(){
 
  function read_wl_domains(){
   var select = document.getElementById("wl_domains");
+  //remove all first
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+
+
   chrome.storage.local.get("wl_domains", function(items)
           {
             //console.log(items.wl_domains);
@@ -81,7 +120,9 @@ function default_icon_changed(){
               opt.innerHTML = items.wl_domains[i];
               select.appendChild(opt);
             }
-          });
+            document.getElementById("wl_domains_json").value=JSON.stringify(items);
+          }
+          );
  }
 
 
@@ -93,7 +134,11 @@ function default_icon_changed(){
   }
 
   console.log(arr);
-  chrome.storage.local.set({wl_domains: arr}); 
+  chrome.storage.local.set({wl_domains: arr});
+  chrome.storage.local.get("wl_domains", function(items)
+    {
+      document.getElementById("wl_domains_json").value=JSON.stringify(items);  
+    });
  }
 
 
@@ -165,6 +210,13 @@ function save_options() {
     localStorage.removeItem("dont_parse_cc_phases");
   }  
 
+  select = document.getElementById("dont_parse_ruby_sql");
+  if(select.checked){
+    localStorage["dont_parse_ruby_sql"]="1";
+  }else{
+    localStorage.removeItem("dont_parse_ruby_sql");
+  }    
+
 
 
   //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
@@ -192,7 +244,12 @@ function save_options() {
   localStorage["magic5_link"] = document.getElementById("magic5_link").value;
 
 
+  document.getElementById("options_json").value = JSON.stringify(localStorage);
+
   console.log("Options saved");
+
+console.log(localStorage);
+
   var statuses = document.querySelectorAll('.status')
   for (var i=0; i<statuses.length; i++){
     statuses[i].innerHTML = "Options Saved.";
@@ -234,6 +291,7 @@ function restore_options() {
   var dont_parse_cc_logs = localStorage["dont_parse_cc_logs"];
   var dont_parse_cc_datasets = localStorage["dont_parse_cc_datasets"];
   var dont_parse_cc_phases = localStorage["dont_parse_cc_phases"];
+  var dont_parse_ruby_sql = localStorage["dont_parse_ruby_sql"];
 
   var magic_title = localStorage["magic_title"];
   var magic_help = localStorage["magic_help"];
@@ -417,7 +475,8 @@ function restore_options() {
   if(dont_parse_cc_logs=="1"){
     document.getElementById("dont_parse_cc_logs").checked=true;
     document.getElementById("dont_parse_cc_phases").disabled=true;
-    document.getElementById("dont_parse_cc_datasets").disabled=true;    
+    document.getElementById("dont_parse_cc_datasets").disabled=true;  
+    document.getElementById("dont_parse_ruby_sql").disabled=true;
   }
 
 if(dont_parse_cc_datasets=="1"){
@@ -426,7 +485,9 @@ if(dont_parse_cc_datasets=="1"){
 if(dont_parse_cc_phases=="1"){
     document.getElementById("dont_parse_cc_phases").checked=true;
   }  
-
+if(dont_parse_ruby_sql=="1"){
+    document.getElementById("dont_parse_ruby_sql").checked=true;
+  }  
 
 
   if (magic_title) {
@@ -482,6 +543,9 @@ if (magic5_title) {
   read_wl_domains();
 
   default_icon_changed();
+
+  document.getElementById("options_json").value = JSON.stringify(localStorage);
+
 }
 
 document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
@@ -492,6 +556,8 @@ for (var i=0; i<saves.length; i++){
   saves[i].addEventListener('click', save_options);
 }
 
+document.querySelector('#import').addEventListener('click',import_options);
+document.querySelector('#import_wl_domains').addEventListener('click',import_wl_domains);
 document.querySelector('#remove_wl_domains_button').addEventListener('click', remove_wl_domains);  
 document.querySelector('#add_wl').addEventListener('click', add_wl_domain);
 
@@ -522,8 +588,10 @@ document.getElementById("dont_parse_cc_logs").addEventListener('change', functio
     if(this.checked){
       document.getElementById("dont_parse_cc_phases").disabled=true;
       document.getElementById("dont_parse_cc_datasets").disabled=true;
+      document.getElementById("dont_parse_ruby_sql").disabled=true;      
     }else{
       document.getElementById("dont_parse_cc_phases").disabled=false;
       document.getElementById("dont_parse_cc_datasets").disabled=false;
+      document.getElementById("dont_parse_ruby_sql").disabled=false;
     }
 });

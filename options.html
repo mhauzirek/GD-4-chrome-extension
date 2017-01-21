@@ -61,6 +61,7 @@
 <option value="icons/default.png">default icon</option>
 <option value="" disabled>New GoodData "G"</option>
 <option value="icons/gd19_rebrand_black.png">GoodData in Black</option>
+<option value="icons/gd19_rebrand_black_beta.png">GoodData in Black (beta)</option>
 <option value="icons/gd19_rebrand_gray.png">GoodData in Gray</option>
 <option value="icons/gd19_rebrand_color.png">GoodData in full colors</option>
         <option value="" disabled>Old GoodData "G"</option>
@@ -107,7 +108,9 @@
       <select multiple="multiple" id="wl_domains">
       </select>
       <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
-   
+      <br><br><span class="detail">Manual import/export hostname settings (copy &amp; paste into another instance)</span>
+      <br><input type="text" id="wl_domains_json" size="80" value="">
+      <input type="button" id="import_wl_domains" value="Import Hostnames">
     </fieldset>
 
     <fieldset>
@@ -144,10 +147,10 @@
     <fieldset>
       <legend>CloudConnect logs:</legend>
       (use if the parsing is causing slownes or other problems)<br>
-      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect logs AT ALL</label><br>
+      <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect/Ruby logs AT ALL</label><br>
       &nbsp;<label><input type="checkbox" id="dont_parse_cc_datasets" value="1">Do NOT parse Dataset Writers in CloudConnect logs</label><br>
       &nbsp;<label><input type="checkbox" id="dont_parse_cc_phases" value="1">Do NOT parse Phases in CloudConnect logs</label><br>
-      
+      &nbsp;<label><input type="checkbox" id="dont_parse_ruby_sql" value="1">Do NOT parse Phases in Ruby SQL Executor logs</label><br>      
     </fieldset>    
 
         <fieldset>
@@ -507,7 +510,12 @@
 <option value="icons/gd19_bear_red.png">Red Bear</option>         
         </select>
         <br>    
-      </fieldset>   
+      </fieldset> 
+    <fieldset>
+      <legend>Manual Options Import/Export: (copy &amp; paste into another instance)</legend>
+      <input type="text" id="options_json" value="" size="80"/> 
+      <input type="button" id="import" class="import" value="Import options" />
+    </fieldset>   
 
 </div>
 
