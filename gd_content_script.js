@@ -44,7 +44,7 @@ function parse_gd_url(url){
 //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc/)?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
 
 
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/p)/([^/|%]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/project)/([^/|%]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 var response = {
@@ -99,10 +99,18 @@ chrome.extension.onMessage.addListener(
 
       break;
 
+       /** new implementation of project info box */
+       case "showProjectInfo3":
+          console.log("showing project info overlay3 for project "+request.PID+", server "+request.server+", specific schedule "+request.spec_schedule);
+          showProjectInfo3(request.PID, request.server,request.spec_schedule);
+
+      break;
+
+
        /** reload project info box */
        case "reloadProjectInfo":
           console.log("reloading project info overlay2 for project "+request.PID+", server "+request.server);
-          reloadProjectInfo(request.PID, request.server);
+          reloadProjectInfo(request.PID, request.server, request.spec_schedule);
 
       break;
 
@@ -176,6 +184,7 @@ function get_basic_info(pid,server){
   }
   proj_info.open("GET", "https://"+server+"/gdc/projects/"+pid);
   proj_info.setRequestHeader("Accept", "application/json");
+  proj_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   proj_info.send();
 
 }
@@ -195,6 +204,7 @@ function get_tz_info(pid,server){
   }
   tz_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/service/timezone");
   tz_info.setRequestHeader("Accept", "application/json");
+  tz_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);  
   tz_info.send();
 
 }
@@ -243,7 +253,143 @@ function get_dataload_info(pid,server){
 
   dataload_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/data/sets");
   dataload_info.setRequestHeader("Accept", "application/json");
+  dataload_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   dataload_info.send();  
+}
+
+
+
+function get_sched_info(pid,server, spec_schedule){
+
+ var etl_info = new XMLHttpRequest();
+  etl_info.onload = function()
+  {
+  //var html ="";
+  if (etl_info.status==200){
+    var resp = JSON.parse(etl_info.responseText);
+    var html_text="";
+    var schedule_count = 1;
+    if(!resp.schedule){
+      document.getElementById("gd4chrome_etl_last").innerHTML="(no known)";
+      document.getElementById("gd4chrome_etl_next").innerHTML="(none)";
+    }else{
+     var lastrun = null;
+     var nextrun = null;
+     var nextExecution = null;
+     var lastExecution = null;
+
+    var cur_last_date=null;
+    var cur_next_date=null;
+    var disabled_count=0;
+    var enabled_count=0;
+    var no_schedule_states = true;
+
+
+
+if(resp.schedule.type)
+    
+      schedule = resp.schedule;
+      console.log("inspecting specific schedule "+schedule.links.self)
+
+      if(schedule.state) no_schedule_states = false; //we have states in schedules R85 or something
+
+
+      if(schedule.lastExecution){
+        cur_last_date = new Date(schedule.lastExecution.execution.endTime);
+        if(lastrun==null || cur_last_date>lastrun){
+          lastrun = cur_last_date;
+          lastExecution=schedule;
+        }
+      }
+
+      cur_next_date = new Date(schedule.nextExecutionTime);
+      if((no_schedule_states || schedule.state =="ENABLED" && schedule.nextExecutionTime!=null) && (nextrun==null || cur_next_date<nextrun) && (schedule.lastExecution.execution.status!="RUNNING") ) {
+        nextrun=cur_next_date;
+        nextExecution = schedule;
+      }
+
+      if(schedule.state == "DISABLED"){
+        disabled_count++;
+      }
+      if(schedule.state == "ENABLED"){
+        enabled_count++;
+      }
+
+
+    if(lastExecution){ //already executed 
+        html_text = "<span>";
+        if(lastExecution.lastExecution.execution.status!="RUNNING"){
+          html_text = html_text + "<span title='Finished at "+lastExecution.lastExecution.execution.endTime+"'>";
+          html_text = html_text + prettyDate(lastExecution.lastExecution.execution.endTime,0)+"</span> ";
+        }
+        html_text = html_text + "<span title='Started at "+lastExecution.lastExecution.execution.startTime;
+        html_text = html_text + " by "+lastExecution.lastExecution.execution.trigger+"' class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+      
+      if(lastExecution.lastExecution.execution.log){
+        html_text = html_text + "<a href='"+lastExecution.lastExecution.execution.log;
+        html_text = html_text + (lastExecution.lastExecution.execution.status=="ERROR" ? "#first_error" : "#last_line")+"'";
+        html_text = html_text + " class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+        html_text = html_text + lastExecution.lastExecution.execution.status;
+        html_text = html_text + "</a>";
+      }else{
+        html_text = html_text + "<span class='gd4chrome_etl_status_"+lastExecution.lastExecution.execution.status+"'>";
+        html_text = html_text + lastExecution.lastExecution.execution.status;
+        html_text = html_text + "</span>";
+      }
+
+      if(lastExecution.lastExecution.execution.status=="RUNNING"){
+        html_text = html_text + " <span class='gd4chrome_value_inline'>started "+prettyDate(lastExecution.lastExecution.execution.startTime,0)+" [this]</span>";
+      }
+
+      html_text = html_text + "</span>"
+
+    }else{
+      //never executed
+      html_text = "<span>no known";
+    }
+
+    html_text = html_text + "<span class='gd4chrome_col1'>(this sch)</span></span>";
+    document.getElementById("gd4chrome_etl_last").innerHTML=html_text;
+
+
+
+    if(nextExecution){ 
+      html_text = "<span title='Next run at "+nextExecution.nextExecutionTime+"'>";
+      html_text = html_text + prettyDate(nextExecution.nextExecutionTime,0);
+    
+    if(schedule_count>1){
+      if(no_schedule_states){
+        html_text = html_text + " <a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+      }else{
+        html_text = html_text + " <a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+enabled_count+" / "+schedule_count;
+        html_text = html_text + " schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+      }
+
+    }
+
+
+    }else{
+      if(schedule_count==0){
+        html_text = "<span>(no schedules)";
+      }else{
+        html_text = "<span><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>("+enabled_count+" / "+schedule_count+" schedule"+(schedule_count>1 ? "s" : "")+")</a>";
+      }
+    }
+
+    html_text = html_text + "<span class='gd4chrome_col1'>(this sch)</span></span>";
+    document.getElementById("gd4chrome_etl_next").innerHTML=html_text;
+  }
+      }else{
+        document.getElementById("gd4chrome_etl_last").innerHTML="[N/A]";
+        document.getElementById("gd4chrome_etl_next").innerHTML="[N/A]";
+      }
+  }
+
+  etl_info.open("GET", "https://"+server+"/gdc/projects/"+pid+"/schedules/"+spec_schedule);
+  etl_info.setRequestHeader("Accept", "application/json");
+  etl_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
+  etl_info.send();
+
 }
 
 
@@ -273,6 +419,9 @@ function get_etl_info(pid,server){
     var no_schedule_states = true;
 
 
+
+if(resp.schedules.items)
+    
     var schedule_count = resp.schedules.items.length;
     schedule = null;
     for (var s = 0; s < schedule_count; s++) {
@@ -380,12 +529,32 @@ function get_etl_info(pid,server){
 
   etl_info.open("GET", "https://"+server+"/gdc/projects/"+pid+"/schedules");
   etl_info.setRequestHeader("Accept", "application/json");
+  etl_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   etl_info.send();
 
 }
 
 
-function reloadProjectInfo(pid, server){
+function reloadProjectInfo(pid, server, spec_sched){
+  get_dataload_info(pid,server);
+  get_basic_info(pid,server);
+  get_tz_info(pid,server);
+
+  if(spec_sched == "" || spec_sched == null){
+    console.log("getting info for all schedules");
+    get_etl_info(pid,server);
+  }else{
+    console.log("getting info for specific schedule '"+spec_sched+"'");
+    get_sched_info(pid,server,spec_sched);
+  }
+  
+
+  //get loads
+  //change loads
+
+}
+
+function xreloadProjectInfo(pid, server){
   get_dataload_info(pid,server);
   get_basic_info(pid,server);
   get_tz_info(pid,server);
@@ -469,6 +638,76 @@ function showProjectInfo2(pid, server){
 
 
 
+function showProjectInfo3(pid, server, spec_schedule){
+        var gd4chrome_div = document.getElementById("gd4chrome_overlay");
+        var infobox_src = "\
+            <table class='gd4chrome_tab' border='0'>\
+            <tr><td class='gd4chrome_headercol' colspan='2' width='390'>\
+              <span class='gd4chrome_proj gd4chrome_title' id='gd4chrome_title'>...</span>\
+              <span class='gd4chrome_det gd4chrome_summary' id='gd4chrome_summary'></span>\
+            </td>\
+            <td width='20' valign='top'>\
+              <span class='gd4chrome_close' onclick='document.getElementById(\"gd4chrome_overlay\").parentNode.removeChild(document.getElementById(\"gd4chrome_overlay\"));'>X</span>\
+            </td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1' width='120'>Created</td>\
+            <td width='290'><span class='gd4chrome_value' id='gd4chrome_created'>...</span></td>\
+            <td width='10'></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>Updated</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_updated'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>DB driver</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_driver'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/gdc/md/"+pid+"/service/timezone'>Timezone</a></td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tz'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/#s=/gdc/projects/"+pid+"|dataPage|dataSets'>Last data load</a></td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_last_dataload'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>Last sched. ETL</a></td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_etl_last'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'><a href='https://"+server+"/admin/disc/#/projects/"+pid+"'>Next sched. ETL</a></td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_etl_next'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>Auth. Token</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_token'>...</span></td>\
+            <td></td>\
+            </tr>\
+            </table>\
+          ";
+
+        if(gd4chrome_div){
+            gd4chrome_div.innerHTML = infobox_src; 
+        }else{
+            gd4chrome_div = document.createElement('div');
+            gd4chrome_div.setAttribute('id',"gd4chrome_overlay");
+            gd4chrome_div.innerHTML = infobox_src;
+            document.body.insertBefore(gd4chrome_div,document.body.firstChild);
+          }
+        console.log("Local Timezone offset is "+tz_offset+" minutes and there is "+prg_diff+" offset in Prague");  
+        reloadProjectInfo(pid, server, spec_schedule);
+} 
+
+
+
+
 
 
 function prettyDate(date_str,tz_offset){
@@ -496,11 +735,11 @@ function prettyDate(date_str,tz_offset){
   var time = ('' + date_str).replace(/-/g,"/").replace(/[TZ]/g," ").replace(/^\s\s*/, '').replace(/\s\s*$/, '');
   if(time.substr(time.length-4,1)==".") time =time.substr(0,time.length-4);
   
-  //convert here&now to UTC
+  //convert here&now to UTC - well not really
   var now_loc = new Date();
-  var now = new Date(now_loc.getTime() + now_loc.getTimezoneOffset()*60*1000);
+  var now = new Date(now_loc.getTime())// + now_loc.getTimezoneOffset()*60*1000);
 
-  //convert there&then to UTC
+  //convert there&then to UTC 
   var then_loc = new Date(time);
   var then = new Date(then_loc.getTime() + tz_offset*60*1000);
   
@@ -558,23 +797,47 @@ var tz_offset = new Date().getTimezoneOffset();
 var prg_diff = prg_dls_diff();
 
 
+
 chrome.storage.local.get("wl_domains", function(items)
           {
             //console.log("Domains set for GD Extension:"+items.wl_domains);
-
+            var url_matched = false;
             var url_regexp = /.*\.(get)?gooddata\.com$/;
             var url_matches = url_regexp.exec(location.hostname);
             if(url_matches){
               console.log("GoodData domain detected, executing GD Extension");
-              gd_extension_init();
+              url_matched = true;
             }else{
+              /* original implementation - exact match */
               if(array_contains(items.wl_domains,location.hostname)){
                 console.log(location.hostname+" is in whitelabeled domains list. executing GD Extension");
-                gd_extension_init();
+                url_matched = true;
               }else{
-                console.log(location.hostname+" is not in whitelabeled domain list. Can be added in extension settings - "+chrome.extension.getURL("options.html"));
+                /*if exact match is not found, try regexp for each record in wl list*/              
+                var domainsLength = items.wl_domains.length;
+                for (var i = 0; i < domainsLength; i++) {
+                  //console.log("testing: "+ items.wl_domains[i]);
+                  try{
+                    var url_regexp_re = new RegExp(items.wl_domains[i], "i");
+                    var url_matches_re = url_regexp_re.exec(location.hostname);
+                    if(url_matches_re){
+                      //console.log(location.hostname+" matches '"+items.wl_domains[i]+"' in the whitelabeled domains list. executing GD Extension");
+                      url_matched = true;
+                      break;
+                    }
+                  }catch (e) {
+                    //console.log("Not a valid regular expression: '"+items.wl_domains[i]+"'. "+e);
+                  }
+                }
               }
             }
+
+            if(url_matched){
+              console.log("Starting GoodData Extension");
+              gd_extension_init();
+            }else{
+                console.log(location.hostname+" does not match anything in GoodData Extension whitelabeled domain list. Can be added in extension settings - "+chrome.extension.getURL("options.html"));
+              }
           });
 
 

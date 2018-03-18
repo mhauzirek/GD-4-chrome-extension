@@ -184,17 +184,17 @@
 </div>
 
   <h2>The Log Parser<sup>(*)</sup></h2>
-<p class="help_div">The Log Parser appears when a CloudConenct Log is detected.</p>
-<p class="help_div">It allows you to clearly see where are errors an warnings and hide some information that is not so important.</p>
-<p class="help_div">In case of error it automatically scrolls to that line. Otherwise it scrolls to last line.</p>
+<p class="help_div">The Log Parser appears when a CloudConenct or Ruby Log is detected.</p>
+<p class="help_div">It allows you to clearly see where are errors an warnings and hide some information that is not so important and can clutter the log (request ID, path to executed ruby script).</p>
+<p class="help_div">In case of error it automatically scrolls to first line with error. Otherwise it scrolls to last logged line so far.</p>
 <p class="help_div">You can manually refresh the log with the Refresh link (it will keep your display settings).</p>
-<p class="help_div">By default the WatchDog process information (regular information each few seconds about what is running) is hidden. You can display it by clicking on the checkbox marked Watchdog. </p>
-<p class="help_div">By default the request_id part (present on each line) is hidden to make the log easier to read. To display the request_id (useful when debuging with GoodData support) click the RequestID link.</p>
+<p class="help_div">By default the CloudConnect WatchDog process information (regular information each few seconds about what is running) is hidden. You can display it by clicking on the checkbox marked Watchdog. </p>
+<p class="help_div">By default the request_id part (present on each line) is hidden to make the log easier to read. To display the request_id (useful when debuging with GoodData Support) click the RequestID link.</p>
 <p class="help_div">You can click on the graph name to open this process within Data Integration Console</p>
-<p class="help_div">When the graph is still running, you can check the box next to Reload link to automatically refresh it every 5 minutes. If it then finishes and the window is not focused, you will be informed by desktop notification.</p>
+<p class="help_div">When the graph is still running, you can check the box next to Reload link to automatically refresh it every 2 minutes. If it then finishes and the window is not focused, you will be informed by desktop notification about success or error.</p>
 <p class="help_div">You can disable parsing of the log files in extension options (in case it is too slow on your computer or you just want to see the raw logs).</p> 
-<p class="help_div">The extension now tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and data volume loaded to GoodData. Click on this information to open details about each dataset writer detected.</p> 
-<p class="help_div">For each dataset Writer you can see its code name (put mouse over it to see the dataset identifier), number of rows, data volume in MBs and relative ratio of these metrics to the other dataset loaded so far. This allows you to easily detect the largest datasets</p>
+<p class="help_div">The extension tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and data volume loaded to GoodData. Click on this information to open details about each dataset writer detected. In standard load mode, you will also see how long did the load part take for each dataset. In Batch SLI mode, you will see total duration of the load of whole batch next to the last dataset. Batch SLI mode is marked with time displayed in green color.</p> 
+<p class="help_div">For each dataset Writer you can see the dataset identifier (put mouse over it to see the CloudConnect component ID), number of rows, data volume in MBs and relative ratio of these metrics to the other dataset loaded so far. This allows you to easily detect the largest datasets</p>
 <p class="help_div">Red bar is for rows, green bar for volume (put mouse over it to see exact percentages).</p>
 
 <div id="cc_head">    <span class="cc_head_links"><span class="graph_name"><i title="Click to go to deployed proces within DIC">[Graph Name]</i></span>    <span class="graph_run_time">[Elapsed Runtime]</span><a class="cc_head_link goto_error" href="#">Error found</a> <a class="cc_head_link goto_err_data" href="#">Download</a>    <a class="run_refresh" href="#">Reload</a><input type="checkbox" title="Reload every 5 minutes" id="auto_refresh">    <a class="cc_head_link close" href="#" xtarget="_blank" title="Show original log">X</a>    </span>    <div class="cc_head_labels">    <label class="cc_head_label cc_head_label_first"> RequestID</label>    <label class="cc_head_label"><input type="checkbox"> WatchDog</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> DEBUG</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> INFO</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> WARN</label>    <label class="cc_head_label"><input type="checkbox" checked="checked"> ERROR</label></div>    </div>
@@ -214,17 +214,46 @@
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
 <p class="help_div">You can set alternate icons for different projects or hostnames.</p>
 <p class="help_div">To enable the extension od hostnames other than *.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section.</p>
-<p class="help_div">You can add up to five custom "magic" buttons. You can use GoodData resource or any other outside URL and to which you can pass the PID. You can use following placeholders: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object. Example: https://${SERVER}/gdc/md/${PID}/validate.
+<p class="help_div">You can add up to five custom "magic" buttons. You can use GoodData resource or any other outside URL and to which you can pass the PID. You can use following placeholders: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object ID. Example: https://${SERVER}/gdc/md/${PID}/validate.
 <p class="help_div">
-You can also target any specific <a class="dev_link" href="https://secure.gooddata.com/labs/apps" target="_blank">GoodData Labs</a> application from your "magic" button. To link it with context of current project, use URL like this: https://${SERVER}/labs/apps/app_link?pid=${PID}&app=APP_NAME where APP_NAME is the name of the Labs App (it is part of its URL i.e. "clone_project").</p>
+You can also target any specific <a class="dev_link" href="https://secure.gooddata.com/labs/apps" target="_blank">GoodData Labs</a> application from your "magic" button. To link it with context of current project, use URL like this: https://${SERVER}/labs/apps/app_link?pid=${PID}&amp;app=APP_NAME where APP_NAME is the name of the Labs App (it is part of its URL i.e. "clone_project").</p>
 <p class="help_div">The extension toolbar total width is limited to 800px and if needed it will make some of the standard link titles shorter to fit your custom buttons. If they would still not fit, it will shorten the longest titles of your magic buttons.</p>
+
+<p class="help_div">You can transfer your settings manually (i.e. between beta and regular extension or between different computers). To export, just copy the settings from the text area. To import, paste the JSON to the text area and hit Import button.</p>
+
 
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
 
+<p>v0.9013:
+  <ul>
+    <li>Improved support for Ruby scripts</li>
+    <li>Support for Ruby SQL Executor Phases</li>
+    <li>Fixed parsing # of rows</li>
+    <li>enable/disable parsing of Ruby SQL Executor</li>
+    <li>manual import/export of WL settings</li>
+    <li>manual import/export of other options</li>
+    <li>dataset identifier shown in CC load parser as default (component name on hover now)</li>
+    <li>auto-refresh for logs reduced to 2 minutes from 5</li>
+    <li>fixed link to explain resource and removed titles parsing in explain resource (this is now native in GoodData)</li>
+</ul>
+</p>
 
-<p>v0.90010:
+<p>v0.9011:
+  <ul>
+    <li>Improved support for Ruby scripts</li>
+    <li>Support for Ruby SQL Executor Phases</li>
+    <li>Fixed parsing # of rows</li>
+    <li>enable/disable parsing of Ruby SQL Executor</li>
+    <li>manual import/export of WL settings</li>
+    <li>manual import/export of other options</li>
+    <li>dataset identifier shown in CC load parser as default (component name on hover now)</li>
+    <li>auto-refresh for logs reduced to 2 minutes from 5</li>
+</ul>
+</p>
+
+<p>v0.9010:
   <ul>
     <li>Up to 5 magic buttons with improved fit algorithm</li>
     <li>Data link (project WebDav) replaced with DB (Data Explorer setup)</li>

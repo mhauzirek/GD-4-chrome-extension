@@ -205,7 +205,7 @@ function parse_gd_url(url){
 //var pidParse = url.match("https://([^/]*)/(#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
 //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");
 //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc/)?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
-var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#|dashboards/#/p)/([^/|%]*))?.*");
+var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#|dashboards/#/project)/([^/|%]*))?.*");
 var objParse = url.match("https://.*/obj/([0-9]+).*");
 
 
@@ -215,7 +215,7 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-//console.log(response);
+console.log(response);
 return response;
 }
 
@@ -367,7 +367,8 @@ function CreateGDProject(server,authToken){
   }
   proj_call.open("POST", "https://"+server+"/gdc/projects/"+pid);
   proj_call.setRequestHeader("Accept", "application/json");
-  proj_call.setRequestHeader("Content-Type", "application/json"); 
+  proj_call.setRequestHeader("Content-Type", "application/json");
+  proj_call.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   proj_call.send(request);
 
 }        

@@ -232,7 +232,7 @@ var is_finished = document.getElementById('finished_ok');
 var show_int = parse_query(location.search);
 var refresh_url = set_refresh_url();
 
-console.log(refresh_url);
+//console.log(refresh_url);
 if(show_int.refresh=="1") set_refresh();
 if(is_error || is_finished){
     document.getElementById('auto_refresh').checked=false;

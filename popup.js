@@ -29,6 +29,7 @@ var tabId=-1;
 var obj="";
 var pid = "";
 var server="";
+var spec_schedule="";
 var ui=0;
 var objURL="#";
 var explain_url;
@@ -42,21 +43,27 @@ function replacer() {
     var target = document.body.innerHTML.replace(/\${PID}/g, pid);
     target = target.replace(/\${SERVER}/g, server).replace(/\${OBJURL}/g, objURL);
     target = target.replace(/\${OBJ}/g, obj);
+    target = target.replace(/\${SCHEDULE}/g, spec_schedule);
+    
     document.body.innerHTML = target;
 }
 
 function parse_gd_url(url) {
+
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");    
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
-    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/p)/([^/|%]*))?.*");
+    var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/project)/([^/|%]*))?.*");
     var objParse = url.match("https://.*/obj/([0-9]+).*");
+
+    var schParse = url.match("https://.*/schedules/([A-Za-z0-9]+).*");
 
     return {
         server: (!pidParse || !pidParse[1] ? null : pidParse[1]),
         ui: (!pidParse || !pidParse[2] ? 0 : 1),
         pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
-        obj: (!objParse || !objParse[1] ? null : objParse[1])
+        obj: (!objParse || !objParse[1] ? null : objParse[1]),
+        sch: (!schParse || !schParse[1] ? null : schParse[1])          
     };
 }
 
@@ -77,13 +84,14 @@ function get_webdav_info(pid,server){
   };
   webdav_info.open("GET", "https://"+server+"/gdc/projects/"+pid);
   webdav_info.setRequestHeader("Accept", "application/json");
+  webdav_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   webdav_info.send();
 
 }
 
 
 function get_explain_info(pid,server,obj){
-console.log("get_explain_info called");
+//console.log("get_explain_info called");
   var report_info = new XMLHttpRequest();
   report_info.onload = function() {
     if (report_info.status==200) {
@@ -91,24 +99,30 @@ console.log("get_explain_info called");
       //console.log("received object  definition");
 
       var resp = JSON.parse(report_info.responseText);
-      //console.log(resp);
 
-      if( typeof resp.report === 'undefined' || resp.report.meta.category!='report'){
-        //console.log("this is not a report, cannot explain");
-        explainDisabler();
+      if( typeof resp !== 'undefined'){
+        //console.log(resp);
+        if(typeof resp.report !== 'undefined' && resp.report.meta.category=='report'){
+          var last_report_def = resp.report.content.definitions[resp.report.content.definitions.length-1];
+          explain_url = 'https://'+server+last_report_def+'/explain2?type=opt_qt_dot&format=html&submit=submit';
+          explainEnabler();
+        }else if(typeof resp.metric !== 'undefined' && resp.metric.meta.category=='metric'){
+          explain_url = 'https://'+server+'/gdc/md/'+pid+'/obj/'+obj+'/explain2';
+          explainEnabler();
+        }else if(typeof resp.reportDefinition !== 'undefined' && resp.reportDefinition.meta.category=='reportDefinition'){
+          explain_url = 'https://'+server+'/gdc/md/'+pid+'/obj/'+obj+'/explain2?type=opt_qt_dot&format=html&submit=submit';
+          explainEnabler();
+        }else{
+          explainDisabler();
+        }
       }else{
-        //console.log("this is report - parsing definitions");
-        var last_report_def = resp.report.content.definitions[resp.report.content.definitions.length-1];
-        explain_url = 'https://'+server+last_report_def+'/explain2?type=oqt_dot&format=html&submit=submit';
-        explainEnabler();
+        explainDisabler();
       }
-    }else{
-      console.log("cannot get last report definition for explain");
-      explainDisabler();
-    }
-  };
+  }
+};
   report_info.open("GET", "https://"+server+"/gdc/md/"+pid+"/obj/"+obj);
   report_info.setRequestHeader("Accept", "application/json");
+  report_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   report_info.send();
 
 }
@@ -187,7 +201,8 @@ function needPidDisabler(){
 }
 
 function clickInfo(e){ 
-  chrome.tabs.sendMessage(tabId, {type: "showProjectInfo2",PID: pid, server: server}); 
+  //chrome.tabs.sendMessage(tabId, {type: "showProjectInfo2",PID: pid, server: server, spec_schedule: spec_schedule}); 
+  chrome.tabs.sendMessage(tabId, {type: "showProjectInfo3",PID: pid, server: server, spec_schedule: spec_schedule}); 
 }
 
 function needPidEnabler(){
@@ -238,17 +253,17 @@ function loader(){
     var tab = array_of_tabs[0];
     tabId= tab.id;
 
-     var parsed = parse_gd_url(tab.url);
+     var parsed = parse_gd_url(tab.url);    
      ui=parsed.ui;
      //console.log("Are we in UI? "+ui);
      server=parsed.server;
      pid=parsed.pid;
      obj=parsed.obj;
+     spec_schedule = (parsed.sch == null ? "" : parsed.sch); //return schedule value or empty string - avoid null
 
     if(pid!=null){
         //console.log("Found PID "+pid);
         //get_webdav_info(pid,server);
-
         needPidEnabler(); 
         if(obj!=null){
           //console.log("Found object ID "+obj);
@@ -266,15 +281,26 @@ function loader(){
                  case 'dataSet' :
                  case 'attribute': 
                  case 'fact': 
-                 case 'metric': 
                  case 'prompt':
                   objURL = '/#s=/gdc/projects/'+pid+'|objectPage|/gdc/md/'+pid+'/obj/'+obj+'|';
                   needObjEnabler();
                   explainDisabler();
                  break; 
 
+                 case 'metric': 
+                  objURL = '/#s=/gdc/projects/'+pid+'|objectPage|/gdc/md/'+pid+'/obj/'+obj+'|';
+                  get_explain_info(pid,server,obj);
+                  needObjEnabler();
+                 break;
+
                  case 'report':
                   objURL = '/#s=/gdc/projects/'+pid+'|analysisPage|head|/gdc/md/'+pid+'/obj/'+obj+'|';
+                  get_explain_info(pid,server,obj);
+                  needObjEnabler();
+                 break;
+
+                 case 'reportDefinition':
+                  objURL = '/#s=/gdc/projects/'+pid+'|analysisPage|/gdc/md/'+pid+'/obj/'+obj+'|';
                   get_explain_info(pid,server,obj);
                   needObjEnabler();
                  break;
@@ -290,6 +316,13 @@ function loader(){
                   objURL = '/#s=/gdc/projects/'+pid+'|dataPage|facts|/gdc/md/'+pid+'/obj/'+obj+'|';
                   needObjEnabler();
                   explainDisabler();  
+                 break; 
+
+                 case 'visualizationObject':
+                 //analytical designer objects
+                  objURL = '/analyze/#/'+pid+'/'+obj+'/edit';
+                  needObjEnabler();
+                  explainDisabler();
                  break; 
 
                 default:

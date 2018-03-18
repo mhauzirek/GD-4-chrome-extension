@@ -92,6 +92,13 @@ overflow: hidden;
     color: rgb(255, 255, 255);
 }
 
+span.gd4chrome_this_schedule {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-weight: normal;
+
+}
+
 .gd4chrome_etl_status_OK, a.gd4chrome_etl_status_OK:link, a.gd4chrome_etl_status_OK:visited, a.gd4chrome_etl_status_OK:hover{
     color: #99FF99;
     text-decoration: none;

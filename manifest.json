@@ -1,6 +1,6 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9012",
+  "version": "0.9018",
   "icons" : {
     "48" : "guy48_beta.png",
     "96" : "guy96_beta.png",
@@ -16,8 +16,8 @@
   "page_action" :
   {
     "default_icon" : {
-      "19" : "icons/gd19_rebrand_gray_beta.png",
-      "38" : "retina/icons/gd19_rebrand_gray_beta.png"
+      "19" : "icons/gd19_rebrand_gray.png",
+      "38" : "retina/icons/gd19_rebrand_gray.png"
     },
     "default_title" : "Legen...wait for it GoodData is loading...dary!",
     "default_popup" : "gdpopup.html"
@@ -33,11 +33,7 @@
       "matches": ["https://*/*/log*"],
       "js": ["gd_cc_log_script.js"],
       "css":["gd_cc_log.css"]
-    },
-    {
-     "matches": ["https://*/*/obj/*/explain2?*type=oqt_dot*"],
-     "js": ["explain.js"]
-    }        
+    }      
   ],
 
 
@@ -46,7 +42,7 @@
     "tabs",
     "storage",
     "notifications"
-    ],
+  ],
   "web_accessible_resources": ["cc_log_switching.js"],
 
   "manifest_version": 2

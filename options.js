@@ -584,6 +584,13 @@ document.getElementById("magic_params").addEventListener('click', function(){
   set_magic("magic",title,help,link);
 },false);
 
+document.getElementById("magic_add").addEventListener('click', function(){
+  var title='ADD';
+  var help='Automated Data Distribution configuration';
+  var link='https://${SERVER}/gdc/dataload/projects/${PID}/outputStage';
+  set_magic("magic",title,help,link);
+},false);
+
 document.getElementById("dont_parse_cc_logs").addEventListener('change', function(){
     if(this.checked){
       document.getElementById("dont_parse_cc_phases").disabled=true;
