@@ -217,6 +217,8 @@ function save_options() {
     localStorage.removeItem("dont_parse_ruby_sql");
   }    
 
+  select = document.getElementById("sound_scheme");
+  localStorage["sound_scheme"] = select.children[select.selectedIndex].value;
 
 
   //localStorage["dont_parse_cc_logs"] = (select.checked ? "1" : "0");
@@ -312,6 +314,9 @@ function restore_options() {
   var magic5_title = localStorage["magic5_title"];
   var magic5_help = localStorage["magic5_help"];
   var magic5_link = localStorage["magic5_link"];
+
+  var sound_scheme = localStorage["sound_scheme"];
+
 
   if(default_icon){
     var select = document.getElementById("default_icon");
@@ -472,6 +477,19 @@ function restore_options() {
     }
   }
 
+  if(sound_scheme){
+    var select = document.getElementById("sound_scheme");
+    for (var i = 0; i < select.children.length; i++) {
+      var child = select.children[i];
+      if (child.value == sound_scheme) {
+        child.selected = "true";
+        break;
+      }
+    }
+  }
+
+
+
   if(dont_parse_cc_logs=="1"){
     document.getElementById("dont_parse_cc_logs").checked=true;
     document.getElementById("dont_parse_cc_phases").disabled=true;
@@ -548,7 +566,9 @@ if (magic5_title) {
 
 }
 
+document.getElementById('ext_name').innerText = chrome.runtime.getManifest().name;
 document.getElementById('ext_version').innerText = chrome.runtime.getManifest().version;
+
 
 restore_options();
 var saves = document.querySelectorAll('.save')

@@ -98,7 +98,7 @@
       </p>
 
       <p>
-        <a href="#" id="data" title="Setup Database Output Stage">DB</a><span class="hlp_desc">Setup project output stage for Data Explorer on <span class="gp">/gdc/dataload/projects/PID/outputStage/</span>. Details can be found in <a class="dev_link" href="https://developer.gooddata.com/article/set-up-data-explorer-for-project">Setup Data Explorer for Project</a><sup>(*)</sup>.</span>
+        <a href="#" id="data" title="Setup Output Stage">DB</a><span class="hlp_desc">Setup project output stage for Automated Data Distribution (ADD) <span class="gp">/gdc/dataload/projects/PID/outputStage/</span>. Details can be found in <a class="dev_link" href="https://help.gooddata.com/display/doc/Automated+Data+Distribution#AutomatedDataDistribution-HowtoStartUsingADD">How to start using Automated Data Distribution</a><sup>(*)</sup>.</span>
       </p>
 
       <p>
@@ -209,6 +209,14 @@
 
 <p class="help_div">The extension also tries to detect GoodData Dataset Wrtiters that have been already successfully finished in the log and displays total number of rows and data volume loaded to GoodData. Click on this information to open details about each dataset writer detected. Move your mouse to this area to expand it if the information does not fit in.</p> 
 
+<p class="help_div">When using with Automated Data Distribution log, the Extension detects all datasets into which the process will write. For each of the datasets the Extension displays an icon based on whether the dataset is partitioned by client_id (<span class="btn btn_id">id</span>) or whether all the data will be loaded (<span class="btn btn_all">all</span>). The second icon identifies if the particular dataset is loaded in full mode (<span class="btn btn_f">F</span>) or incrementally (<span class="btn btn_i">I</span>). In case the dataset is mentioned in the log but not loaded, there is instead following icon (<span class="btn btn_x">N/A</span>). For each of the loaded datasets there a number of rows displayed and time of extraction of these rows from ADS.</p> 
+
+
+<p class="help_div">When using with logs from the Ruby Bricks, the extension formats the lines to distinguish error levels and also hides some non-significant information () to improve the log readability. </p> 
+
+<p class="help_div">There is a special mode for SQL Executor brick. In case of SQL Executor, the Extension displays how long each script took to execute. The script runs are also displayed on a timeline so you can easily see which scripts run in parallel. For iterations in SQL Executor (.isql files), each iteration is now displayed separately with an appropriate key.</p> 
+
+
 
 <h2>The Options</h2>
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
@@ -225,6 +233,35 @@ You can also target any specific <a class="dev_link" href="https://secure.goodda
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
+
+<p>v0.9018:
+  <ul>
+    <li>Improved support for SQL Executor iterations</li>
+    <li>Fixed timezone handling in fuzzy time</li>
+    <li>Fixed parsing of ADD logs</li>
+    <li>Added support for parsing visualizationObject</li>
+</ul>
+</p>
+
+<p>v0.9017:
+  <ul>
+    <li>Fixed parsing of SQL Executor logs in case of an error</li>
+    <li>Improved detection of Error in CloudConnect parsing after some errors got filtered</li>
+    <li>Added support for explain (EX) also for metrics</li>
+    <li>Improved ADD parsing - display list of datasets even before query executor</li>
+</ul>
+</p>
+
+<p>v0.9016:
+  <ul>
+    <li>Fixed PID detection in KPI dashboards</li>
+    <li>Support for regular expressions (incl. wildcards) in hostname detection</li>
+    <li>Added support for explain (EX) also for metrics</li>
+    <li>Improved ADD parsing - display list of datasets even before query executor</li>
+</ul>
+</p>
+
+
 
 <p>v0.9013:
   <ul>

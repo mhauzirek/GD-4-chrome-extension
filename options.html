@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="options.css" />   
 
 <body>
-  <h1>GoodData Extension Tool::</h1>
+  <h1><span id='ext_name'>GoodData Extension Tool</span>::</h1>
   <hr>
   <pre>
   {
@@ -512,6 +512,17 @@
         </select>
         <br>    
       </fieldset> 
+
+    <fieldset>
+      <legend>Notification Sound Scheme</legend>
+      <select id="sound_scheme">
+        <option value="none">(no sounds)</option>
+        <option value="8bit">8-bit</option>
+        <option value="phone">Phone</option>        
+        <option value="s_certy">CZ</option>
+      </select> 
+    </fieldset> 
+
     <fieldset>
       <legend>Manual Options Import/Export: (copy &amp; paste into another instance)</legend>
       <input type="text" id="options_json" value="" size="80"/> 

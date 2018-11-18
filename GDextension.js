@@ -64,6 +64,13 @@ chrome.extension.onMessage.addListener(
             sendResponse(localStorage[request.field]);
         break;
 
+        case "getAudioNotificationDir":
+            if(!localStorage['audioNotificationDir']){
+              localStorage['audioNotificationDir'] = 'none';
+            }
+            sendResponse(localStorage['audioNotificationDir']);
+        break;
+
         case "canParseCcLog":
           var can_parse_cc_datasets=true;
           var can_parse_cc_phases=true;
@@ -82,10 +89,19 @@ chrome.extension.onMessage.addListener(
         case "showNotification":
         //when only_other_tab is true show notification only when other tab is active or whole window is not focused
         //= do not show notification when I am in the window.
+
+
+
         chrome.windows.getCurrent(function(current_window){
           chrome.tabs.query({active: true,currentWindow: true}, function(activeTab){
             if(request.only_other_tab==false || current_window.focused==false || sender.tab.id!=activeTab[0].id){
-              notify(request.title, request.text, sender.tab.id, request.img);  
+                sound_scheme = localStorage['sound_scheme'];
+
+              if(!sound_scheme || sound_scheme == 'none'){
+                  notify(request.title, request.text, sender.tab.id, request.img);  
+              }else{
+                  audio_notify(request.title, request.text, sender.tab.id, request.img, null, sound_scheme);
+              }              
             }else{
               //console.log("NOT NOTIFYING ON SAME TAB");
             }
@@ -133,7 +149,7 @@ function notify(title, text, tab, img, link) {
       };
       
       chrome.notifications.create("id"+notID++, notOptions, function(notID){
-        //console.log("created notification "+notID+" with title "+title);
+        console.log("created notification "+notID+" with title "+title);
       });
     }else{
       console.log("GD4Chrome cannot display notification:");
@@ -141,6 +157,40 @@ function notify(title, text, tab, img, link) {
     }
   });
 }
+
+
+function audio_notify(title, text, tab, img, link, sound_scheme) {
+
+  console.log("inside audio notify");
+
+  img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
+  //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
+
+    var sound;
+    if(img == 'icons/gd_etl_error.png'){
+        sound = 'sound/'+sound_scheme+'/error.ogg';
+    }
+    if(img == 'icons/gd_etl_ok.png'){
+        sound = 'sound/'+sound_scheme+'/success.ogg';
+    }
+
+    if(sound){
+      console.log("playing sound");
+        var notifySound = new Audio(sound);
+        notifySound.play();
+    }
+    notify(title,text,tab,img,link);
+}
+
+
+/*
+
+function audioNotification(){
+    var yourSound = new Audio('yourSound.mp3');
+    yourSound.play();
+}
+
+*/
 
 //todo click on notification
 
