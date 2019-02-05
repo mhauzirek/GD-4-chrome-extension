@@ -97,18 +97,18 @@ function set_refresh_url(){
 
 
 function reload_refresh(){
-  console.log("we are reloading...");
+  //console.log("we are reloading...");
   if(location.href==refresh_url){
     location.reload(true);
   }else{
-    console.log("will load this URL: "+refresh_url);
+    //console.log("will load this URL: "+refresh_url);
     location.href=refresh_url;
   }
 }
 
 
 function reload_hash(){
-  console.log("reloading without parsing");
+  //console.log("reloading without parsing");
   var reload = false;
   if(!location.search) {reload = true;}
   location.href=location.href.split(/\?|#/)[0]+"#no_parse";
@@ -145,7 +145,7 @@ function fadeIn(el, display){
 
 
 function set_refresh(){
-  console.log("setting auto reload to 2 minutes");
+  //console.log("setting auto reload to 2 minutes");
   show_int.refresh="1";
   timed_refresh = setTimeout(reload_refresh, 120000);
 
@@ -153,7 +153,7 @@ function set_refresh(){
 }
 
 function stop_refresh() {
-  console.log("canceling auto reload");
+  //console.log("canceling auto reload");
   show_int.refresh="0";
   clearTimeout(timed_refresh);
 }
@@ -168,7 +168,7 @@ function toggle_refresh(){
 }
 
 function switch_gd_writers(){
-  console.log("switching");
+  //console.log("switching");
   var gdw = document.getElementById('cc_head_writers_box');
   var hdw_hid = document.getElementById('cc_head_writers_hider');
 
@@ -218,7 +218,7 @@ function switch_tab(tab_display, tab_hide){
       }
     }
   }else{
-    console.log(display+" not found to display");
+    //console.log(display+" not found to display");
   }
 
 

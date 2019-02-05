@@ -405,7 +405,7 @@ function parseCClog(){
   var add_regexp_basic = / Output stage to LDM replication started, /
   var add_match_basic = add_regexp_basic.exec(document.body.firstChild.textContent);
   if(add_match_basic){
-    console.log("log of Automated Data Distribution identified");
+    //console.log("log of Automated Data Distribution identified");
     add_parsing = true;
   }
 
@@ -477,7 +477,7 @@ if(ruby_csvdown_match){
 if(!ruby_parsing && !add_parsing){
     //general parsing for CloudConnect
     //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
-    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|(.*(Final) tracking Log for phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10$13$12'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
+    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} (\[(([A-Za-z0-9_]+)_([0-9]+)|main)?\] )?\[([A-Za-z]+)\]:)( request_id=[^ ]+)((.*Starting up all nodes in phase \[([0-9]+)\].*)|(.*(Final) tracking Log for phase \[([0-9]+)\].*)|.+)/gm, "</div><a name='ph_$5_$10$13$12'><div class='logline $4 $6'>$1<span class='request_id'>$7</span>$8");
 }else if(add_parsing){
 graph_name = "Automated Data Distribution";
 //console.log("transforming ADD");
@@ -501,7 +501,7 @@ graph_name = "Automated Data Distribution";
   }else{
     //generic ruby parsing
     //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
-    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");
+    document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");
   }
 
 }
@@ -572,7 +572,7 @@ var first_error = document.querySelector('.ERROR');
     }
 
 
-
+//console.log(last_line);
 //console.log(match_last);
 //console.log(first_error);
 
@@ -993,7 +993,7 @@ var gdw_upload_match = original_source.match(gdw_upload_regexp);
 //Dataset with id: dataset.inventory_items will be loaded in incremental mode.
 
 
-var gdw_rows_regexp =/Finished reading from OutputStage and writing data.\nFile: .*\.csv\n(UPSERT )?[Qq]uery: .*\. Processed .*/g
+var gdw_rows_regexp =/Finished reading from OutputStage and writing data.\nFile: .*\.csv\n([A-Z]{6} )?[Qq]uery: .*\. Processed .*/g
 var gdw_rows_match = original_source.match(gdw_rows_regexp);
 
 //console.log(gdw_rows_match);
@@ -1021,9 +1021,12 @@ var gdw_length = (gdw_upload_match.length);
 //console.log("we have "+gdw_length+" writers");
 
 
-var gdw_upload_line_regexp = /Dataset with id: ([^ ]*) (w[^ ]*) be loaded ((in [a-z]+ mode)|((.*))).*/
+var gdw_upload_line_regexp = /Dataset with id: ([^ ]*) (w[^ ]*) be loaded ((in [a-z]+ mode)|(the delete)|((.*))).*/
 
-var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n(UPSERT )?[Qq]uery: SELECT .+ FROM "[^"]+"\."[^"]+"( WHERE x__client_id='([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
+//var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n(UPSERT )?[Qq]uery: SELECT .+ FROM "[^"]+"\."[^"]+"( WHERE x__client_id='([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
+var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n([A-Z]{6} )?[Qq]uery: SELECT .+ FROM "[^"]+" ?\. ?"[^"]+"( WHERE x__client_id ?= ?'([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
+
+
 
 var gdw_sli_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[INFO\]: ETL pull ([^ ]+) (in ([0-9,]+) milliseconds)?.*/
 
@@ -1082,7 +1085,11 @@ for (var i = 0; i < gdw_length; i++) {
 //console.log(gdw_datasets);
 
   }
+}
 
+
+var gdw_rows_length = gdw_rows_match.length;
+for (var i = 0; i < gdw_rows_length; i++) {
 
   if(gdw_rows_match!== null && gdw_rows_match!== undefined  && gdw_rows_match[i] !== null && gdw_rows_match[i]!== undefined){
     gdw_rows_line_match = gdw_rows_match[i].match(gdw_rows_line_regexp);
@@ -1090,14 +1097,34 @@ for (var i = 0; i < gdw_length; i++) {
 
 //console.log(gdw_rows_line_match);
 
-  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null &&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])){
+//  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null &&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])){
+
+  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null ){
     //we've never seen this writer before
 
 //console.log(gdw_rows_line_match);
 
     var current_dataset = {};
-    var bytes = Number(gdw_rows_line_match[6]);
-    var rows = Number(gdw_rows_line_match[7]);
+
+    var has_upsert = -1;
+    var has_delete = -1;
+    var bytes = -1;
+    var rows = -1;
+    var delete_bytes = -1;
+    var delete_rows = -1;
+
+
+    if(gdw_rows_line_match[2]===undefined || gdw_rows_line_match[2]=="UPSERT " ){
+      has_upsert = true;
+      bytes = Number(gdw_rows_line_match[6]);
+      rows = Number(gdw_rows_line_match[7]);
+    }
+    if(gdw_rows_line_match[2]=="DELETE " ){
+      delete_bytes = Number(gdw_rows_line_match[6]);
+      delete_rows = Number(gdw_rows_line_match[7]);
+      has_delete = true;
+    }
+
     var columns = Number(gdw_rows_line_match[8]);
     var extract_duration_ms = Number(gdw_rows_line_match[10]);
     var client_discriminator = false;
@@ -1111,25 +1138,35 @@ for (var i = 0; i < gdw_length; i++) {
     if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
       //we've seen this dataset before and have proper load mode for it
       current_dataset = gdw_datasets[gdw_rows_line_match[1]];
-      current_dataset.rows = rows;
+      if(rows!=-1) current_dataset.rows = rows;
       current_dataset.columns = columns;
       current_dataset.extract_duration_ms = extract_duration_ms;
       current_dataset.client_discriminator = client_discriminator;
       current_dataset.client_id = client_id;
-      current_dataset.bytes = bytes;
+      if(bytes!=-1) current_dataset.bytes = bytes;
+      if(delete_bytes!=-1) current_dataset.delete_bytes = delete_bytes;
+      if(delete_rows!=-1) current_dataset.delete_rows = delete_rows;
+      if(has_upsert!=-1) current_dataset.has_upsert = has_upsert;
+      if(has_delete!=-1) current_dataset.has_delete = has_delete;
 
+//console.log("updating "+current_dataset.name);
     }else{
       //we've not seen this dataset before - should not happen though but if, we create it
       current_dataset.name = gdw_rows_line_match[1];
       current_dataset.mode = "?";
-      current_dataset.rows = rows;
+      if(rows!=-1) current_dataset.rows = rows;
       current_dataset.columns = columns;
       current_dataset.extract_duration_ms = extract_duration_ms;
       current_dataset.client_discriminator = client_discriminator;
       current_dataset.client_id = client_id;
-      current_dataset.bytes = bytes;
+      if(bytes!=-1) current_dataset.bytes = bytes;
+      if(delete_rows!=-1) current_dataset.delete_rows = delete_rows;
+      if(delete_bytes!=-1) current_dataset.delete_bytes = delete_bytes;
+      if(has_upsert!=-1) current_dataset.has_upsert = has_upsert;
+      if(has_delete!=-1) current_dataset.has_delete = has_delete;
 
       gdw_datasets[gdw_rows_line_match[1]]=current_dataset;
+//console.log("creating "+current_dataset.name);
     }
 
     //check if it is max and add to total rows
@@ -1137,13 +1174,25 @@ for (var i = 0; i < gdw_length; i++) {
     if(rows>gdw_datasets['*max*'].rows){
       gdw_datasets['*max*'].rows = rows;
     }
+    if(delete_rows>gdw_datasets['*max*'].rows){
+      gdw_datasets['*max*'].rows = delete_rows;
+    }    
     if(bytes>gdw_datasets['*max*'].bytes){
       gdw_datasets['*max*'].bytes = bytes;
     }
+    if(delete_bytes>gdw_datasets['*max*'].bytes){
+      gdw_datasets['*max*'].bytes = delete_bytes;
+    }
 
-    gdw_datasets['*total*'].rows += rows;
+
+    if(rows!=-1) gdw_datasets['*total*'].rows += rows;
+    if(delete_rows!=-1) gdw_datasets['*total*'].rows += delete_rows;
+    
+    if(bytes!=-1) gdw_datasets['*total*'].bytes += bytes;
+    if(delete_bytes!=-1) gdw_datasets['*total*'].bytes += delete_bytes;
+
     gdw_datasets['*total*'].extract_duration_ms += extract_duration_ms;
-    gdw_datasets['*total*'].bytes += bytes;
+    
 
 
     gdw_rows[gdw_rows_line_match[1]]=rows;
@@ -1182,7 +1231,7 @@ for (var i = 0; i < gdw_length; i++) {
 //console.log("added SLI start");
 //console.log(last_dataset);
 
-        }else if(gdw_sli_start_line_match[2]=="finished"){
+        }else if(gdw_sli_start_line_match[2]=="finished" || gdw_sli_start_line_match[2]=="processed"){
           gdw_current_sli.finish_date = Date.parse(gdw_sli_start_line_match[1]);
           gdw_current_sli.duration = gdw_current_sli.finish_date - gdw_current_sli.start_date;
 
@@ -1202,6 +1251,7 @@ for (var i = 0; i < gdw_length; i++) {
 
 //console.log(gdw_sli);
 //console.log(gdw_rows);
+
 //console.log(gdw_datasets);
 
 var text="\
@@ -1215,6 +1265,7 @@ var last_key;
 
 for (var key in gdw_datasets) {
   if (gdw_datasets.hasOwnProperty(key) && key!='*total*' && key!='*max*') {
+
       var sli_duration = null;
       if(gdw_datasets[key].sli) sli_duration=gdw_datasets[key].sli.duration;
       if(gdw_datasets[key].extract_duration_ms) extract_duration_ms = gdw_datasets[key].extract_duration_ms;
@@ -1239,19 +1290,18 @@ for (var key in gdw_datasets) {
           text=text+"\rINCREMENTAL LOAD";
         break;
         case "X":
-          text=text+"\rNOT LOADED!\r"+gdw_datasets[key].nonload_reason;
+          text=text+"\rNOT LOADED!\rno new data identified";
         break;                
       }
 
       text = text+"'>";
 
-      if(gdw_datasets[key].mode!='X'){
+
           if( gdw_datasets[key].client_discriminator){
             text=text+"<span class='btn btn_id'>id</span>";
           }else{
             text=text+"<span class='btn btn_all'>all</span>";
           }
-      }
 
       switch(gdw_datasets[key].mode){
         case "F":
@@ -1262,7 +1312,7 @@ for (var key in gdw_datasets) {
         break;
         case "X":
 
-          text=text+"<span class='btn btn_x'>N/A</span>";
+          text=text+"<span class='btn btn_x'>N</span>";
         break;                
       }
 
@@ -1291,6 +1341,71 @@ for (var key in gdw_datasets) {
       text=text+"</td>";
 
       text=text+"</tr>\n";
+
+      /*and repeat for delete rows*/
+      if(gdw_datasets[key].has_delete && gdw_datasets[key].delete_rows>0){
+
+        text=text+"<tr class='cc_head_writer'><td class='cc_writer_name add_delete' title='"+key+" DELETE";
+
+      if(gdw_datasets[key].mode!='X'){
+        if(gdw_datasets[key].client_discriminator){
+          text=text+"\rCLIENT_ID = "+gdw_datasets[key].client_id;
+        }else{
+          text=text+"\rNO CLIENT DISCRIMINATOR!";
+        }
+      }
+
+      switch(gdw_datasets[key].mode){
+        case "I":
+          text=text+"\rINCREMENTAL DELETE";
+        break;
+        case "X":
+          text=text+"\rNOT LOADED!\r"+gdw_datasets[key].nonload_reason;
+        break;                
+      }
+
+      text = text+"'>";
+
+      switch(gdw_datasets[key].mode){
+        case "F":
+        case "I":
+          text=text+"<span class='btn'>&nbsp; &nbsp;</span><span class='btn btn_d'>D</span>";
+        break;
+        case "X":
+          text=text+"<span class='btn btn_x'>N/A</span>";
+        break;                
+      }
+
+
+
+      var short_name_length = 26;
+
+      var short_name = gdw_datasets[key].name.substring(0,short_name_length)+(gdw_datasets[key].name.length>short_name_length ? "»" : "");
+      //text=text+" "+short_name;
+      text=text+" &nbsp; &nbsp; (delete)";
+      text=text+"</td>";
+     
+      text=text+"<td class='cc_writer_rows add_delete'>"+numberWithCommas1(gdw_datasets[key].delete_rows,0)+"</td><td class='cc_writer_size add_delete' ";
+      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',true)+"'>";
+      text=text+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',false)+"</td>";
+
+      //text=text+formatTimeCompact(Math.round(gdw_datasets[key].extract_duration_ms/1000))+"</td>";
+
+
+
+        text=text+"<td class='cc_writer_sli'>&nbsp;</td>";
+
+      text=text+"<td class='cc_writer_bar add_delete_bar' title='"+gdw_datasets[key].name+"&#10;"+(!isNaN(gdw_datasets[key].delete_rows) ? Math.round(gdw_datasets[key].delete_rows/gdw_datasets['*total*'].rows*100) : "N/A")+"% rows\r"+(!isNaN(gdw_datasets[key].delete_bytes) ? Math.round(gdw_datasets[key].delete_bytes/gdw_datasets['*total*'].bytes*100) : "N/A")+"% of volume'>";
+      text=text+"<div class='cc_writer_bar_rows cc_writer_bar_rows_delete' style=\"width: "+(!isNaN(gdw_datasets[key].delete_rows) ? Math.round(gdw_datasets[key].delete_rows/gdw_datasets['*max*'].rows*30) : "0")+"px\"> </div>";
+      text=text+"<div class='cc_writer_bar_sizes cc_writer_sizes_delete' style=\"width: "+(!isNaN(gdw_datasets[key].delete_bytes) ? Math.round(gdw_datasets[key].delete_bytes/gdw_datasets['*max*'].bytes*30) : "0")+"px\"> </div>";
+      text=text+"</td>";
+
+      text=text+"</tr>\n";
+
+
+      }
+
+
       cc_total_count++;
       last_key = key;
 
@@ -1618,10 +1733,10 @@ document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
 //var gdp_start_regexp =/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/g
-var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\] \[INFO\]: request_id=[^ ]+ Starting up all nodes in phase \[[0-9]+\]/g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\] \[INFO\]: request_id=[^ ]+ Starting up all nodes in phase \[[0-9]+\]/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 
-var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\].*request_id=[^ ]+ Execution of phase \[[0-9]+\] [a-zA-Z ]*finished.*/g
+var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[WatchDog_[0-9]+\].*request_id=[^ ]+ Execution of phase \[[0-9]+\] [a-zA-Z ]*finished.*/g
 var gdp_end_match = original_source.match(gdp_end_regexp);
 
 
@@ -1630,7 +1745,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
   var gdp_length = gdp_start_match.length;
 
   //console.log("we have "+gdp_length+" starts of phases");
-  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Starting up all nodes in phase \[([0-9]+)\].*/
   var gdp_start_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_start_match[i] !== null && gdp_start_match[i]!== undefined) {
@@ -1660,7 +1775,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 if(gdp_end_match!== null && gdp_end_match !== undefined ){
   var gdp_length = gdp_end_match.length;
   //console.log("we have "+gdp_length+" ends of phases");
-  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Execution of phase \[([0-9]+)\] ([a-zA-Z ]*)finished.*/
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[WatchDog_([0-9]+)\].*request_id=[^ ]+ Execution of phase \[([0-9]+)\] ([a-zA-Z ]*)finished.*/
   var gdp_end_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_end_match[i] !== null && gdp_end_match[i]!== undefined) {
@@ -1842,22 +1957,22 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
+var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
 var gdp_plan_match = original_source.match(gdp_plan_regexp);
 //console.log(gdp_plan_match);
 
 //var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql/g
-var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql.*/g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql.*/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 //console.log(gdp_start_match);
 
 //var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* took: [0-9\.]*/g
-var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* (\([^\)]*\) )?took: [0-9\.]*/g
+var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* (\([^\)]*\) )?took: [0-9\.]*/g
 var gdp_end_match = original_source.match(gdp_end_regexp);
 //console.log(gdp_end_match);
 
 
-var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file .* has failed.*/g
+var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file .* has failed.*/g
 var gdp_err_match = original_source.match(gdp_err_regexp);
 //console.log(gdp_err_match);
 
@@ -1867,7 +1982,7 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
   var gdp_length = gdp_plan_match.length;
 
 //  console.log("we have "+gdp_length+" scripts in execution plan");
-  var gdp_plan_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[INFO\]: request_id=[^ ]+    File: (([0-9]*)_.*\.([ip]?)sql)/
+  var gdp_plan_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[INFO\]: request_id=[^ ]+    File: (([0-9]*)_.*\.([ip]?)sql)/
   var gdp_plan_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_plan_match[i] !== null && gdp_plan_match[i]!== undefined) {
@@ -1913,7 +2028,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
 
 //  console.log("we have "+gdp_length+" starts of phases");
-  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: (([0-9]*)_.*\.[ip]?sql)( \(key => ([^,\)]*)[,\)])?/
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: (([0-9]*)_.*\.[ip]?sql)( \(key => ([^,\)]*)[,\)])?/
   // (key => out_event2018-02-28,anchor_table_name => out_event,partition_key => 2018-02-28)
 
   var gdp_start_line_match;
@@ -2027,7 +2142,7 @@ if(gdp_end_match!== null && gdp_end_match !== undefined ){
   var gdp_length = gdp_end_match.length;
 
   //console.log("we have "+gdp_length+" ends of phases");
-  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command (([0-9]*)_.*sql)( \(key => ([^,\)]*)[,\)].*)? took: ([0-9\.]*)/
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command (([0-9]*)_.*sql)( \(key => ([^,\)]*)[,\)].*)? took: ([0-9\.]*)/
   var gdp_end_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_end_match[i] !== null && gdp_end_match[i]!== undefined) {
@@ -2075,7 +2190,7 @@ if(gdp_err_match!== null && gdp_err_match !== undefined ){
 //2017-12-08 16:42:59.480+0000 [main] [WARN]: request_id=wCfGtAGT4jHPg9fm Exception: The execution of file /mnt/execution/200_datasets_all.sql has failed. Message Java::JavaSql::SQLException: SQLValidation failure: extraneous input ';' expecting {ABORT, ALTER, AT, BEGIN, COMMENT, COMMIT, COPY, CREATE, DELETE, DROP, END, EXPLAIN, INSERT, MERGE, PROFILE, RELEASE, ROLLBACK, SAVEPOINT, SELECT, SET, SHOW, START, TRUNCATE, UPDATE, WITH, '('} line: 5 position: 1
 
 //  console.log("we have "+gdp_length+" errors");
-  var gdp_err_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file (\/mnt\/execution\/)?(([0-9]*)_.*sql) has failed.*/
+  var gdp_err_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file (\/mnt\/execution\/)?(([0-9]*)_.*sql) has failed.*/
   var gdp_err_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_err_match[i] !== null && gdp_err_match[i]!== undefined) {

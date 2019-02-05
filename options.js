@@ -103,6 +103,60 @@ function default_icon_changed(){
   }
  }
 
+ function add_wl_domain_dynamic(){
+
+chrome.permissions.getAll(function(permissions){
+  console.log(permissions)}
+  );
+
+chrome.permissions.remove( {"origins":['https://*/*']});
+
+
+
+
+
+  var select = document.getElementById("wl_domains");
+  var text = document.getElementById("add_wl_domain");
+  var exists = false;
+  var sites = [];
+  if(text.value!=''){
+    for(i=0; i<select.length; i++){
+      sites.push("https://"+select[i].value+"/");
+      if(select[i].value==text.value){
+        exists=true;
+        alert("This value is already there.");
+
+        continue;
+        //break;
+      }
+    }
+    if(!exists){
+        chrome.permissions.request({
+          origins: sites
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            var opt = document.createElement('option');
+            opt.value = text.value;
+            opt.innerHTML = text.value;
+            select.appendChild(opt);
+            text.value='';
+          } else {
+            console.log("Permission to access '"+sites+"' not granted.");
+          }
+        });
+
+
+
+    }
+  }
+ }
+
+
+
+      
+
+
  function read_wl_domains(){
   var select = document.getElementById("wl_domains");
   //remove all first

@@ -573,6 +573,10 @@ tr.cc_head_writer_header td.cc_writer_name{
 	text-align: right;
 }
 
+.add_delete {
+	color: #666;
+}
+
 
 /*
 
@@ -889,6 +893,10 @@ margin-right: 50px;
 	padding-bottom: 2px
 }
 
+.add_delete_bar{
+	opacity: 0.4;
+}
+
 
 .btn {
   -webkit-border-radius: 14;
@@ -927,7 +935,19 @@ margin-right: 50px;
   padding-right: 4px;
 }
 
-.btn_x {
+.btn_d {
+  background: #990099;
+  background-image: -webkit-linear-gradient(top, #990099, #660066);
+  background-image: -moz-linear-gradient(top, #990099, #660066);
+  background-image: -ms-linear-gradient(top, #990099, #660066);
+  background-image: -o-linear-gradient(top, #990099, #660066);
+  background-image: linear-gradient(to bottom, #990099, #660066);
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 1px;
+}
+
+.btn_xx {
   background: #d93434;
   background-image: -webkit-linear-gradient(top, #d93434, #b82c2c);
   background-image: -moz-linear-gradient(top, #d93434, #b82c2c);
@@ -936,6 +956,17 @@ margin-right: 50px;
   background-image: linear-gradient(to bottom, #d93434, #b82c2c);
   padding-left: 5px;
   padding-right: 5px;  
+}
+
+.btn_x {
+  background: #909090;
+  background-image: -webkit-linear-gradient(top, #909090, #707070);
+  background-image: -moz-linear-gradient(top, #909090, #707070);
+  background-image: -ms-linear-gradient(top, #909090, #707070);
+  background-image: -o-linear-gradient(top, #909090, #707070);
+  background-image: linear-gradient(to bottom, #909090, #707070);
+  padding-left: 2px;
+  padding-right: 2px;  
 }
 
 .btn_all{

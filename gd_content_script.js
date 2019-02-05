@@ -814,7 +814,8 @@ chrome.storage.local.get("wl_domains", function(items)
                 url_matched = true;
               }else{
                 /*if exact match is not found, try regexp for each record in wl list*/              
-                var domainsLength = items.wl_domains.length;
+                var domainsLength = 0;
+                if(items.wl_domains!==undefined) domainsLength = items.wl_domains.length;
                 for (var i = 0; i < domainsLength; i++) {
                   //console.log("testing: "+ items.wl_domains[i]);
                   try{
