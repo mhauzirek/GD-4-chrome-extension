@@ -899,6 +899,7 @@ margin-right: 50px;
 
 
 .btn {
+  -webkit-user-select: none;
   -webkit-border-radius: 14;
   -moz-border-radius: 14;
   border-radius: 16px;
@@ -911,6 +912,10 @@ margin-right: 50px;
   margin-left: 0px;
   margin-right: 1px;
   text-decoration: none;
+}
+
+.btn_last {
+	margin-right: 5px;
 }
 
 .btn_f {
@@ -995,4 +1000,13 @@ margin-right: 50px;
   background-image: -ms-linear-gradient(top, #919191, #4d4d4d);
   background-image: -o-linear-gradient(top, #919191, #4d4d4d);
   background-image: linear-gradient(to bottom, #919191, #4d4d4d);
+}
+
+.inviscopy { 
+  display: inline-block !important;
+  width: 0px !important;
+  padding-left: 1px !important;
+  border: none !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
 }

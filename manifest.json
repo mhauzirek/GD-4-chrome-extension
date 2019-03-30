@@ -1,6 +1,6 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9026",
+  "version": "0.9027",
   "icons" : {
     "48" : "guy48_beta.png",
     "96" : "guy96_beta.png",
@@ -29,11 +29,19 @@
       "js": ["gd_content_script.js"],
       "css":["gd_content.css"]
     },
-      {
+    {
       "matches": ["https://*/*/log*"],
       "js": ["gd_cc_log_script.js","cc_log_switching.js"],
       "css":["gd_cc_log.css"]
-    }      
+    },
+    {
+      "matches": [
+                  "https://*/gdc/md/*/obj/*",
+                  "https://*/gdc/md/*/usedby2/*",
+                  "https://*/gdc/md/*/using2/*"
+      ],
+      "js": ["identifiers.js"]
+    }
   ],
 
 
@@ -41,14 +49,12 @@
     "https://*/*",
     "tabs",
     "storage",
-    "notifications"
+    "notifications",
+    
+    "contextMenus"
   ],
 
-  "optional_permissions" : [
-    "https://*/*"
-  ],
-
-  "web_accessible_resources": ["cc_log_switching.js"],
+  "web_accessible_resources": ["cc_log_switching.js","identifiers_inject.js"],
 
   "manifest_version": 2
 }

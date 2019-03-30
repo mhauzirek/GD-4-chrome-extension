@@ -75,6 +75,13 @@ overflow: hidden;
     margin-bottom: 10px
 }
 
+.gd4chrome_tooltip{
+    border: 1;
+    width: 500px;
+    margin-bottom: 10px
+}
+
+
 .gd4chrome_col1 {
     margin-bottom: 2px;
     margin-right: 10px;
@@ -185,3 +192,57 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     left: -5px;
   }
 
+
+#gd4chrome_tooltip{
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgb(0, 0, 0);
+    background-image: none;
+    background-origin: padding-box;
+    background-size: auto;
+    x_border-bottom-left-radius: 15px;
+    x_border-bottom-right-radius: 15px;
+    x_border-top-left-radius: 15px;
+    x_border-top-right-radius: 15px;
+    color: rgb(255, 255, 255);
+    display: block;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    outline-color: rgb(255, 255, 255);
+    outline-style: none;
+    outline-width: 0px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+
+    width:500px;
+    display:block;
+    position:fixed! important; 
+    z-index:22000;
+    top:70px;
+    right:20px;
+
+    padding: 5px 5px 5px 5px;
+    color: white;
+    background: #333;
+    background: rgb(0,0,0);
+    border-radius: 5px;
+    font-size: 110%;
+  }
+
+   .gd4chrome_tooltip_line {
+
+    border-collapse: separate;
+    color: rgb(170, 170, 170);
+    display: inline;
+    font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-right: 10px;    
+    margin-bottom: 2px;
+
+    display: block;
+    padding-bottom: 2px;
+    background: auto !important;
+}

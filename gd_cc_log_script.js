@@ -154,15 +154,21 @@ function formatTimeCompact(x){
 
 
 
-function numberWithCommas(x) {
+function numberWithCommas(x,noselect) {
+    if(!noselect){noselect = false;}
     var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, (noselect ? "<span style=\"user-select: none;\">,</span>" : ",") );
     return parts.join(".");
 }
 
 
-function numberWithCommas1(x,decimals) {
+function numberWithCommas1(x,decimals, noselect) {
+  if(!noselect){noselect = false;}
+
   var DecimalSeparator = Number("1.2").toLocaleString().substr(1,1);
+  var GroupSeparator = Number("1000").toLocaleString().substr(1,1);
+
+
   if(isNaN(x)){
     return "N/A";
   }
@@ -172,11 +178,18 @@ function numberWithCommas1(x,decimals) {
   var intPart = arParts[0];
   var decPart = (arParts.length > 1 ? arParts[1] : '');
   decPart = decimals>0 ? DecimalSeparator+(decPart + '0000000000').substr(0,decimals) : "";
+
+  
+  GroupSeparator = GroupSeparator.replace(".","\\.");
+  var regexp = new RegExp(GroupSeparator, 'g')
+
+  intPart = intPart.replace(regexp, (noselect ? "<span style=\"user-select: none;\">"+GroupSeparator+"</span>" : GroupSeparator));
   return intPart + decPart;
 }
 
 
-function sizeWithCommas(x,decimals,unit,show_unit){
+function sizeWithCommas(x,decimals,unit,show_unit,noselect){
+  noselect = typeof noselect !== 'undefined' ? noselect : false;
   decimals = typeof decimals !== 'undefined' ? decimals : 0;
   show_unit = typeof show_unit !== 'undefined' ? show_unit : true;  
   unit = typeof unit !== 'undefined' ? unit : 'auto';
@@ -187,19 +200,20 @@ function sizeWithCommas(x,decimals,unit,show_unit){
   }
  
   if((x/1000/1000/1000>1000 && unit=='auto') || unit=='TB'){
-    return numberWithCommas1(Math.round(x/1000/1000/1000/1000*factor)/factor,decimals)+(show_unit ? " TB" : "");
+    return numberWithCommas1(Math.round(x/1000/1000/1000/1000*factor)/factor,decimals,noselect)+(show_unit ? " TB" : "");
   }else if((x/1000/1000>1000 && unit=='auto') || unit=='GB'){
-    return numberWithCommas1(Math.round(x/1000/1000/1000*factor)/factor,decimals)+(show_unit ? " GB" : "");
+    return numberWithCommas1(Math.round(x/1000/1000/1000*factor)/factor,decimals,noselect)+(show_unit ? " GB" : "");
   }else if((x/1000>1000 && unit=='auto') || unit=='MB'){
-    return numberWithCommas1(Math.round(x/1000/1000*factor)/factor,decimals)+(show_unit ? " MB" : "");
+    return numberWithCommas1(Math.round(x/1000/1000*factor)/factor,decimals,noselect)+(show_unit ? " MB" : "");
   }else if((x/1000>1 && unit=='auto') || unit=='KB'){
-    return numberWithCommas1(Math.round(x/1000*factor)/factor,decimals)+(show_unit ? " KB" : "");
+    return numberWithCommas1(Math.round(x/1000*factor)/factor,decimals,noselect)+(show_unit ? " KB" : "");
   }else{
-    return numberWithCommas1(Math.round(x*factor)/factor,decimals)+(show_unit ? " B" : "");
+    return numberWithCommas1(Math.round(x*factor)/factor,decimals,noselect)+(show_unit ? " B" : "");
   }
 }
 
-function sizeWithCommasIec(x,decimals,unit,show_unit){
+function sizeWithCommasIec(x,decimals,unit,show_unit,noselect){
+  noselect = typeof noselect !== 'undefined' ? noselect : false;
   decimals = typeof decimals !== 'undefined' ? decimals : 0;
   show_unit = typeof show_unit !== 'undefined' ? show_unit : true;  
   unit = typeof unit !== 'undefined' ? unit : 'auto';
@@ -210,33 +224,34 @@ function sizeWithCommasIec(x,decimals,unit,show_unit){
   }
  
   if((x/1024/1024/1024>1024 && unit=='auto') || unit=='TiB'){
-    return numberWithCommas1(Math.round(x/1024/1024/1024/1024*factor)/factor,decimals)+(show_unit ? " TiB" : "");
+    return numberWithCommas1(Math.round(x/1024/1024/1024/1024*factor)/factor,decimals,noselect)+(show_unit ? " TiB" : "");
   }else if((x/1024/1024>1024 && unit=='auto') || unit=='GiB'){
-    return numberWithCommas1(Math.round(x/1024/1024/1024*factor)/factor,decimals)+(show_unit ? " GiB" : "");
+    return numberWithCommas1(Math.round(x/1024/1024/1024*factor)/factor,decimals,noselect)+(show_unit ? " GiB" : "");
   }else if((x/1000>1000 && unit=='auto') || unit=='MiB'){
-    return numberWithCommas1(Math.round(x/1024/1024*factor)/factor,decimals)+(show_unit ? " MiB" : "");
+    return numberWithCommas1(Math.round(x/1024/1024*factor)/factor,decimals,noselect)+(show_unit ? " MiB" : "");
   }else if((x/1000>1 && unit=='auto') || unit=='KiB'){
-    return numberWithCommas1(Math.round(x/1024*factor)/factor,decimals)+(show_unit ? " KiB" : "");
+    return numberWithCommas1(Math.round(x/1024*factor)/factor,decimals,noselect)+(show_unit ? " KiB" : "");
   }else{
-    return numberWithCommas1(Math.round(x*factor)/factor,decimals)+(show_unit ? " B" : "");
+    return numberWithCommas1(Math.round(x*factor)/factor,decimals,noselect)+(show_unit ? " B" : "");
   }
 }
 
 
 function rowsWithCommas(x,decimals){
   decimals = typeof decimals !== 'undefined' ? decimals : 0;
+  noselect = typeof noselect !== 'undefined' ? noselect : false;
   var factor = Math.pow(10,decimals);
   if(x/1000/1000>1000){
     //B rows
-    return numberWithCommas(Math.round(x/1000/1000/1000*factor)/factor)+" B";
+    return numberWithCommas(Math.round(x/1000/1000/1000*factor)/factor,noselect)+" B";
   }else if(x/1000>1000){
     //M rows
-    return numberWithCommas(Math.round(x/1000/1000*factor)/factor)+" M";
+    return numberWithCommas(Math.round(x/1000/1000*factor)/factor,noselect)+" M";
   }else if(x/1000>1){
     //K rows
-    return numberWithCommas(Math.round(x/1000))+" K";
+    return numberWithCommas(Math.round(x/1000),noselect)+" K";
   }else{
-    return numberWithCommas(Math.round(x))+"";
+    return numberWithCommas(Math.round(x),noselect)+"";
   }
 }
 
@@ -373,6 +388,7 @@ function parseCClog(){
   var run_hour=null;
   var run_min=null;
   var run_sec=null;
+  var component_name=null;
 
   var graph_run_string = "?";
 
@@ -411,11 +427,21 @@ function parseCClog(){
 
 
 //console.log("looking for component execution");
-  var comp_regexp_basic = /status=SCRIPT_EXEC component=/
+  var comp_regexp_basic = /status=SCRIPT_EXEC component=([^ ]*)/
   var comp_match_basic = comp_regexp_basic.exec(document.body.firstChild.textContent);
   if(comp_match_basic){
-    console.log("log of Component identified");
+    //console.log("log of Component identified");
+    //console.log(comp_match_basic);
+    ruby_parsing = true;
     component_parsing = true;
+    component_name = comp_match_basic[1];
+
+    switch(component_name){
+      case "gdc-etl-sql-executor":
+        ruby_specific = "SQL EXECUTOR BRICK";
+      break;
+
+    }
   }
 
 
@@ -424,7 +450,7 @@ function parseCClog(){
   var ruby_regexp_basic = / action=jvmscript /
   var ruby_match_basic = ruby_regexp_basic.exec(document.body.firstChild.textContent);
   if(ruby_match_basic){
-    console.log("log of Ruby script identified");
+    //console.log("log of Ruby script identified");
     ruby_parsing = true;
   }
 /*------------------*/
@@ -470,8 +496,9 @@ if(ruby_csvdown_match){
 
 //console.log(add_parsing);
 //console.log(ruby_parsing);
-
-
+//console.log(ruby_parsing);
+//console.log(component_parsing);
+//console.log(ruby_specific);
 
 /*standard CloudConnect*/
 if(!ruby_parsing && !add_parsing){
@@ -488,12 +515,17 @@ graph_name = "Automated Data Distribution";
 
 }else if(ruby_parsing){
   //ruby specific parsing for SQL executor
-  if(ruby_parsing && ruby_specific=="SQL EXECUTOR BRICK"){
+  if(ruby_parsing && ruby_specific=="SQL EXECUTOR BRICK" && !component_parsing){
   	graph_name = "SQL Executor";
     document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");      
+
+
+    //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)): ([^\]]*))\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10");      
+
   }else if(ruby_parsing && component_parsing) {
     //generic ruby parsing
     //document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[(([A-Za-z0-9_]+)_[0-9]+|main)?\] \[([A-Za-z]+)\]:)( request_id=[^ ]+)(.+)/gm, "</div><div class='logline $3 $4'>$1<span class='request_id'>$5</span>$6");
+    graph_name = component_name;
     document.body.firstChild.innerHTML = document.body.firstChild.textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[((main)|((Ruby-[0-9]+-Thread-[0-9]+)[^\]]*))\] \[([A-Za-z]+)\](.+)/gm, "</div><div class='logline $6'>$1 [$5$3] [$6]$7"); //"</div><div class='logline $8'>$2 [$4$5] [$8]:<span class='request_id'>$9</span>$10"
 
 /*																																	2018-11-18T12:29:04.632+0000 [main] [INFO]: [#6] #read('AIDAJ4BF64R3Y4JSCPEHM_gdc-ms-dev_LogMeIn-Renewal/feed/feed.txt', 'source/feed.txt') */
@@ -624,7 +656,7 @@ var first_error = document.querySelector('.ERROR');
       run_from = Date.parse(match[1]);
 
       request_id = match[3];
-      graph_name = ruby_specific || match[6] || match[10] || (add_parsing==true ? "Automated Data Distribution" : "(unknown)");
+  //graph_name = ruby_specific || match[6] || match[10] || (add_parsing==true ? "Automated Data Distribution" : "(unknown)");
       //properties = (match[4] ? match[4].split(", ") : null );
       var run_diff = (run_to-run_from)/1000;
       run_hour = Math.floor(run_diff/(60*60));
@@ -1088,7 +1120,8 @@ for (var i = 0; i < gdw_length; i++) {
 }
 
 
-var gdw_rows_length = gdw_rows_match.length;
+var gdw_rows_length = 0;
+if(gdw_rows_match) gdw_rows_length = gdw_rows_match.length;
 for (var i = 0; i < gdw_rows_length; i++) {
 
   if(gdw_rows_match!== null && gdw_rows_match!== undefined  && gdw_rows_match[i] !== null && gdw_rows_match[i]!== undefined){
@@ -1305,14 +1338,14 @@ for (var key in gdw_datasets) {
 
       switch(gdw_datasets[key].mode){
         case "F":
-          text=text+"<span class='btn btn_f'>F</span>";
+          text=text+"<span class='btn btn_f btn_last'>F</span>";
         break;
         case "I":
-          text=text+"<span class='btn btn_i'>I</span>";
+          text=text+"<span class='btn btn_i btn_last'>I</span>";
         break;
         case "X":
 
-          text=text+"<span class='btn btn_x'>N</span>";
+          text=text+"<span class='btn btn_x btn_last'>N</span>";
         break;                
       }
 
@@ -1321,18 +1354,18 @@ for (var key in gdw_datasets) {
       var short_name_length = 26;
 
       var short_name = gdw_datasets[key].name.substring(0,short_name_length)+(gdw_datasets[key].name.length>short_name_length ? "»" : "");
-      text=text+" "+short_name;
+      text=text+short_name;
       text=text+"</td>";
      
-      text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_datasets[key].rows,0)+"</td><td class='cc_writer_size' ";
-      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].bytes,0,'KiB',true)+"'>";
-      text=text+sizeWithCommasIec(gdw_datasets[key].bytes,0,'KiB',false)+"</td>";
+      text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_datasets[key].rows,0,true)+"</td><td class='cc_writer_size' ";
+      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].bytes,0,'KiB',true,false)+"'>";
+      text=text+sizeWithCommasIec(gdw_datasets[key].bytes,0,'KiB',false,true)+"</td>";
 
       //text=text+formatTimeCompact(Math.round(gdw_datasets[key].extract_duration_ms/1000))+"</td>";
 
 
 
-        text=text+"<td class='cc_writer_sli' title='Extraction time\r"+numberWithCommas1(gdw_datasets[key].extract_duration_ms,0)+" ms'>";        
+        text=text+"<td class='cc_writer_sli' title='Extraction time\r"+numberWithCommas1(gdw_datasets[key].extract_duration_ms,0,false)+" ms'>";        
         text=text+formatTimeCompact(Math.round(extract_duration_ms/1000))+"</td>";
 
       text=text+"<td class='cc_writer_bar' title='"+gdw_datasets[key].name+"&#10;"+(!isNaN(gdw_datasets[key].rows) ? Math.round(gdw_datasets[key].rows/gdw_datasets['*total*'].rows*100) : "N/A")+"% rows\r"+(!isNaN(gdw_datasets[key].bytes) ? Math.round(gdw_datasets[key].bytes/gdw_datasets['*total*'].bytes*100) : "N/A")+"% of volume'>";
@@ -1382,12 +1415,13 @@ for (var key in gdw_datasets) {
 
       var short_name = gdw_datasets[key].name.substring(0,short_name_length)+(gdw_datasets[key].name.length>short_name_length ? "»" : "");
       //text=text+" "+short_name;
-      text=text+" &nbsp; &nbsp; (delete)";
+//      text=text+" &nbsp; &nbsp; (delete)";
+      text=text+"<span class='inviscopy'>"+short_name+"</span> (delete)";      
       text=text+"</td>";
      
-      text=text+"<td class='cc_writer_rows add_delete'>"+numberWithCommas1(gdw_datasets[key].delete_rows,0)+"</td><td class='cc_writer_size add_delete' ";
-      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',true)+"'>";
-      text=text+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',false)+"</td>";
+      text=text+"<td class='cc_writer_rows add_delete'>"+numberWithCommas1(gdw_datasets[key].delete_rows,0,true)+"</td><td class='cc_writer_size add_delete' ";
+      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',true,false)+"'>";
+      text=text+sizeWithCommasIec(gdw_datasets[key].delete_bytes,0,'KiB',false,true)+"</td>";
 
       //text=text+formatTimeCompact(Math.round(gdw_datasets[key].extract_duration_ms/1000))+"</td>";
 
@@ -1634,14 +1668,14 @@ for (var key in gdw_rows) {
 
       text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+key+"'>"+gdw_datasets[key]+"</td>";
       
-      text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0)+"</td><td class='cc_writer_size' ";
-      text=text+"title='"+sizeWithCommasIec(gdw_sizes[key],0,'KiB')+"'>"+sizeWithCommasIec(gdw_sizes[key],0,'KiB',false)+"</td>";
+      text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0,true)+"</td><td class='cc_writer_size' ";
+      text=text+"title='"+sizeWithCommasIec(gdw_sizes[key],0,'KiB',true,false)+"'>"+sizeWithCommasIec(gdw_sizes[key],0,'KiB',false,true)+"</td>";
 
       if(!sli_duration){
         text=text+"<td class='cc_writer_sli_none'>&nbsp;</td>";
       }else{
         text=text+"<td class='cc_writer_sli"+(gdw_sli[key].batch ? "_batch" : "")+"' title='"+(gdw_sli[key].batch ? "batch SLI upload used!\r" : "");
-        text=text+numberWithCommas1(sli_duration,0)+" ms'>";
+        text=text+numberWithCommas1(sli_duration,0,false)+" ms'>";
         text=text+formatTimeCompact(Math.round(sli_duration/1000))+"</td>";  
       }
 
@@ -1863,7 +1897,7 @@ text=text+"<a href='#ph_"+key+"' ondblclick='"+code+"'><div class='cc_phase_bar_
       text=text+"<td class='cc_phase_duration' title='";
 
       
-      text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";  
+      text=text+numberWithCommas1(phase_duration,0,false)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";  
       text=text+"<td class='cc_phase_bar' title='"+Math.round(phase_duration/time_span*100)+"% of total runtime "+formatTime(Math.round(time_span/1000))+"'>";
       text=text+"<div class='cc_phase_bar_durations"+(phases_obj_arr[key].top_process ? "" : " cc_phase_bar_durations_NOTOP")+"' style=\"width: "+(!isNaN(phase_duration) ? Math.round(phase_duration/max_phase_duration*50) : "0")+"px\"></div>";
 
@@ -1957,22 +1991,25 @@ hider.classList.add("hider_inactive");
 document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
-var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
+//2019-03-30T20:12:14.724+0000 [main] Downloading file 00_01_ext_client_mapping.sql (AIDAIOGIF2EK45N675OP6_gdc-ms-connectors-dev_TurnTo/TurnTo/dev/sql/00_01_ext_client_mapping.sql) 
+
+//var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
+
+var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\]( \[INFO\]: request_id=[^ ]+)? Downloading file .*/g
 var gdp_plan_match = original_source.match(gdp_plan_regexp);
-//console.log(gdp_plan_match);
 
 //var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql/g
-var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql.*/g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: ([^ ]+ )Executing script: .*sql.*/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 //console.log(gdp_start_match);
 
 //var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* took: [0-9\.]*/g
-var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command [^ ]* (\([^\)]*\) )?took: [0-9\.]*/g
+var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: ([^ ]* )Command [^ ]* (\([^\)]*\) )?took: [0-9\.]*/g
 var gdp_end_match = original_source.match(gdp_end_regexp);
 //console.log(gdp_end_match);
 
 
-var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file .* has failed.*/g
+var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: ([^ ]* )Exception: The execution of file .* has failed.*/g
 var gdp_err_match = original_source.match(gdp_err_regexp);
 //console.log(gdp_err_match);
 
@@ -1982,17 +2019,17 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
   var gdp_length = gdp_plan_match.length;
 
 //  console.log("we have "+gdp_length+" scripts in execution plan");
-  var gdp_plan_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[INFO\]: request_id=[^ ]+    File: (([0-9]*)_.*\.([ip]?)sql)/
+  var gdp_plan_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] (\[INFO\]: request_id=[^ ]+ )?Downloading file (([0-9]*)_.*\.([ip]?)sql) /
   var gdp_plan_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_plan_match[i] !== null && gdp_plan_match[i]!== undefined) {
       gdp_plan_line_match = gdp_plan_match[i].match(gdp_plan_line_regexp);
     }
-    var phase_name = gdp_plan_line_match[2];
-    var phase_id = gdp_plan_line_match[2];
-    var phase_step = gdp_plan_line_match[3];
+    var phase_name = gdp_plan_line_match[3];
+    var phase_id = gdp_plan_line_match[3];
+    var phase_step = gdp_plan_line_match[4];
     var iterator = false;
-    if(gdp_plan_line_match[4] && gdp_plan_line_match[4]=='i') iterator = true;
+    if(gdp_plan_line_match[5] && gdp_plan_line_match[5]=='i') iterator = true;
 
 //console.log(gdp_plan_line_match);
 
@@ -2002,7 +2039,7 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
 
     if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
       //we've never seen this phase_step yet create it
-      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_plan_line_match[3], phase_id: gdp_plan_line_match[3], status: "PLANNED", end_time: null, duration: null, start_time: null};
+      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_plan_line_match[4], phase_id: gdp_plan_line_match[4], status: "PLANNED", end_time: null, duration: null, start_time: null};
       //unfinished_phases++;
       //phases_count++;
 //      console.log("adding new group "+phase_step);
@@ -2010,7 +2047,7 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
       groups_count++
     }
 
-    var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_plan_line_match[3], phase_id: gdp_plan_line_match[2], status: "PLANNED", end_time: null, duration: null, start_time: null, iterator: iterator};
+    var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_plan_line_match[4], phase_id: gdp_plan_line_match[3], status: "PLANNED", end_time: null, duration: null, start_time: null, iterator: iterator};
      if(!iterator) unfinished_phases++;
     phases_count++;
     
@@ -2028,26 +2065,29 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
 
 //  console.log("we have "+gdp_length+" starts of phases");
-  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: (([0-9]*)_.*\.[ip]?sql)( \(key => ([^,\)]*)[,\)])?/
-  // (key => out_event2018-02-28,anchor_table_name => out_event,partition_key => 2018-02-28)
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: ([^ ]* )Executing script: (([0-9]*)_.*\.[ip]?sql)( \(key => ([^,\)]*)[,\)])?/
+
+//  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: (([0-9]*)_.*\.[ip]?sql)( \(key => ([^,\)]*)[,\)])?/
+
 
   var gdp_start_line_match;
   for (var i = 0; i < gdp_length; i++) {
+      //console.log("checking line "+i);
     if(gdp_start_match[i] !== null && gdp_start_match[i]!== undefined) {
       gdp_start_line_match = gdp_start_match[i].match(gdp_start_line_regexp);
-//      console.log(gdp_start_line_match);
+      //console.log(gdp_start_line_match);
     }
 
 
-    var phase_name = gdp_start_line_match[2];
-    var phase_id = gdp_start_line_match[2];
-    if(gdp_start_line_match[4]){
+    var phase_name = gdp_start_line_match[3];
+    var phase_id = gdp_start_line_match[3];
+    if(gdp_start_line_match[5]){
       //it is iteration step - rename phase and add title
 
-      phase_name = phase_name+" => ["+gdp_start_line_match[5]+"]";
-      var phase_title = " "+phase_name.substring(0,6)+"…=>"+gdp_start_line_match[5];
+      phase_name = phase_name+" => ["+gdp_start_line_match[6]+"]";
+      var phase_title = " "+phase_name.substring(0,6)+"…=>"+gdp_start_line_match[6];
 
-      var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_start_line_match[3], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null, phase_title: phase_title, iteration: true};
+      var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_start_line_match[4], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null, phase_title: phase_title, iteration: true};
 
       unfinished_phases++;
       phases_count++;
@@ -2056,14 +2096,14 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
     }
 
-    var phase_step = gdp_start_line_match[3];
+    var phase_step = gdp_start_line_match[4];
     var unfinished_duration = current_time.getTime() - Date.parse(gdp_start_line_match[1]);
 
 
 //if this group was not in plan or there was no plan
     if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
       //we've never seen this phase_step yet create it
-      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_start_line_match[3], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null};
+      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_start_line_match[4], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null};
       phases_obj_arr["Group "+phase_step]=new_group_phase;
       groups_count++
     }
@@ -2073,7 +2113,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
 //if this phase was not in plan or there was no plan    
     if(!phases_obj_arr.hasOwnProperty(phase_name)){
-      var new_phase = {"phase_name": phase_name, "top_process": false, "process_id":gdp_start_line_match[3], "phase_id": phase_id, "status": "PLANNED", "end_time": null, "duration": null, "start_time": null, "iterator": iterator};
+      var new_phase = {"phase_name": phase_name, "top_process": false, "process_id":gdp_start_line_match[4], "phase_id": phase_id, "status": "PLANNED", "end_time": null, "duration": null, "start_time": null, "iterator": iterator};
 
      if(!iterator) unfinished_phases++;
     phases_count++;    
@@ -2118,6 +2158,10 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
   }
 }
 
+
+//console.log(phases_obj_arr);
+
+
 if(run_finished && phases_with_error==0 && phases_count>0){
   //we have finished the script - finish the last phase
 //console.log("finishing latest phase "+previous_phase_step);
@@ -2142,20 +2186,20 @@ if(gdp_end_match!== null && gdp_end_match !== undefined ){
   var gdp_length = gdp_end_match.length;
 
   //console.log("we have "+gdp_length+" ends of phases");
-  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Command (([0-9]*)_.*sql)( \(key => ([^,\)]*)[,\)].*)? took: ([0-9\.]*)/
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: ([^ ]* )Command (([0-9]*)_.*sql)( \(key => ([^,\)]*)[,\)].*)? took: ([0-9\.]*)/
   var gdp_end_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_end_match[i] !== null && gdp_end_match[i]!== undefined) {
       gdp_end_line_match = gdp_end_match[i].match(gdp_end_line_regexp);
       //console.log(gdp_end_line_match);
     }
-    var phase_name = gdp_end_line_match[2];
-    var phase_id = gdp_end_line_match[2];    
-    var phase_step = gdp_end_line_match[3];
+    var phase_name = gdp_end_line_match[3];
+    var phase_id = gdp_end_line_match[3];    
+    var phase_step = gdp_end_line_match[4];
 
-    if(gdp_end_line_match[4]){
+    if(gdp_end_line_match[5]){
       //it is iteration step - rename phase
-      phase_name = phase_name+" => ["+gdp_end_line_match[5]+"]";
+      phase_name = phase_name+" => ["+gdp_end_line_match[6]+"]";
     }
 
 
@@ -2190,15 +2234,15 @@ if(gdp_err_match!== null && gdp_err_match !== undefined ){
 //2017-12-08 16:42:59.480+0000 [main] [WARN]: request_id=wCfGtAGT4jHPg9fm Exception: The execution of file /mnt/execution/200_datasets_all.sql has failed. Message Java::JavaSql::SQLException: SQLValidation failure: extraneous input ';' expecting {ABORT, ALTER, AT, BEGIN, COMMENT, COMMIT, COPY, CREATE, DELETE, DROP, END, EXPLAIN, INSERT, MERGE, PROFILE, RELEASE, ROLLBACK, SAVEPOINT, SELECT, SET, SHOW, START, TRUNCATE, UPDATE, WITH, '('} line: 5 position: 1
 
 //  console.log("we have "+gdp_length+" errors");
-  var gdp_err_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file (\/mnt\/execution\/)?(([0-9]*)_.*sql) has failed.*/
+  var gdp_err_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[main\] \[WARN\]: ([^ ]* )Exception: The execution of file (\/mnt\/execution\/)?(([0-9]*)_.*sql) has failed.*/
   var gdp_err_line_match;
   for (var i = 0; i < gdp_length; i++) {
     if(gdp_err_match[i] !== null && gdp_err_match[i]!== undefined) {
       gdp_err_line_match = gdp_err_match[i].match(gdp_err_line_regexp);
     }
-    var phase_name = gdp_err_line_match[3];
-    var phase_id = gdp_err_line_match[3];
-    var phase_step = gdp_err_line_match[4];
+    var phase_name = gdp_err_line_match[4];
+    var phase_id = gdp_err_line_match[4];
+    var phase_step = gdp_err_line_match[5];
 
     update_phase = phases_obj_arr[phase_name]
     update_group = phases_obj_arr["Group "+phase_step];
@@ -2360,7 +2404,7 @@ for(var i = 0; i< tuples.length; i++){
       text=text+"<tr class='cc_head_phase'><td class='cc_phase_name cc_phase_name_"+this_phase.status+"' title='"+this_phase.phase_name+"'>"+(this_phase.top_process==true ? short_name : "&nbsp;"+short_name)+"</td>";
 
 //code = "location.href=&apos;#ph_"+key+"Final&apos;";
-
+/*
 console.log("phase_name: "+this_phase.phase_name);
 console.log("phase_status: "+this_phase.status);
 console.log("phase_duration: "+phase_duration);
@@ -2370,7 +2414,7 @@ console.log("phase_end: "+phase_end);
 console.log("min_phase_start: "+min_phase_start);
 console.log("max_phase_end: "+max_phase_end);
 console.log("time_span: "+time_span);
-
+*/
 
 text=text+"<td title='File:&#09;"+this_phase.phase_name;
 if(this_phase.status=="PLANNED"){
@@ -2394,7 +2438,7 @@ if(Math.round((phase_start-min_phase_start)*px_per_ms)>1000){
         text=text+"not started yet'>&nbsp;</td>";
       }
       else{
-        text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";
+        text=text+numberWithCommas1(phase_duration,0,false)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";
       }
 
 
@@ -2824,7 +2868,7 @@ if(Math.round((phase_start-min_phase_start)*px_per_ms)>1000){
         text=text+"not started yet'>&nbsp;</td>";
       }
       else{
-        text=text+numberWithCommas1(phase_duration,0)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";
+        text=text+numberWithCommas1(phase_duration,0,false)+" ms'>"+formatTimeCompact(Math.round(phase_duration/1000))+"</td>";
       }
 
 

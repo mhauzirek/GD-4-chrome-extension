@@ -58,6 +58,8 @@ return response;
 }
 
 
+var cmid;
+
 function gd_extension_init(){
 //answer extension to request for category
 
@@ -106,6 +108,13 @@ chrome.extension.onMessage.addListener(
 
       break;
 
+       /** info tooltip */
+       case "showTooltip":
+          console.log("showing tooltip for project "+request.PID+", server "+request.server);
+          showTooltip(request.PID, request.server, request.url);
+
+      break;
+
 
        /** reload project info box */
        case "reloadProjectInfo":
@@ -147,6 +156,54 @@ function html_entities(rawStr){
     return '&#'+i.charCodeAt(0)+';';
   });
   return encodedStr;
+}
+
+
+function get_object_info(pid,server,url){
+
+  document.getElementById("gd4chrome_tooltip_uri").innerHTML="<a href='https://"+server+url+"'>"+html_entities(url)+"</a>";
+
+  var obj_info = new XMLHttpRequest();
+  obj_info.onload = function()
+  {
+  var resp = null;
+  if (obj_info.status==200)
+    {
+      
+      resp_plain = obj_info.responseText;
+      resp_json = JSON.parse(obj_info.responseText);
+      var allPropertyNames = Object.keys(resp_json);
+      var obj = allPropertyNames[0];
+      var object = resp_json[obj];
+      console.log(resp);
+      console.log(object);
+
+      document.getElementById("gd4chrome_tooltip_title").innerHTML=html_entities(object.meta.title);
+      document.getElementById("gd4chrome_tooltip_category").innerHTML=html_entities(object.meta.category);
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML=object.meta.identifier;
+      
+    }else if(obj_info.status==401){
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Token expired. Click to reload and try again</span>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+
+    }else if(obj_info.status==404){
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload'>Object with this URI Not found</span>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+
+    }else{
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Error occured. Try again later.</span>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+      console.log(obj_info.responseText);
+    }
+  }
+  obj_info.open("GET", "https://"+server+url);
+  obj_info.setRequestHeader("Accept", "application/json");
+  obj_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
+  obj_info.send();
+
 }
 
 
@@ -535,6 +592,14 @@ if(resp.schedules.items)
 }
 
 
+function reloadTooltipInfo(pid, server, url){
+  //todo process identifier vs elementID info?
+
+  get_object_info(pid,server,url);
+
+}
+
+
 function reloadProjectInfo(pid, server, spec_sched){
   get_dataload_info(pid,server);
   get_basic_info(pid,server);
@@ -765,6 +830,62 @@ function prettyDate(date_str,tz_offset){
 };
 
 
+function showTooltip(pid, server,url){
+        var gd4chrome_tooltip_div = document.getElementById("gd4chrome_tooltip");
+        var infobox_src = "\
+            <table class='gd4chrome_tab gd4chrome_tooltip' border='0'>\
+            <tr><td class='gd4chrome_headercol' colspan='2' width='390'>\
+              <span class='gd4chrome_proj gd4chrome_title'>Object Info</span>\
+              <span class='gd4chrome_det gd4chrome_summary' id='gd4chrome_summary'></span>\
+            </td>\
+            <td width='20' valign='top'>\
+              <span class='gd4chrome_close' onclick='document.getElementById(\"gd4chrome_tooltip\").parentNode.removeChild(document.getElementById(\"gd4chrome_tooltip\"));'>X</span>\
+            </td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1' width='100'>URI</td>\
+            <td width='390'><span class='gd4chrome_value' id='gd4chrome_tooltip_uri'>...</span></td>\
+            <td width='10'></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>Category</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tooltip_category'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>Title</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tooltip_title'>...</span></td>\
+            <td></td>\
+            </tr>\
+            <tr>\
+            <td class='gd4chrome_col1'>Identifier</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tooltip_identifier'>...</span></td>\
+            <td></td>\
+            </tr>\
+            </table>\
+          ";
+
+/*
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="<span class='gd4chrome_clickreload'>Error</span>";
+      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Error occured. Try again later.</span>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+*/
+
+
+        if(gd4chrome_tooltip_div){
+            gd4chrome_tooltip_div.innerHTML = infobox_src; 
+        }else{
+            gd4chrome_tooltip_div = document.createElement('div');
+            gd4chrome_tooltip_div.setAttribute('id',"gd4chrome_tooltip");
+            gd4chrome_tooltip_div.innerHTML = infobox_src;
+            document.body.insertBefore(gd4chrome_tooltip_div,document.body.firstChild);
+          }
+        reloadTooltipInfo(pid, server, url);
+} 
+
+
+
+
 function prg_dls_diff(){
 
 var prg_dls_start = new Date(); //date
@@ -836,6 +957,11 @@ chrome.storage.local.get("wl_domains", function(items)
             if(url_matched){
               console.log("Starting GoodData Extension");
               gd_extension_init();
+
+                chrome.runtime.sendMessage({
+                  message: 'updateContextMenu'
+                });
+
             }else{
                 console.log(location.hostname+" does not match anything in GoodData Extension whitelabeled domain list. Can be added in extension settings - "+chrome.extension.getURL("options.html"));
               }

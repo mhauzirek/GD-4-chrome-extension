@@ -38,9 +38,74 @@ var notID=0;
 
 
 var lastURL = "";
+
+
+var contextMenuItem = {
+  "id": "gd_menu",
+  "title": "GD Lookup Identifier",
+  "contexts": ["selection"]
+}
+
+var tabId = -1;
+var cmid;
+
+
+
+
+
+var cm_clickHandler = function(clickData){
+  
+console.log(clickData);
+
+  if(clickData.menuItemId == "gd_menu" && clickData.selectionText){
+    var selection = clickData.selectionText;
+
+    var obj_regexp = /^.*(\/gdc\/md\/([^\/]*)\/obj\/([0-9]*)).*/
+    var obj_matches = obj_regexp.exec(selection);
+
+    if(obj_matches){
+      //object path found
+
+      chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
+        if(array_of_tabs.length>0){
+          var server = "";
+          var tab = array_of_tabs[0];
+          tabId= tab.id;
+          var url = tab.url;
+
+          var server_regexp = /^https:\/\/([^\/]*)/
+          var server_matches = server_regexp.exec(url);
+
+          if(server_matches){
+            server = server_matches[1];
+          }
+        }
+
+      var response  = {"message": "showTooltip", "type": "showTooltip", "server": server, "PID":obj_matches[2], "url":obj_matches[1]}
+      chrome.tabs.sendMessage(tabId,response)
+});
+
+
+    }else{
+      //object path not found
+    }
+
+    
+  }
+}
+
+
+
+//chrome.contextMenus.update(integer or string id, object updateProperties, function callback)
+
+
+
 //when I receive message, show icon
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
+
+console.log(request);
+
     switch (request.message){
       case "wakeup":
         console.info("GoodData extension for Chrome is awake");
@@ -60,9 +125,26 @@ chrome.extension.onMessage.addListener(
           sendResponse(getProjectInfo(request.PID, request.server));
         break;
 
+        case "displayContextMenu":
+          displayMenu(request.text);
+        break;
+
         case "getFromLocalStorage":
             sendResponse(localStorage[request.field]);
         break;
+
+
+
+      case "updateContextMenu":
+
+        chrome.contextMenus.removeAll();
+        var gd_menu = chrome.contextMenus.create(contextMenuItem);
+        chrome.contextMenus.onClicked.addListener(cm_clickHandler)
+
+      break;
+
+
+
 
         case "getAudioNotificationDir":
             if(!localStorage['audioNotificationDir']){
@@ -129,6 +211,7 @@ chrome.extension.onMessage.addListener(
             }
           }
       }
+
 
 
 // show desktop notification
@@ -395,32 +478,6 @@ chrome.notifications.onClicked.addListener(function (notID){
 
 //New project
 
-
-
-function CreateGDProject(server,authToken){
-
-  var proj_call = new XMLHttpRequest();
-
-  var request = '{ "project" : {"content" : { "guidedNavigation": 1, "driver" : "Pg", "authorizationToken" : "'+authToken+'"},"meta" : { title" : "Test Project","summary" : "Testing Project",} }}';
-
-  proj_call.onload = function()
-  {
-  var resp = null;
-  if (proj_call.status==201)
-    {
-      resp = JSON.parse(proj_call.responseText);
-      //console.log(resp.uri);
-    }else{
-      //console.log("ERROR creating new project");
-      //console.log(proj_call.responseText);
-    }
-  }
-  proj_call.open("POST", "https://"+server+"/gdc/projects/"+pid);
-  proj_call.setRequestHeader("Accept", "application/json");
-  proj_call.setRequestHeader("Content-Type", "application/json");
-  proj_call.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
-  proj_call.send(request);
-
-}        
+     
 
 
