@@ -25,6 +25,53 @@
  * this is content script for GD extension
  * it is embeded to GD pages and sends message to wakeup extension
  */
+
+function getUILink(category,pid,obj){
+  var objURL = "#";
+  switch(category){    
+                case 'projectDashboard' :
+                  objURL = '/#s=/gdc/projects/'+pid+'|projectDashboardPage|/gdc/md/'+pid+'/obj/'+obj+'|';
+                break;
+                 case 'dataSet' :
+                 case 'attribute': 
+                 case 'fact': 
+                 case 'prompt':
+                  objURL = '/#s=/gdc/projects/'+pid+'|objectPage|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break; 
+
+                 case 'metric': 
+                  objURL = '/#s=/gdc/projects/'+pid+'|objectPage|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break;
+
+                 case 'report':
+                  objURL = '/#s=/gdc/projects/'+pid+'|analysisPage|head|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break;
+
+                 case 'reportDefinition':
+                  objURL = '/#s=/gdc/projects/'+pid+'|analysisPage|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break;
+
+                 case 'dimension':
+                  objURL = '/#s=/gdc/projects/'+pid+'|dataPage|attributes|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break; 
+
+                 case 'folder':
+                  //folder is for both metrics and facts so this is not ideal
+                  objURL = '/#s=/gdc/projects/'+pid+'|dataPage|facts|/gdc/md/'+pid+'/obj/'+obj+'|';
+                 break; 
+
+                 case 'visualizationObject':
+                 //analytical designer objects
+                  objURL = '/analyze/#/'+pid+'/'+obj+'/edit';
+                 break; 
+
+                default:
+                  objURL="#";
+              }
+return objURL;
+}
+
+
 function array_contains(a, obj) {
     if(!a) return false;
     var i = a.length;
@@ -90,35 +137,41 @@ chrome.extension.onMessage.addListener(
 
        /** request for hiding project info box */
        case "hideProjectInfo":
-          console.log("hiding project info overlay");
+          //console.log("hiding project info overlay");
           hideProjectInfo();
        break;
 
        /** better implementation of project info box */
        case "showProjectInfo2":
-          console.log("showing project info overlay2 for project "+request.PID+", server "+request.server);
+          //console.log("showing project info overlay2 for project "+request.PID+", server "+request.server);
           showProjectInfo2(request.PID, request.server);
 
       break;
 
        /** new implementation of project info box */
        case "showProjectInfo3":
-          console.log("showing project info overlay3 for project "+request.PID+", server "+request.server+", specific schedule "+request.spec_schedule);
+          //console.log("showing project info overlay3 for project "+request.PID+", server "+request.server+", specific schedule "+request.spec_schedule);
           showProjectInfo3(request.PID, request.server,request.spec_schedule);
 
       break;
 
        /** info tooltip */
        case "showTooltip":
-          console.log("showing tooltip for project "+request.PID+", server "+request.server);
-          showTooltip(request.PID, request.server, request.url);
+          //console.log("showing tooltip for project "+request.PID+", server "+request.server+" selection: "+request.selection);
+
+            var sel = selection2urltype(request.selection);
+            //console.log(sel);
+
+          //translate selection to url and type;
+
+          showTooltip(request.PID, request.server, sel.obj_url, sel.type, sel.element_url);
 
       break;
 
 
        /** reload project info box */
        case "reloadProjectInfo":
-          console.log("reloading project info overlay2 for project "+request.PID+", server "+request.server);
+          //console.log("reloading project info overlay2 for project "+request.PID+", server "+request.server);
           reloadProjectInfo(request.PID, request.server, request.spec_schedule);
 
       break;
@@ -127,6 +180,30 @@ chrome.extension.onMessage.addListener(
      }
       
   });
+}
+
+
+function selection2urltype(selection){
+  var result = {type: "none", obj_url:"", element_url:"", pid: ""};
+  var obj_regexp = /(\/gdc\/md\/([^\/]*)\/obj\/([0-9]*))(\/elements\?id=[0-9]*)?/
+  var obj_matches = obj_regexp.exec(selection);
+
+//console.log(obj_matches);
+
+  if(obj_matches){
+    //matched 
+    result.obj_url = obj_matches[1];
+    result.pid = obj_matches[2];
+    if(obj_matches[4]){
+      result.type = "element";
+      result.element_url = obj_matches[4];
+    }else{
+      result.type = "object";
+    }
+  }else{
+    result.type = "none";
+  }
+  return result;
 }
 
 
@@ -163,6 +240,11 @@ function get_object_info(pid,server,url){
 
   document.getElementById("gd4chrome_tooltip_uri").innerHTML="<a href='https://"+server+url+"'>"+html_entities(url)+"</a>";
 
+
+
+
+
+
   var obj_info = new XMLHttpRequest();
   obj_info.onload = function()
   {
@@ -175,34 +257,128 @@ function get_object_info(pid,server,url){
       var allPropertyNames = Object.keys(resp_json);
       var obj = allPropertyNames[0];
       var object = resp_json[obj];
-      console.log(resp);
-      console.log(object);
 
-      document.getElementById("gd4chrome_tooltip_title").innerHTML=html_entities(object.meta.title);
+      var object_id = object.meta.uri.split('/')[5];
+      var project_id = object.meta.uri.split('/')[3];
+
+      //console.log(resp);
+      //console.log(object);
+      var category = object.meta.category;
+
+      //console.log("category: "+category+" project_id: "+project_id+" object_id: "+object_id);
+      var uilink = getUILink(category,project_id,object_id);
+      //console.log(uilink);
+
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="<a href='"+uilink+"' title='click to open in UI'>"+html_entities(object.meta.title)+"</a>";
       document.getElementById("gd4chrome_tooltip_category").innerHTML=html_entities(object.meta.category);
-      document.getElementById("gd4chrome_tooltip_identifier").innerHTML=object.meta.identifier;
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="<a href='"+uilink+"' title='click to open in UI'>"+object.meta.identifier+"</a>";
       
     }else if(obj_info.status==401){
       document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
       document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Token expired. Click to reload and try again</span>";
       document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
 
     }else if(obj_info.status==404){
       document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
       document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload'>Object with this URI Not found</span>";
       document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
 
     }else{
       document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
       document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Error occured. Try again later.</span>";
       document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
-      console.log(obj_info.responseText);
+      document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
+//      console.log(obj_info.responseText);
+
     }
   }
   obj_info.open("GET", "https://"+server+url);
   obj_info.setRequestHeader("Accept", "application/json");
   obj_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
   obj_info.send();
+
+}
+
+
+
+
+function get_element_info(pid,server,url,element_url){
+
+  var obj_info = new XMLHttpRequest();
+  obj_info.onload = function()
+  {
+  var resp = null;
+  if (obj_info.status==200)
+    {
+      
+      resp_plain = obj_info.responseText;
+      resp_json = JSON.parse(obj_info.responseText);
+      var allPropertyNames = Object.keys(resp_json);
+      var obj = allPropertyNames[0];
+      var object = resp_json[obj];
+//      console.log(resp);
+//      console.log(object);
+
+      var label_url = object.content.displayForms[0].meta.uri;
+      //console.log("getting elements for label: "+label_url+" with element_url:"+element_url);
+
+      var element_value_url = "https://"+server+label_url+element_url;
+      var element_id = element_url.split('=')[1];
+
+//      console.log(element_value_url);
+
+
+      var element_info = new XMLHttpRequest();
+      element_info.onload = function()
+      {
+        var resp = null;
+        if (element_info.status==200)
+        {      
+          var resp_element_json = JSON.parse(element_info.responseText);
+
+//          console.log(resp_element_json);
+          var element;
+
+          var elements = resp_element_json.attributeElements.elements;
+          if(elements.length==0){
+            element = "<i>(deleted value)</i> ID="+element_id;
+          }else{
+            element = elements[0].title;
+          }
+          //console.log(element);
+          document.getElementById("gd4chrome_tooltip_element").innerHTML="<span class='gd4chrome_value_element'>"+element+"</span>";
+        }else{
+          document.getElementById("gd4chrome_tooltip_element").innerHTML="<span class='gd4chrome_clickreload'>Error retrieving element</span>";
+          //console.log(element_info.responseText);
+        }
+      }
+      element_info.open("GET", element_value_url);
+      element_info.setRequestHeader("Accept", "application/json");
+      element_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
+      element_info.send();
+    }else{
+          document.getElementById("gd4chrome_tooltip_element").innerHTML="<span class='gd4chrome_clickreload'>Error retrieving element</span>";
+          console.log(obj_info.responseText);
+    }
+  }
+  obj_info.open("GET", "https://"+server+url);
+  obj_info.setRequestHeader("Accept", "application/json");
+  obj_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
+  obj_info.send();
+
+}
+
+
+
+function clearTooltipInfo(){
+
+  document.getElementById("gd4chrome_tooltip_uri").innerHTML="No object identified";
+  document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
+  document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload'>No object URI selected. Select valid object URI</span>";
+  document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+  document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
 
 }
 
@@ -346,7 +522,7 @@ function get_sched_info(pid,server, spec_schedule){
 if(resp.schedule.type)
     
       schedule = resp.schedule;
-      console.log("inspecting specific schedule "+schedule.links.self)
+      //console.log("inspecting specific schedule "+schedule.links.self)
 
       if(schedule.state) no_schedule_states = false; //we have states in schedules R85 or something
 
@@ -592,24 +768,16 @@ if(resp.schedules.items)
 }
 
 
-function reloadTooltipInfo(pid, server, url){
-  //todo process identifier vs elementID info?
-
-  get_object_info(pid,server,url);
-
-}
-
-
 function reloadProjectInfo(pid, server, spec_sched){
   get_dataload_info(pid,server);
   get_basic_info(pid,server);
   get_tz_info(pid,server);
 
   if(spec_sched == "" || spec_sched == null){
-    console.log("getting info for all schedules");
+    //console.log("getting info for all schedules");
     get_etl_info(pid,server);
   }else{
-    console.log("getting info for specific schedule '"+spec_sched+"'");
+    //console.log("getting info for specific schedule '"+spec_sched+"'");
     get_sched_info(pid,server,spec_sched);
   }
   
@@ -696,7 +864,7 @@ function showProjectInfo2(pid, server){
             gd4chrome_div.innerHTML = infobox_src;
             document.body.insertBefore(gd4chrome_div,document.body.firstChild);
           }
-        console.log("Local Timezone offset is "+tz_offset+" minutes and there is "+prg_diff+" offset in Prague");  
+        //console.log("Local Timezone offset is "+tz_offset+" minutes and there is "+prg_diff+" offset in Prague");  
         reloadProjectInfo(pid, server);
 } 
 
@@ -766,7 +934,7 @@ function showProjectInfo3(pid, server, spec_schedule){
             gd4chrome_div.innerHTML = infobox_src;
             document.body.insertBefore(gd4chrome_div,document.body.firstChild);
           }
-        console.log("Local Timezone offset is "+tz_offset+" minutes and there is "+prg_diff+" offset in Prague");  
+        //console.log("Local Timezone offset is "+tz_offset+" minutes and there is "+prg_diff+" offset in Prague");  
         reloadProjectInfo(pid, server, spec_schedule);
 } 
 
@@ -830,12 +998,12 @@ function prettyDate(date_str,tz_offset){
 };
 
 
-function showTooltip(pid, server,url){
+function showTooltip(pid, server,url,type, element_url){
         var gd4chrome_tooltip_div = document.getElementById("gd4chrome_tooltip");
         var infobox_src = "\
             <table class='gd4chrome_tab gd4chrome_tooltip' border='0'>\
             <tr><td class='gd4chrome_headercol' colspan='2' width='390'>\
-              <span class='gd4chrome_proj gd4chrome_title'>Object Info</span>\
+              <span class='gd4chrome_proj gd4chrome_title' id='gd4chrome_object_info_title'>Object Info</span>\
               <span class='gd4chrome_det gd4chrome_summary' id='gd4chrome_summary'></span>\
             </td>\
             <td width='20' valign='top'>\
@@ -862,6 +1030,11 @@ function showTooltip(pid, server,url){
             <td><span class='gd4chrome_value' id='gd4chrome_tooltip_identifier'>...</span></td>\
             <td></td>\
             </tr>\
+            <tr id='gd4chrome_tooltip_element_row' style='display: none'>\
+            <td class='gd4chrome_col1'>Element title</td>\
+            <td><span class='gd4chrome_value' id='gd4chrome_tooltip_element'>...</span></td>\
+            <td></td>\
+            </tr>\
             </table>\
           ";
 
@@ -880,7 +1053,27 @@ function showTooltip(pid, server,url){
             gd4chrome_tooltip_div.innerHTML = infobox_src;
             document.body.insertBefore(gd4chrome_tooltip_div,document.body.firstChild);
           }
-        reloadTooltipInfo(pid, server, url);
+        
+        if(type=="none"){
+          document.getElementById("gd4chrome_object_info_title").innerText="Unrecognized selection";
+          document.getElementById("gd4chrome_tooltip_element_row").style="display:none";
+          clearTooltipInfo();
+        }
+        if(type=="object"){
+          document.getElementById("gd4chrome_object_info_title").innerText="Object URI info";
+          document.getElementById("gd4chrome_tooltip_element_row").style="display:none";
+          get_object_info(pid, server, url);  
+        }
+        if(type=="element"){
+          document.getElementById("gd4chrome_object_info_title").innerText="Element value URI info";
+          document.getElementById("gd4chrome_tooltip_element_row").style="display:table-row";
+          document.getElementById("gd4chrome_tooltip_element").innerHTML="...";
+          get_object_info(pid, server, url);  
+          get_element_info(pid, server, url, element_url);
+        }
+        
+
+
 } 
 
 

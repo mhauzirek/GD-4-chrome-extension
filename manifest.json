@@ -1,8 +1,8 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9027",
+  "version": "0.9030",
   "icons" : {
-    "48" : "guy48_beta.png",
+    "48" : "default_beta.png",
     "96" : "guy96_beta.png",
     "128": "guy128_beta.png",
     "256": "guy256_beta.png"

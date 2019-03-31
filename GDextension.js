@@ -42,7 +42,7 @@ var lastURL = "";
 
 var contextMenuItem = {
   "id": "gd_menu",
-  "title": "GD Lookup Identifier",
+  "title": "GoodData URL Lookup",
   "contexts": ["selection"]
 }
 
@@ -50,21 +50,12 @@ var tabId = -1;
 var cmid;
 
 
-
-
-
 var cm_clickHandler = function(clickData){
   
-console.log(clickData);
+//console.log(clickData);
 
   if(clickData.menuItemId == "gd_menu" && clickData.selectionText){
     var selection = clickData.selectionText;
-
-    var obj_regexp = /^.*(\/gdc\/md\/([^\/]*)\/obj\/([0-9]*)).*/
-    var obj_matches = obj_regexp.exec(selection);
-
-    if(obj_matches){
-      //object path found
 
       chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
         if(array_of_tabs.length>0){
@@ -81,16 +72,9 @@ console.log(clickData);
           }
         }
 
-      var response  = {"message": "showTooltip", "type": "showTooltip", "server": server, "PID":obj_matches[2], "url":obj_matches[1]}
+      var response  = {"message": "showTooltip", "type": "showTooltip", "server": server, "selection": selection}
       chrome.tabs.sendMessage(tabId,response)
-});
-
-
-    }else{
-      //object path not found
-    }
-
-    
+    });
   }
 }
 

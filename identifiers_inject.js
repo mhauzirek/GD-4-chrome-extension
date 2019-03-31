@@ -48,7 +48,7 @@ function get_objects_cache(url,callback){
         //console.log(global_objects_cache);
     });
   }else{
-    console.log("FROM CACHE:");
+    //console.log("FROM CACHE:");
     callback(url,global_objects_cache);
   }
 }

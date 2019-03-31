@@ -2534,7 +2534,7 @@ document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
 
-var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: .* Starting parallel entity [^ ]+ integration.* /g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[^\]]*\] \[INFO\]: \[[^\]]*\] Starting (parallel )?entity [^ ]* integration.*/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 //console.log(gdp_start_match);
 
@@ -2542,6 +2542,11 @@ var gdp_start_match = original_source.match(gdp_start_regexp);
 var gdp_end_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: .* Result for command Merge Data Task for entity.* /g
 var gdp_end_match = original_source.match(gdp_end_regexp);
 //console.log(gdp_end_match.length);
+
+//productized connectors proper entity processing end
+var gdp_end2_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[^\]]*\] \[INFO\]: .* Finished (in parallel )?entity .*/g
+var gdp_end2_match = original_source.match(gdp_end2_regexp);
+
 
 
 var gdp_err_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[WARN\]: request_id=[^ ]+ Exception: The execution of file .* has failed.* /g
@@ -2554,7 +2559,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 //  console.log("we have "+gdp_length+" starts of phases");
 
 
-  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: .* Starting parallel entity ([^ ]*) integration /
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]*\] \[INFO\]: \[[^\]]*\] Starting (parallel )?entity ([^ ]*) integration/
   // (key => out_event2018-02-28,anchor_table_name => out_event,partition_key => 2018-02-28)
 
   var gdp_start_line_match;
@@ -2565,8 +2570,8 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
     }
 
 
-    var phase_name = gdp_start_line_match[2];
-    var phase_id = gdp_start_line_match[2];
+    var phase_name = gdp_start_line_match[3];
+    var phase_id = gdp_start_line_match[3];
 
     var unfinished_duration = current_time.getTime() - Date.parse(gdp_start_line_match[1]);
 
@@ -2624,12 +2629,16 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 //console.log(phases_obj_arr);
 
 
-if(gdp_end_match!== null && gdp_end_match !== undefined ){
-  var gdp_length = gdp_end_match.length;
-
+if ( (gdp_end_match!== null && gdp_end_match !== undefined ) || (gdp_end2_match!== null && gdp_end2_match !== undefined )  ) {
 
 //2018-11-18 08:09:32.819+0000 [Ruby-0-Thread-149: /mnt/execution/vendor/bundle/jruby/2.3.0/bundler/gems/gooddata_connectors_ads-5f6947b459c9/lib/gooddata_connectors_ads/ads_storage.rb:440] [INFO]: request_id=jR7Ueg0drxTC9nCB I, [2018-11-18T08:09:32.819000 #8]  INFO -- : Result for command Merge Data Task for entity products:
 
+
+if(!gdp_end2_match){
+  //if there are not entities ends logged use merge task
+
+  var gdp_length = gdp_end_match.length;
+  //standard connector
   //console.log("we have "+gdp_length+" ends of phases");
   var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[Ruby-[^\]]*\] \[INFO\]: .* Result for command Merge Data Task for entity ([^:]*):/
   var gdp_end_line_match;
@@ -2661,6 +2670,45 @@ if(gdp_end_match!== null && gdp_end_match !== undefined ){
     }
     phases_end[phase_name]=gdp_end_line_match[1];
   }
+}else{
+//if ends of processing entities are present use those
+
+//console.log("prod_integrator");
+var gdp_length = gdp_end2_match.length;
+  var gdp_end_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]*\] \[INFO\]: .* Finished (in parallel )?entity ([^ ]*) integration/
+  var gdp_end_line_match;
+  for (var i = 0; i < gdp_end2_match.length; i++) {
+    if(gdp_end2_match[i] !== null && gdp_end2_match[i]!== undefined) {
+      gdp_end_line_match = gdp_end2_match[i].match(gdp_end_line_regexp);
+
+//console.log(gdp_end_match[i]);
+//console.log(gdp_end_line_match);
+    }
+    var phase_name = gdp_end_line_match[3];
+    var phase_id = gdp_end_line_match[3];
+
+    update_phase = phases_obj_arr[phase_name]
+    /*update_group = phases_obj_arr["Group "+phase_step];*/
+
+    update_phase.end_time = Date.parse(gdp_end_line_match[1]);
+    update_phase.status="OK";
+    unfinished_phases--;
+
+
+    update_phase.duration = update_phase.end_time - update_phase.start_time;
+    if(update_phase.duration > max_phase_duration){
+      max_phase_duration = update_phase.duration;
+    }
+    if(update_phase.end_time > max_phase_end){
+      max_phase_end = update_phase.end_time;
+//console.log("max phase end set to "+max_phase_end);
+    }
+    phases_end[phase_name]=gdp_end_line_match[1];
+  }
+
+}
+
+
 }
 
 
