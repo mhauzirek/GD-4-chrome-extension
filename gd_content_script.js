@@ -271,7 +271,7 @@ function get_object_info(pid,server,url){
 
       document.getElementById("gd4chrome_tooltip_title").innerHTML="<a href='"+uilink+"' title='click to open in UI'>"+html_entities(object.meta.title)+"</a>";
       document.getElementById("gd4chrome_tooltip_category").innerHTML=html_entities(object.meta.category);
-      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="<a href='"+uilink+"' title='click to open in UI'>"+object.meta.identifier+"</a>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML=object.meta.identifier;
       
     }else if(obj_info.status==401){
       document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
@@ -374,11 +374,11 @@ function get_element_info(pid,server,url,element_url){
 
 function clearTooltipInfo(){
 
-  document.getElementById("gd4chrome_tooltip_uri").innerHTML="No object identified";
-  document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
-  document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload'>No object URI selected. Select valid object URI</span>";
-  document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
-  document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
+  document.getElementById("gd4chrome_tooltip_uri").innerHTML="No URL identified in your selection"
+  document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload_info'>No GoodData object URL (/gdc/md/PID/obj/XXX) </span>";
+  document.getElementById("gd4chrome_tooltip_title").innerHTML="<span class='gd4chrome_clickreload_info'>or element URL (/gdc/md/PID/obj/XXX/elements?id=YY)</span>";
+  document.getElementById("gd4chrome_tooltip_identifier").innerHTML="<span class='gd4chrome_clickreload_info'>were found in selected text</span>";
+  document.getElementById("gd4chrome_tooltip_element").innerHTML="";
 
 }
 
@@ -1011,7 +1011,7 @@ function showTooltip(pid, server,url,type, element_url){
             </td>\
             </tr>\
             <tr>\
-            <td class='gd4chrome_col1' width='100'>URI</td>\
+            <td class='gd4chrome_col1' width='100'>URL</td>\
             <td width='390'><span class='gd4chrome_value' id='gd4chrome_tooltip_uri'>...</span></td>\
             <td width='10'></td>\
             </tr>\
@@ -1118,6 +1118,20 @@ chrome.storage.local.get("wl_domains", function(items)
             var url_matched = false;
             var url_regexp = /.*\.(get)?gooddata\.com$/;
             var url_matches = url_regexp.exec(location.hostname);
+
+            var menu_hostnames = ["https://*.gooddata.com/*"];
+
+
+            var domainsLength = 0;
+            var domain_regexp = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/
+            if(items.wl_domains!==undefined) domainsLength = items.wl_domains.length;
+                for (var i = 0; i < domainsLength; i++) {
+                  if(items.wl_domains[i].match(domain_regexp)){
+                    menu_hostnames.push("https://"+items.wl_domains[i]+"/*");
+                  }
+            }
+            //console.log(menu_hostnames);
+
             if(url_matches){
               console.log("GoodData domain detected, executing GD Extension");
               url_matched = true;
@@ -1152,7 +1166,8 @@ chrome.storage.local.get("wl_domains", function(items)
               gd_extension_init();
 
                 chrome.runtime.sendMessage({
-                  message: 'updateContextMenu'
+                  message: 'updateContextMenu',
+                  hostnames: menu_hostnames
                 });
 
             }else{

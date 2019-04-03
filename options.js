@@ -23,6 +23,49 @@
 
 // Saves options to localStorage.
 
+/*
+
+        chrome.permissions.request({
+          permissions: ['contextMenus']
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            console.log("Context Menu Permission granted");
+            chrome.contextMenus.removeAll();
+            contextMenuItem.documentUrlPatterns = request.hostnames;
+            var gd_menu = chrome.contextMenus.create(contextMenuItem);
+            chrome.contextMenus.onClicked.addListener(cm_clickHandler)
+          } else {
+            console.log("Context Menu Permission not granted");
+          }
+        });
+
+
+*/
+
+
+function remove_hostname(src){
+
+var hostname = src.value;
+
+
+ chrome.permissions.remove({
+          origins: [hostname]
+        }, function(revoked) {
+          // The callback argument will be true if the user granted the permissions.
+          if (revoked) {
+            document.getElementById("permission_hostnames_status").innerText = "Hostname removed";
+            restore_options();
+          } else {
+            document.getElementById("permission_hostnames_status").innerText = "Error removing hostname";
+          }
+        });
+
+
+}
+
+
+
 function set_magic(magic_name,title, help, link){
   document.getElementById(magic_name+"_title").value=title;
   document.getElementById(magic_name+"_help").value=help;
@@ -168,7 +211,7 @@ chrome.permissions.remove( {"origins":['https://*/*']});
   chrome.storage.local.get("wl_domains", function(items)
           {
             //console.log(items.wl_domains);
-            for(i=0; i<items.wl_domains.length; i++){
+            if(items.wl_domains) for(i=0; i<items.wl_domains.length; i++){
               var opt = document.createElement('option');
               opt.value = items.wl_domains[i];
               opt.innerHTML = items.wl_domains[i];
@@ -618,6 +661,68 @@ if (magic5_title) {
 
   document.getElementById("options_json").value = JSON.stringify(localStorage);
 
+  chrome.permissions.getAll(function(permissions){
+    console.log(permissions);
+    if(permissions.permissions.includes("contextMenus")){
+      console.log("we have context menus");
+      document.getElementById("permission_contextmenus_status").innerText = 'GRANTED';
+    }else{
+      console.log("we DO NOT have context menus");
+      document.getElementById("permission_contextmenus_status").innerHTML = '<b>NOT GRANTED</b>';
+      document.getElementById("permission_contextmenus_block").classList.add("blink_me");
+    }
+
+    if(permissions.permissions.includes("notifications")){
+      console.log("we have notifications");
+      document.getElementById("permission_notifications_status").innerText = 'GRANTED';
+    }else{
+      console.log("we DO NOT have notifications");
+      document.getElementById("permission_notifications_status").innerHTML = '<b>NOT GRANTED</b>';
+    }
+
+
+//    var origins = permissions.origins;
+//    var default_origins = ["https://*.gooddata.com/*","https://*/*","https://*/*/log*","https://*/gdc/md/*/obj/*","https://*/gdc/md/*/usedby2/*","https://*/gdc/md/*/using2/*"];
+//    var hostnames_block = "https://*.gooddata.com/*<br>\n";
+/*    
+    for(var i = 0; i<origins.length; i++){
+      var origin = origins[i];
+      if(!default_origins.includes(origin)){
+          hostnames_block = hostnames_block + "<input type=\"button\" class=\"hostname\" value=\""+origin+"\"><br>\n";
+      }else{
+        //is in default origins - we do not care;
+      }
+    }
+
+
+    document.getElementById('permission_hostnames_block').innerHTML = hostnames_block;
+    var hostnames = document.querySelectorAll('.hostname');
+    for (var i=0; i<hostnames.length; i++){
+      hostnames[i].addEventListener('click', function(e){
+          console.log(e);
+          alert(e.target.value);
+
+        chrome.permissions.remove({
+          permissions: ["contextMenus"],
+          origins: ["https://*.gooddata.com/*",e.target.value]
+        }, function(revoked) {
+          // The callback argument will be true if the user granted the permissions.
+          if (revoked) {
+            document.getElementById("permission_hostname_status").innerText = "Permission Revoked";
+          } else {
+            document.getElementById("permission_hostname_status").innerText = "Permission NOT Revoked";
+          }
+        });
+
+      });
+    }
+
+    */
+
+  });
+
+  
+
 }
 
 document.getElementById('ext_name').innerText = chrome.runtime.getManifest().name;
@@ -664,6 +769,85 @@ document.getElementById("magic_add").addEventListener('click', function(){
   var link='https://${SERVER}/gdc/dataload/projects/${PID}/outputStage';
   set_magic("magic",title,help,link);
 },false);
+
+
+document.getElementById("permission_contextmenus_grant").addEventListener('click',function(event){
+        chrome.permissions.request({
+          permissions: ['contextMenus']
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            document.getElementById("permission_contextmenus_status").innerText = "Permission Granted";
+          } else {
+            document.getElementById("permission_contextmenus_status").innerText = "Permission NOT Granted";
+          }
+        });
+});
+
+document.getElementById("permission_contextmenus_revoke").addEventListener('click',function(event){
+        chrome.permissions.remove({
+          permissions: ['contextMenus']
+        }, function(revoked) {
+          // The callback argument will be true if the user granted the permissions.
+          if (revoked) {
+            document.getElementById("permission_contextmenus_status").innerText = "Permission Revoked";
+          } else {
+            document.getElementById("permission_contextmenus_status").innerText = "Permission NOT Revoked";
+          }
+        });
+});
+
+
+document.getElementById("permission_notifications_grant").addEventListener('click',function(event){
+        chrome.permissions.request({
+          permissions: ['notifications']
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            document.getElementById("permission_notifications_status").innerText = "Permission Granted";
+          } else {
+            document.getElementById("permission_notifications_status").innerText = "Permission NOT Granted";
+          }
+        });
+});
+
+document.getElementById("permission_notifications_revoke").addEventListener('click',function(event){
+        chrome.permissions.remove({
+          permissions: ['notifications']
+        }, function(revoked) {
+          // The callback argument will be true if the user granted the permissions.
+          if (revoked) {
+            document.getElementById("permission_notifications_status").innerText = "Permission Revoked";
+          } else {
+            document.getElementById("permission_notifications_status").innerText = "Permission NOT Revoked";
+          }
+        });
+});
+
+
+
+/*
+document.getElementById("permission_hostnames_add").addEventListener('click',function(event){
+        var newhostname = "https://"+document.getElementById("permission_newhostname").value+"/*";
+        chrome.permissions.request({
+          origins: [newhostname]
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            document.getElementById("permission_hostnames_status").innerText = "Permission Granted";
+            restore_options();
+          } else {
+            document.getElementById("permission_hostnames_status").innerText = "Permission NOT Granted";
+          }
+        });
+});
+
+*/
+
+
+
+
+
 
 document.getElementById("dont_parse_cc_logs").addEventListener('change', function(){
     if(this.checked){

@@ -38,6 +38,7 @@ var webdav_dir;//="#";
 document.addEventListener('DOMContentLoaded', loader);
 
 
+
 function replacer() {
 //console.log("executing replacer with objURL="+objURL);
     var target = document.body.innerHTML.replace(/\${PID}/g, pid);
@@ -245,6 +246,21 @@ function loader(){
 
   document.getElementById('optLink').href=chrome.extension.getURL("options.html");
   document.getElementById('hlpLink').href=chrome.extension.getURL("gd_help.html");
+
+  chrome.permissions.contains({
+      permissions: ['contextMenus']
+    }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            //OK
+          } else {
+            //gently ask user to grant the permission
+            document.getElementById("optLink").classList.add("blink_me");          
+          }
+  });
+
+  
+
 //added status: "complete" to avoid errors when clicking on internal notifications of extension
   chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
     

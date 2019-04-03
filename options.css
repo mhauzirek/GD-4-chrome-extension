@@ -36,3 +36,19 @@ html {
             padding : 3px;
             clear:both;
         }
+
+
+
+
+.blink_me {
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 1.2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 4;
+}
+
+@-webkit-keyframes blinker {  
+    0% { background-color: #999; color: #fff;}
+    50% { background-color: #000; color: #999;}
+    100% { background-color: #999; color: #fff;}
+}

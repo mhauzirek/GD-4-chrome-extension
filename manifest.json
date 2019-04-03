@@ -1,6 +1,9 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9030",
+  "version": "0.9032",
+  "version_name": "0.9032 BETA",
+
+
   "icons" : {
     "48" : "default_beta.png",
     "96" : "guy96_beta.png",
@@ -48,10 +51,12 @@
   "permissions" : [
     "https://*/*",
     "tabs",
-    "storage",
-    "notifications",
-    
-    "contextMenus"
+    "storage"
+  ],
+
+  "optional_permissions" : [
+    "contextMenus",
+    "notifications"
   ],
 
   "web_accessible_resources": ["cc_log_switching.js","identifiers_inject.js"],

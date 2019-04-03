@@ -543,10 +543,16 @@ graph_name = "Automated Data Distribution";
 
 
   //add tool with checkboxes
-  var last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
-  var pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
-  var pre_pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-3];
 
+    var last_element;
+    var pre_last_element;
+    var pre_pre_last_element;
+
+  if(document.body.firstChild.children){
+    last_element = document.body.firstChild.children[document.body.firstChild.children.length-1];
+    pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-2];
+    pre_pre_last_element = document.body.firstChild.children[document.body.firstChild.children.length-3];
+  }
 
 //console.log(last_element.textContent);
 
@@ -609,7 +615,7 @@ var first_error = document.querySelector('.ERROR');
 //console.log(first_error);
 
 //execution terminated -> make it error
-      if(match_last[6] && !first_error){
+      if(match_last && match_last[6] && !first_error){
         first_error = last_element;
         first_error.id="first_error";
         first_error.className += " ERROR";
@@ -656,7 +662,9 @@ var first_error = document.querySelector('.ERROR');
       run_from = Date.parse(match[1]);
 
       request_id = match[3];
-  //graph_name = ruby_specific || match[6] || match[10] || (add_parsing==true ? "Automated Data Distribution" : "(unknown)");
+      if(graph_name =='???'){
+        graph_name =  ruby_specific || match[6] || match[10] || (add_parsing==true ? "Automated Data Distribution" : "(unknown)");
+      }
       //properties = (match[4] ? match[4].split(", ") : null );
       var run_diff = (run_to-run_from)/1000;
       run_hour = Math.floor(run_diff/(60*60));
@@ -1995,7 +2003,7 @@ document.body.lastChild.appendChild(toolbox2);
 
 //var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\] \[INFO\]: request_id=[^ ]+    File: .*sql/g
 
-var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\]( \[INFO\]: request_id=[^ ]+)? Downloading file .*/g
+var gdp_plan_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[main\]( \[INFO\]: request_id=[^ ]+)? Downloading file [0-9]*_.*\.[ip]?sql.*/g
 var gdp_plan_match = original_source.match(gdp_plan_regexp);
 
 //var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[Ruby-[^\]]*\] \[INFO\]: request_id=[^ ]+ Executing script: .*sql/g
@@ -2039,7 +2047,9 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
 
     if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
       //we've never seen this phase_step yet create it
-      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_plan_line_match[4], phase_id: gdp_plan_line_match[4], status: "PLANNED", end_time: null, duration: null, start_time: null};
+
+
+      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:parseInt(gdp_plan_line_match[4],10), phase_id: gdp_plan_line_match[4], status: "PLANNED", end_time: null, duration: null, start_time: null};
       //unfinished_phases++;
       //phases_count++;
 //      console.log("adding new group "+phase_step);
@@ -2047,7 +2057,7 @@ if(gdp_plan_match!== null && gdp_plan_match !== undefined ){
       groups_count++
     }
 
-    var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_plan_line_match[4], phase_id: gdp_plan_line_match[3], status: "PLANNED", end_time: null, duration: null, start_time: null, iterator: iterator};
+    var new_phase = {phase_name: phase_name, top_process: false, process_id:parseInt(gdp_plan_line_match[4],10), phase_id: gdp_plan_line_match[3], status: "PLANNED", end_time: null, duration: null, start_time: null, iterator: iterator};
      if(!iterator) unfinished_phases++;
     phases_count++;
     
@@ -2087,7 +2097,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
       phase_name = phase_name+" => ["+gdp_start_line_match[6]+"]";
       var phase_title = " "+phase_name.substring(0,6)+"…=>"+gdp_start_line_match[6];
 
-      var new_phase = {phase_name: phase_name, top_process: false, process_id:gdp_start_line_match[4], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null, phase_title: phase_title, iteration: true};
+      var new_phase = {phase_name: phase_name, top_process: false, process_id:parseInt(gdp_start_line_match[4],10), phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null, phase_title: phase_title, iteration: true};
 
       unfinished_phases++;
       phases_count++;
@@ -2103,7 +2113,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 //if this group was not in plan or there was no plan
     if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
       //we've never seen this phase_step yet create it
-      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:gdp_start_line_match[4], phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null};
+      var new_group_phase = {phase_name: "Group "+phase_step, top_process: true, process_id:parseInt(gdp_start_line_match[4],10), phase_id: phase_id, status: "PLANNED", end_time: null, duration: null, start_time: null};
       phases_obj_arr["Group "+phase_step]=new_group_phase;
       groups_count++
     }
@@ -2113,7 +2123,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
 //if this phase was not in plan or there was no plan    
     if(!phases_obj_arr.hasOwnProperty(phase_name)){
-      var new_phase = {"phase_name": phase_name, "top_process": false, "process_id":gdp_start_line_match[4], "phase_id": phase_id, "status": "PLANNED", "end_time": null, "duration": null, "start_time": null, "iterator": iterator};
+      var new_phase = {"phase_name": phase_name, "top_process": false, "process_id":parseInt(gdp_start_line_match[4],10), "phase_id": phase_id, "status": "PLANNED", "end_time": null, "duration": null, "start_time": null, "iterator": iterator};
 
      if(!iterator) unfinished_phases++;
     phases_count++;    
@@ -2346,7 +2356,7 @@ var code = "";
 for(var i = 0; i< tuples.length; i++){
 //console.log(i);
   var value = tuples[i];
-//  console.log(value);
+//console.log(value);
 
       var this_phase = value;
       var phase_start = value.start_time;
@@ -2427,7 +2437,7 @@ text=text+"<div class='cc_phase_bar_timeline cc_phase_bar_timeline_"+phase_statu
 
 
 if(Math.round((phase_start-min_phase_start)*px_per_ms)>1000){
-  console.log("phase: "+this_phase.phase_name+" start: "+phase_start+" min_start: "+min_phase_start);
+  //console.log("phase: "+this_phase.phase_name+" start: "+phase_start+" min_start: "+min_phase_start);
 }
 
       text=text+"</td>";

@@ -23,6 +23,14 @@
 
 }
 
+.gd4chrome_clickreload_info {
+    font-weight: regular;
+    color: rgb(176, 176, 176);
+    font-size: 11px;
+;
+
+}
+
 .gd4chrome_title{
 color: rgb(255, 255, 255);
 display: block;

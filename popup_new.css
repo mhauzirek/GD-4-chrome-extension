@@ -230,3 +230,17 @@ text-decoration: none;
 .gd4chrome_close {
   font-weight: 500;
 }
+
+
+.blink_me {
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: .7s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 3;
+}
+
+@-webkit-keyframes blinker {  
+    0% { background-color: #000; color: #999;}
+    50% { background-color: #999; color: #fff;}
+    100% { background-color: #000; color: #999;}
+}

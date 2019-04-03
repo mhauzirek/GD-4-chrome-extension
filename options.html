@@ -100,6 +100,36 @@
     </fieldset>
 
     <fieldset>
+      <legend>Enable permissions:</legend>
+      <span class="detail">Grant special permissions to the extension</span><br><br>
+      <div id="permission_contextmenus_block">
+        Context Menus
+        <input type="button" id="permission_contextmenus_grant" value="Grant"> 
+        <input type="button" id="permission_contextmenus_revoke" value="Revoke"> 
+        <span id="permission_contextmenus_status"></span>
+      </div>
+      <div id="permission_notifications_block">
+        Desktop Notifications 
+        <input type="button" id="permission_notifications_grant" value="Grant"> 
+        <input type="button" id="permission_notifications_revoke" value="Revoke"> 
+        <span id="permission_notifications_status"></span>
+      </div>      
+    </fieldset>
+
+
+    <!-- fieldset>
+      <legend>Enabled for hostnames:</legend>
+      <span class="detail">Click to remove hostname</span><br><br>
+      <div id="permission_hostnames_block">
+      </div>
+      <br><br>
+      <div id="permission_hostnames_add_block">
+        <span class="detail">Add new hostname (use * as wildcard)</span><br>
+        https://<input type="text" size="50" id="permission_newhostname" value="*.gooddata.com">/* <input type="button" id="permission_hostnames_add" value="ADD"> <span id="permission_hostnames_status"></span>
+      </div>
+    </fieldset -->
+
+    <fieldset>
       <legend>Whitelabeled hostnames:</legend>
       <span class="detail">use full hostnames (i.e. na1.analytics.example.com) or Regular Expressions (i.e. .*\.example\.com)</span><br>
       <input type="text" id="add_wl_domain">
@@ -112,7 +142,6 @@
       <br><input type="text" id="wl_domains_json" size="80" value="">
       <input type="button" id="import_wl_domains" value="Import Hostnames">
     </fieldset>
-
     <fieldset>
         <legend>Magic buttons:</legend>
         <div class="detail">You can add up to five custom buttons. Click on the examples below to set magic button.</div>

@@ -118,13 +118,26 @@ console.log(request);
         break;
 
 
+        case "removeContextMenu":
+            chrome.contextMenus.removeAll();
+        break;
+
 
       case "updateContextMenu":
 
-        chrome.contextMenus.removeAll();
-        var gd_menu = chrome.contextMenus.create(contextMenuItem);
-        chrome.contextMenus.onClicked.addListener(cm_clickHandler)
-
+        chrome.permissions.contains({
+          permissions: ['contextMenus']
+        }, function(granted) {
+          // The callback argument will be true if the user granted the permissions.
+          if (granted) {
+            chrome.contextMenus.removeAll();
+            contextMenuItem.documentUrlPatterns = request.hostnames;
+            var gd_menu = chrome.contextMenus.create(contextMenuItem);
+            chrome.contextMenus.onClicked.addListener(cm_clickHandler)
+          } else {
+            console.log("Context Menu Permission not granted, go to GD Extension options to grant it manually");
+          }
+        });
       break;
 
 
@@ -204,31 +217,35 @@ function notify(title, text, tab, img, link) {
   img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
   //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
 
-  chrome.notifications.getPermissionLevel(function(permissionLevel){
-    if(permissionLevel == "granted"){
-      //permission allowed
 
-      var notOptions = {
+     chrome.permissions.contains({
+        permissions: ['notifications']
+      }, function(result) {
+        if (result) {
+        var notOptions = {
         type: "basic",
         title: title,
         message: text,
         iconUrl: img
       };
+
+      chrome.notifications.onClicked.addListener(function (notID){
+          chrome.notifications.clear(notID,function(cleared){});
+        });
       
       chrome.notifications.create("id"+notID++, notOptions, function(notID){
         console.log("created notification "+notID+" with title "+title);
       });
-    }else{
-      console.log("GD4Chrome cannot display notification:");
-      console.log(permissionLevel);
-    }
-  });
+        } else {
+          console.log("The extension doesn't have the permissions.");
+        }
+      });
 }
 
 
 function audio_notify(title, text, tab, img, link, sound_scheme) {
 
-  console.log("inside audio notify");
+  //console.log("inside audio notify");
 
   img = typeof img !== 'undefined' ? img : 'icons/gd19_rebrand_black.png';
   //tab = typeof tab !== 'undefined' ? tab : chrome.tabs.query({active: true}, function (ac){tab=});
@@ -242,7 +259,7 @@ function audio_notify(title, text, tab, img, link, sound_scheme) {
     }
 
     if(sound){
-      console.log("playing sound");
+      //console.log("playing sound");
         var notifySound = new Audio(sound);
         notifySound.play();
     }
@@ -332,7 +349,7 @@ var response = {
     pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
     obj: (!objParse || !objParse[1] ? null : objParse[1])
 };
-console.log(response);
+//console.log(response);
 return response;
 }
 
@@ -436,13 +453,13 @@ var parsed = parse_gd_url(tab.url);
 
 
 chrome.runtime.onSuspend.addListener(function(){
-    console.info("GoodData extension for chrome is going to sleep");
+    //console.info("GoodData extension for chrome is going to sleep");
   });
 
 
 chrome.runtime.onInstalled.addListener(function(details){
     if(details.reason == "install"){
-        console.log("This is a first install of GoodData Extension Tool!");
+        //console.log("This is a first install of GoodData Extension Tool!");
         notify("Welcome to GoodData Extension Tool!", "Click here to see the help",null,"install_96.png","gd_help.html#top");
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
@@ -450,10 +467,6 @@ chrome.runtime.onInstalled.addListener(function(details){
         notify("GoodData Extension has been updated!", "Check help to see what is new and enjoy!",null,"install_96.png","gd_help.html#changelog");
     }
 });
-
-chrome.notifications.onClicked.addListener(function (notID){
-          chrome.notifications.clear(notID,function(cleared){});
-        });
 
  
 //Export project
