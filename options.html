@@ -23,7 +23,7 @@
  */
 -->
 <html>
-<head><title>GD 4 Chrome Extension Options</title></head>
+<head><title>GoodData Extension Options</title></head>
     <link rel="stylesheet" type="text/css" href="options.css" />   
 
 <body>
@@ -38,7 +38,7 @@
         "hostname - for example to distinguish whether you are on PI or secure",
         "PID - to be sure which project are you currently playing with" 
       ],
-      "You can disable CloudConnect logs parsing if you don't like colors or it is too slow on your computer.",
+      "You can disable logs parsing if you don't like colors or it is too slow on your computer.",
       "If you want to use this extension on <b>whitelabeled</b> environment (GoodData running on other domain than *.gooddata.com), you need to add the domain below. Note that the extension will not be whitelabeled."
     ],
     "usage info": "see <a href="gd_help.html">the help</a>",
@@ -130,46 +130,63 @@
     </fieldset -->
 
     <fieldset>
-      <legend>Whitelabeled hostnames:</legend>
-      <span class="detail">use full hostnames (i.e. na1.analytics.example.com) or Regular Expressions (i.e. .*\.example\.com)</span><br>
+      <legend>Whitelabeled hostnames  (and GD domains:)</legend>
+      <span class="detail">use full hostnames (i.e. na1.analytics.example.com)</span><br>
       <input type="text" id="add_wl_domain">
       <input type="button" id="add_wl" value="Add new">
       <br>
       <select multiple="multiple" id="wl_domains">
-      </select>
-      <br><input type="button" id="remove_wl_domains_button" value="Remove selected">
+      </select><input type="button" id="remove_wl_domains_button" value="Remove selected">
+<br><br>
+      <legend>Associated GD domains:</legend>
+      <span class="detail">Associate GD domain (i.e. example-dev) to hostname if you have domain admin rights. Enables to use ${DOMAIN} in magic buttons</span><br>
+      <input type="text" id="add_wl_hostname" size="40"> <input type="text" id="add_wl_gddomain" size="20">
+      <input type="button" id="add_gddomain" value="Add new">
+      <br>
+      <select multiple="multiple" id="wl_gddomains" with="40">
+      </select><input type="button" id="remove_wl_gddomains_button" value="Remove selected">
+<br><br>      
       <br><br><span class="detail">Manual import/export hostname settings (copy &amp; paste into another instance)</span>
       <br><input type="text" id="wl_domains_json" size="80" value="">
       <input type="button" id="import_wl_domains" value="Import Hostnames">
     </fieldset>
+
     <fieldset>
         <legend>Magic buttons:</legend>
-        <div class="detail">You can add up to five custom buttons. Click on the examples below to set magic button.</div>
-        <div>Or use wildcards ${SERVER}, ${PID}, ${OBJ} to create your own.</div>
+        <div class="detail">You can add up to five custom buttons. Click on the examples below to set magic button. Or use wildcards ${SERVER}, ${PID}, ${OBJ} and ${DOMAIN} to create your own.</div>
+        <br>
         <div>
-          <a id="magic_validate" href="#">Validation</a>
-          <a id="magic_clone" href="#">Clone project</a>
-          <a id="magic_params" href="#">ETL Params</a>
-          <a id="magic_add" href="#">Automated Data Distribution</a>
+          Project-level:
+          <a id="magic_validate" href="#">Validation</a>, 
+          <a id="magic_clone" href="#">Clone project</a>, 
+          <a id="magic_params" href="#">ETL Params</a>, 
+          <a id="magic_add" href="#">Automated Data Distribution</a>, 
+          <a id="magic_ff" href="#">Project Hierarcical Settings</a>
+          <br>
+          Domain-level:
+          <a id="magic_dom_ff" href="#">Domain Hierarcical Settings</a>, 
+          <a id="magic_dom_users" href="#">Domain Users</a>, 
+          <a id="magic_dom_wl" href="#">Whitelabeling settings</a>, 
+          <a id="magic_dom_lcm" href="#">LCM Data Products</a>
         </div>
         <br>
-        <label for="magic_title">Title: </label><input type="text" id="magic_title" maxlength="5"><br>
+        <label for="magic_title">Title: </label><input type="text" id="magic_title" maxlength="5"> <input type="button"  id="reset_magic" value="Remove"><br>
         <label for="magic_help">Popup help: </label><input type="text" id="magic_help"><br>
         <label for="magic_link">Link: </label><input type="text" id="magic_link" size="90"><br>
         <br>
-        <label for="magic2_title">Title: </label><input type="text" id="magic2_title" maxlength="5"><br>
+        <label for="magic2_title">Title: </label><input type="text" id="magic2_title" maxlength="5"> <input type="button"  id="reset_magic2" value="Remove"><br>
         <label for="magic2_help">Popup help: </label><input type="text" id="magic2_help"><br>
         <label for="magic2_link">Link: </label><input type="text" id="magic2_link" size="90"><br>
         <br>
-        <label for="magic3_title">Title: </label><input type="text" id="magic3_title" maxlength="5"><br>
+        <label for="magic3_title">Title: </label><input type="text" id="magic3_title" maxlength="5"> <input type="button"  id="reset_magic3" value="Remove"><br>
         <label for="magic3_help">Popup help: </label><input type="text" id="magic3_help"><br>
         <label for="magic3_link">Link: </label><input type="text" id="magic3_link" size="90"><br>                
         <br>
-        <label for="magic4_title">Title: </label><input type="text" id="magic4_title" maxlength="5"><br>
+        <label for="magic4_title">Title: </label><input type="text" id="magic4_title" maxlength="5"> <input type="button"  id="reset_magic4" value="Remove"><br>
         <label for="magic4_help">Popup help: </label><input type="text" id="magic4_help"><br>
         <label for="magic4_link">Link: </label><input type="text" id="magic4_link" size="90"><br>                
         <br>
-        <label for="magic5_title">Title: </label><input type="text" id="magic5_title" maxlength="5"><br>
+        <label for="magic5_title">Title: </label><input type="text" id="magic5_title" maxlength="5"> <input type="button"  id="reset_magic5" value="Remove"><br>
         <label for="magic5_help">Popup help: </label><input type="text" id="magic5_help"><br>
         <label for="magic5_link">Link: </label><input type="text" id="magic5_link" size="90"><br>                
     </fieldset>

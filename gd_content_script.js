@@ -26,7 +26,7 @@
  * it is embeded to GD pages and sends message to wakeup extension
  */
 
-function getUILink(category,pid,obj){
+function getUILink(category,pid,obj,identifier){
   var objURL = "#";
   switch(category){    
                 case 'projectDashboard' :
@@ -64,6 +64,12 @@ function getUILink(category,pid,obj){
                  //analytical designer objects
                   objURL = '/analyze/#/'+pid+'/'+obj+'/edit';
                  break; 
+
+                 case 'analyticalDashboard':
+                 //analytical designer objects
+                  objURL = '/dashboards/#/project/'+pid+'/dashboard/'+identifier;
+                 break; 
+
 
                 default:
                   objURL="#";
@@ -159,12 +165,15 @@ chrome.extension.onMessage.addListener(
        case "showTooltip":
           //console.log("showing tooltip for project "+request.PID+", server "+request.server+" selection: "+request.selection);
 
-            var sel = selection2urltype(request.selection);
+            selection2urltype(request.selection,request.server,request.pid).then(function(response) {
+              showTooltip(request.PID, request.server, response.obj_url, response.type, response.element_url);
+            });
+            
             //console.log(sel);
 
           //translate selection to url and type;
 
-          showTooltip(request.PID, request.server, sel.obj_url, sel.type, sel.element_url);
+          
 
       break;
 
@@ -182,16 +191,17 @@ chrome.extension.onMessage.addListener(
   });
 }
 
+function selection2urltype(selection,server,pid){
+  return new Promise(function(resolve, reject) {
 
-function selection2urltype(selection){
-  var result = {type: "none", obj_url:"", element_url:"", pid: ""};
+  var result = {type: "none", obj_url:"", element_url:"", pid: pid};
   var obj_regexp = /(\/gdc\/md\/([^\/]*)\/obj\/([0-9]*))(\/elements\?id=[0-9]*)?/
   var obj_matches = obj_regexp.exec(selection);
 
 //console.log(obj_matches);
 
   if(obj_matches){
-    //matched 
+    //matched object_id or element_id
     result.obj_url = obj_matches[1];
     result.pid = obj_matches[2];
     if(obj_matches[4]){
@@ -200,12 +210,51 @@ function selection2urltype(selection){
     }else{
       result.type = "object";
     }
-  }else{
-    result.type = "none";
-  }
-  return result;
-}
 
+    resolve(result);
+
+  }else{
+
+    
+    //TODO add parsing of identifier here (but need server and pid from external source to be able to call identifiers API)
+
+    var identifier_info = new XMLHttpRequest();
+    var payload = {"identifierToUri": [selection]};
+
+
+    identifier_info.onload = function() {
+//console.log(identifier_info.responseText);
+
+      if (identifier_info.status==200) {
+        var resp = JSON.parse(identifier_info.responseText);
+        if(resp.identifiers.length > 0){
+          var obj_url = resp.identifiers[0].uri;
+          result.obj_url = obj_url;
+          result.type = "object_identifier";
+          resolve(result);
+        }else{
+          //not a valid identifier
+          result.type = "none";
+          resolve(result);
+        }
+      }else if(identifier_info.status==401) {
+          result.type = "token_expired";
+          resolve(result);
+      }else{
+          console.log("cannot translate identifier")
+          result.type = "none";
+          resolve(result);
+      }
+  };
+  identifier_info.open("POST", "https://"+server+"/gdc/md/"+pid+"/identifiers");
+  identifier_info.setRequestHeader("Accept", "application/json");
+  identifier_info.setRequestHeader("Content-Type", "application/json");
+  identifier_info.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/"+chrome.runtime.getManifest().version);
+  identifier_info.send(JSON.stringify(payload));
+  }
+});
+  
+}
 
 
 function hideProjectInfo(){
@@ -236,6 +285,15 @@ function html_entities(rawStr){
 }
 
 
+
+function obj_info_token_failed(){
+      document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Session expired. Click to reload and try again</span>";
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
+      document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";  
+}
+
+
 function get_object_info(pid,server,url){
 
   document.getElementById("gd4chrome_tooltip_uri").innerHTML="<a href='https://"+server+url+"'>"+html_entities(url)+"</a>";
@@ -260,24 +318,22 @@ function get_object_info(pid,server,url){
 
       var object_id = object.meta.uri.split('/')[5];
       var project_id = object.meta.uri.split('/')[3];
+      var identifier = object.meta.identifier;
 
       //console.log(resp);
       //console.log(object);
       var category = object.meta.category;
 
       //console.log("category: "+category+" project_id: "+project_id+" object_id: "+object_id);
-      var uilink = getUILink(category,project_id,object_id);
+      var uilink = getUILink(category,project_id,object_id,identifier);
       //console.log(uilink);
 
       document.getElementById("gd4chrome_tooltip_title").innerHTML="<a href='"+uilink+"' title='click to open in UI'>"+html_entities(object.meta.title)+"</a>";
       document.getElementById("gd4chrome_tooltip_category").innerHTML=html_entities(object.meta.category);
-      document.getElementById("gd4chrome_tooltip_identifier").innerHTML=object.meta.identifier;
+      document.getElementById("gd4chrome_tooltip_identifier").innerHTML=identifier;
       
     }else if(obj_info.status==401){
-      document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
-      document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Token expired. Click to reload and try again</span>";
-      document.getElementById("gd4chrome_tooltip_identifier").innerHTML="N/A";
-      document.getElementById("gd4chrome_tooltip_element").innerHTML="N/A";
+      obj_info_token_failed();
 
     }else if(obj_info.status==404){
       document.getElementById("gd4chrome_tooltip_title").innerHTML="N/A";
@@ -374,10 +430,10 @@ function get_element_info(pid,server,url,element_url){
 
 function clearTooltipInfo(){
 
-  document.getElementById("gd4chrome_tooltip_uri").innerHTML="No URL identified in your selection"
+  document.getElementById("gd4chrome_tooltip_uri").innerHTML="No URL or identifier found in your selection"
   document.getElementById("gd4chrome_tooltip_category").innerHTML="<span class='gd4chrome_clickreload_info'>No GoodData object URL (/gdc/md/PID/obj/XXX) </span>";
   document.getElementById("gd4chrome_tooltip_title").innerHTML="<span class='gd4chrome_clickreload_info'>or element URL (/gdc/md/PID/obj/XXX/elements?id=YY)</span>";
-  document.getElementById("gd4chrome_tooltip_identifier").innerHTML="<span class='gd4chrome_clickreload_info'>were found in selected text</span>";
+  document.getElementById("gd4chrome_tooltip_identifier").innerHTML="<span class='gd4chrome_clickreload_info'>or valid object identifier were found in selected text</span>";
   document.getElementById("gd4chrome_tooltip_element").innerHTML="";
 
 }
@@ -407,7 +463,7 @@ function get_basic_info(pid,server){
       document.getElementById("gd4chrome_updated").title=resp.project.meta.updated;
     }else if(proj_info.status==401){
       document.getElementById("gd4chrome_title").innerHTML="<span class='gd4chrome_clickreload'>Unauthorized</span>";
-      document.getElementById("gd4chrome_summary").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Token probably expired. Click here to reload and then try again.</span>";
+      document.getElementById("gd4chrome_summary").innerHTML="<span class='gd4chrome_clickreload' onclick='location.reload()'>Session probably expired. Click here to reload and then try again.</span>";
     }else{
       resp = JSON.parse(proj_info.responseText);
       document.getElementById("gd4chrome_title").innerHTML="<span class='gd4chrome_clickreload'>ERROR</span>";
@@ -1053,6 +1109,11 @@ function showTooltip(pid, server,url,type, element_url){
             gd4chrome_tooltip_div.innerHTML = infobox_src;
             document.body.insertBefore(gd4chrome_tooltip_div,document.body.firstChild);
           }
+        if(type=="token_expired"){
+          document.getElementById("gd4chrome_object_info_title").innerText="Token Expired";
+          document.getElementById("gd4chrome_tooltip_element_row").style="display:none";
+          obj_info_token_failed();
+        }
         
         if(type=="none"){
           document.getElementById("gd4chrome_object_info_title").innerText="Unrecognized selection";
@@ -1064,6 +1125,11 @@ function showTooltip(pid, server,url,type, element_url){
           document.getElementById("gd4chrome_tooltip_element_row").style="display:none";
           get_object_info(pid, server, url);  
         }
+        if(type=="object_identifier"){
+          document.getElementById("gd4chrome_object_info_title").innerText="Object Identifier info";
+          document.getElementById("gd4chrome_tooltip_element_row").style="display:none";
+          get_object_info(pid, server, url);  
+        }        
         if(type=="element"){
           document.getElementById("gd4chrome_object_info_title").innerText="Element value URI info";
           document.getElementById("gd4chrome_tooltip_element_row").style="display:table-row";
@@ -1116,10 +1182,10 @@ chrome.storage.local.get("wl_domains", function(items)
           {
             //console.log("Domains set for GD Extension:"+items.wl_domains);
             var url_matched = false;
-            var url_regexp = /.*\.(get)?gooddata\.com$/;
+            var url_regexp = /secure\.gooddata\.com$/;
             var url_matches = url_regexp.exec(location.hostname);
 
-            var menu_hostnames = ["https://*.gooddata.com/*"];
+            var menu_hostnames = ["https://secure.gooddata.com/*"];
 
 
             var domainsLength = 0;
@@ -1133,24 +1199,24 @@ chrome.storage.local.get("wl_domains", function(items)
             //console.log(menu_hostnames);
 
             if(url_matches){
-              console.log("GoodData domain detected, executing GD Extension");
+//console.log("GoodData domain detected, executing GD Extension");
               url_matched = true;
             }else{
               /* original implementation - exact match */
               if(array_contains(items.wl_domains,location.hostname)){
-                console.log(location.hostname+" is in whitelabeled domains list. executing GD Extension");
+//console.log(location.hostname+" is in whitelabeled domains list. executing GD Extension");
                 url_matched = true;
               }else{
                 /*if exact match is not found, try regexp for each record in wl list*/              
                 var domainsLength = 0;
                 if(items.wl_domains!==undefined) domainsLength = items.wl_domains.length;
                 for (var i = 0; i < domainsLength; i++) {
-                  //console.log("testing: "+ items.wl_domains[i]);
+//console.log("testing: "+ items.wl_domains[i]);
                   try{
                     var url_regexp_re = new RegExp(items.wl_domains[i], "i");
                     var url_matches_re = url_regexp_re.exec(location.hostname);
                     if(url_matches_re){
-                      //console.log(location.hostname+" matches '"+items.wl_domains[i]+"' in the whitelabeled domains list. executing GD Extension");
+//console.log(location.hostname+" matches '"+items.wl_domains[i]+"' in the whitelabeled domains list. executing GD Extension");
                       url_matched = true;
                       break;
                     }
@@ -1172,6 +1238,7 @@ chrome.storage.local.get("wl_domains", function(items)
 
             }else{
                 console.log(location.hostname+" does not match anything in GoodData Extension whitelabeled domain list. Can be added in extension settings - "+chrome.extension.getURL("options.html"));
+                  chrome.extension.sendMessage({message: "unknownHostname", hostname: location.hostname});
               }
           });
 

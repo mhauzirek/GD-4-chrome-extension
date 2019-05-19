@@ -456,7 +456,7 @@ function parseCClog(){
 /*------------------*/
 /*temporary before specific ADS integrator flavor gets added to logs*/
 
-var ruby_adsint_regexp = /ads_integrator/
+var ruby_adsint_regexp = /type=ads_integrator/
 var ruby_adsint_match = ruby_adsint_regexp.exec(document.body.firstChild.textContent);
 //console.log(ruby_adsint_match);
 if(ruby_adsint_match){
@@ -2544,7 +2544,7 @@ document.body.lastChild.appendChild(hider);
 document.body.lastChild.appendChild(toolbox2);
 
 
-var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[^\]]*\] \[INFO\]: \[[^\]]*\] Starting (parallel )?entity [^ ]* integration.*/g
+var gdp_start_regexp =/[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4} \[[^\]]*\] \[INFO\]: .* Starting (parallel )?entity [^ ]* integration.*/g
 var gdp_start_match = original_source.match(gdp_start_regexp);
 //console.log(gdp_start_match);
 
@@ -2569,7 +2569,7 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 //  console.log("we have "+gdp_length+" starts of phases");
 
 
-  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]*\] \[INFO\]: \[[^\]]*\] Starting (parallel )?entity ([^ ]*) integration/
+  var gdp_start_line_regexp = /([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}[+-][0-9]{4}) \[[^\]]*\] \[INFO\]: .* Starting (parallel )?entity ([^ ]*) integration/
   // (key => out_event2018-02-28,anchor_table_name => out_event,partition_key => 2018-02-28)
 
   var gdp_start_line_match;
@@ -2587,7 +2587,6 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
 
 
 //if this group was not in plan or there was no plan
-
 /*
     if(!phases_obj_arr.hasOwnProperty("Group "+phase_step)) {
       //we've never seen this phase_step yet create it
@@ -2596,7 +2595,6 @@ if(gdp_start_match!== null && gdp_start_match !== undefined ){
       groups_count++
     }
 */
-
  
 //if this phase was not in plan or there was no plan    
     if(!phases_obj_arr.hasOwnProperty(phase_name))
@@ -2658,12 +2656,15 @@ if(!gdp_end2_match){
 
 //console.log(gdp_end_match[i]);
 //console.log(gdp_end_line_match);
+
+//console.log(phases_obj_arr);
     }
     var phase_name = gdp_end_line_match[2];
     var phase_id = gdp_end_line_match[2];
 
     update_phase = phases_obj_arr[phase_name]
     /*update_group = phases_obj_arr["Group "+phase_step];*/
+
 
     update_phase.end_time = Date.parse(gdp_end_line_match[1]);
     update_phase.status="OK";

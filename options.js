@@ -23,25 +23,21 @@
 
 // Saves options to localStorage.
 
-/*
 
-        chrome.permissions.request({
-          permissions: ['contextMenus']
-        }, function(granted) {
-          // The callback argument will be true if the user granted the permissions.
-          if (granted) {
-            console.log("Context Menu Permission granted");
-            chrome.contextMenus.removeAll();
-            contextMenuItem.documentUrlPatterns = request.hostnames;
-            var gd_menu = chrome.contextMenus.create(contextMenuItem);
-            chrome.contextMenus.onClicked.addListener(cm_clickHandler)
-          } else {
-            console.log("Context Menu Permission not granted");
-          }
-        });
+function testStorage(){
+  chrome.storage.local.get(null,function(items){
+    //console.log(items);
+  });
+
+  for(var i = 0; i<localStorage.length; i++){
+    console.log(localStorage[i]);
+  }
+}
 
 
-*/
+
+
+
 
 
 function remove_hostname(src){
@@ -65,6 +61,15 @@ var hostname = src.value;
 }
 
 
+function find_free_magic(){
+  if(document.getElementById("magic_title").value=="") return "magic";
+  if(document.getElementById("magic2_title").value=="") return "magic2";
+  if(document.getElementById("magic3_title").value=="") return "magic3";
+  if(document.getElementById("magic4_title").value=="") return "magic4";
+  return "magic5";
+}
+
+
 
 function set_magic(magic_name,title, help, link){
   document.getElementById(magic_name+"_title").value=title;
@@ -80,7 +85,7 @@ function import_options(){
     try{
       opt = JSON.parse(document.getElementById("options_json").value);
       for (i in opt){
-        console.log("importing "+i+":"+opt[i]);
+        //console.log("importing "+i+":"+opt[i]);
         localStorage[i] = opt[i];
       }
       restore_options();
@@ -92,12 +97,62 @@ function import_options(){
 
 function import_wl_domains(){
   try{
-    var wl_domains = JSON.parse(document.getElementById("wl_domains_json").value);
-    chrome.storage.local.set(wl_domains);
-    read_wl_domains();
-  }
-  catch(err){
-    console.log("error importing whitelabeled hostnames");
+    var select = document.getElementById("wl_domains");
+    var new_select = document.createElement("select");
+
+    var wl_object = JSON.parse(document.getElementById("wl_domains_json").value);
+    var wl_domains = wl_object.wl_domains;
+
+
+//console.log(wl_domains);
+//console.log(wl_domains.length);
+
+  var sites = [];
+  if(wl_domains && wl_domains.length>0){
+    for(i=0; i<wl_domains.length; i++){
+        //check for invalid hostnames
+
+        var valid_hostname_regexp = /^(\*\.)?[^/\\*]+$/
+        var hostname_matches = valid_hostname_regexp.exec(wl_domains[i]);
+
+        if(!hostname_matches){
+          alert("Following imported hostname pattern ignored\regular expressions in hostnames no longer supported\rPlease use plain wildcard * instead\r\r"+wl_domains[i]);
+          continue;
+        }
+
+        sites.push("https://"+wl_domains[i]+"/");
+
+        var opt = document.createElement('option');
+        opt.value = wl_domains[i];
+        opt.innerHTML = wl_domains[i];
+        new_select.appendChild(opt);
+
+        continue;
+        //break;
+      }
+    }
+
+    var perm = {permissions: ["tabs","contextMenus","notifications"],origins: sites};
+
+//console.log(sites);
+//console.log(perm);
+
+    chrome.permissions.request(perm,function(granted){
+      if(granted){
+         //OK
+         var wl_object = {"wl_domains": wl_domains};
+          chrome.storage.local.set(wl_object, function(){
+            select.innerHTML = new_select.innerHTML;
+            read_wl_domains();  
+          });
+          
+       } else {
+         console.log("Permissions NOT granted to some or all of: '"+sites);
+       }
+    });
+    }catch(err){
+    console.log("error importing whitelabeled hostnames: "+err);
+    alert("Error importing hostnames:\r"+err);
   }
 }
 
@@ -116,66 +171,98 @@ function default_icon_changed(){
 
  function remove_wl_domains(){
   var select = document.getElementById("wl_domains");
+  var hostnames = [];
+  for(i=0; i<select.length; i++){
+    if(select[i].selected){
+      var hostname = "https://"+select[i].innerText+"/*";
+      hostnames.push(hostname);
+      select.removeChild(select[i]);
+      i--;
+    }
+  }
+
+      try{
+        chrome.permissions.remove({
+          origins: hostnames
+        }, function(revoked) {
+          void chrome.runtime.lastError;//ignore error
+          // The callback argument will be true if the user granted the permissions.
+          if (revoked) {
+            console.log("Permissions Revoked");
+          } else {
+            console.log("Permissions NOT Revoked");
+          }
+        });
+      }
+      catch(err){
+        console.log(err);
+      }
+}
+
+
+ function add_wl_gddomain(){
+  var select = document.getElementById("wl_gddomains");
+  var text = document.getElementById("add_wl_hostname");
+  var domain = document.getElementById("add_wl_gddomain");
+  var exists = false;
+
+  if(text.value!=''){
+    for(i=0; i<select.length; i++){
+      if(select[i].value==text.value){
+        exists=true;
+        alert("This value is already there. In case of issues try to remove it add add again.");
+        break;
+      }
+    }
+    if(!exists){
+
+            var opt = document.createElement('option');
+            opt.value = text.value + ' ~ ' + domain.value;
+            opt.innerHTML = text.value + ' ~ ' + domain.value;
+            select.appendChild(opt);
+            text.value='';
+            domain.value='';
+      }
+  }
+ }
+
+
+  function remove_wl_gddomains(){
+  var select = document.getElementById("wl_gddomains");
+  var hostnames = [];
   for(i=0; i<select.length; i++){
     if(select[i].selected){
       select.removeChild(select[i]);
       i--;
     }
   }
+
 }
+
+
 
  function add_wl_domain(){
   var select = document.getElementById("wl_domains");
   var text = document.getElementById("add_wl_domain");
   var exists = false;
+
   if(text.value!=''){
     for(i=0; i<select.length; i++){
       if(select[i].value==text.value){
         exists=true;
-        alert("This value is already there.");
+        alert("This value is already there. In case of issues try to remove it add add again.");
         break;
       }
     }
     if(!exists){
-      var opt = document.createElement('option');
-      opt.value = text.value;
-      opt.innerHTML = text.value;
-      select.appendChild(opt);
-      text.value='';
-    }
-  }
- }
 
- function add_wl_domain_dynamic(){
+        
 
-chrome.permissions.getAll(function(permissions){
-  console.log(permissions)}
-  );
+        var site_arr = ['https://'+text.value+"/*"];
 
-chrome.permissions.remove( {"origins":['https://*/*']});
-
-
-
-
-
-  var select = document.getElementById("wl_domains");
-  var text = document.getElementById("add_wl_domain");
-  var exists = false;
-  var sites = [];
-  if(text.value!=''){
-    for(i=0; i<select.length; i++){
-      sites.push("https://"+select[i].value+"/");
-      if(select[i].value==text.value){
-        exists=true;
-        alert("This value is already there.");
-
-        continue;
-        //break;
-      }
-    }
-    if(!exists){
         chrome.permissions.request({
-          origins: sites
+          permissions: ["tabs","contextMenus","notifications"],
+          origins: site_arr
         }, function(granted) {
           // The callback argument will be true if the user granted the permissions.
           if (granted) {
@@ -185,22 +272,19 @@ chrome.permissions.remove( {"origins":['https://*/*']});
             select.appendChild(opt);
             text.value='';
           } else {
-            console.log("Permission to access '"+sites+"' not granted.");
+//            console.log("Permission not granted.");
+            var myError = chrome.runtime.lastError;
+            if(myError){
+              alert("Error, invalid hostname entered:\r'"+text.value+"'\r\rPlease enter valid hostname.");
+              console.log(myError);
+            }
           }
         });
-
-
-
-    }
+      }
   }
  }
 
-
-
-      
-
-
- function read_wl_domains(){
+ function read_wl_domains_backup(){
   var select = document.getElementById("wl_domains");
   //remove all first
   while (select.firstChild) {
@@ -223,17 +307,87 @@ chrome.permissions.remove( {"origins":['https://*/*']});
  }
 
 
- function write_wl_domains(){
+ function read_wl_domains(){
+  var select = document.getElementById("wl_domains");
+  //remove all first
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+
+  var select_gdd = document.getElementById("wl_gddomains");
+  //remove all first
+  while (select_gdd.firstChild) {
+    select_gdd.removeChild(select_gdd.firstChild);
+  }
+
+
+  chrome.storage.local.get(null, function(items){
+            //console.log(items.wl_domains);
+            if(items.wl_domains) for(i=0; i<items.wl_domains.length; i++){
+              var opt = document.createElement('option');
+              opt.value = items.wl_domains[i];
+              opt.innerHTML = items.wl_domains[i];
+              select.appendChild(opt);
+            }
+
+            if(items.gd_domains) for (var key in items.gd_domains) {
+            // skip loop if the property is from prototype
+            if (!items.gd_domains.hasOwnProperty(key)) continue;
+
+              var gddomain = items.gd_domains[key];
+              var opt = document.createElement('option');
+              opt.value = gddomain.hostname+" ~ "+gddomain.gddomain;
+              opt.innerHTML = gddomain.hostname+" ~ "+gddomain.gddomain;
+              select_gdd.appendChild(opt);
+            }
+
+            document.getElementById("wl_domains_json").value=JSON.stringify(items);
+          }
+          );
+ }
+
+
+ function write_wl_domains_backup(){
   var select = document.getElementById("wl_domains");
   var arr = [];
   for(i=0; i<select.length; i++){
     arr[i]=select[i].value;
   }
 
-  console.log(arr);
+//  console.log(arr);
   chrome.storage.local.set({wl_domains: arr});
   chrome.storage.local.get("wl_domains", function(items)
     {
+      document.getElementById("wl_domains_json").value=JSON.stringify(items);  
+    });
+ }
+
+
+  function write_wl_domains(){
+  var select = document.getElementById("wl_domains");
+  var arr = [];
+  for(i=0; i<select.length; i++){
+    arr[i]=select[i].value;
+  }
+
+  var select_gdd = document.getElementById("wl_gddomains");
+  var arr_gdd = {};
+  for(i=0; i<select_gdd.length; i++){
+    var value = select_gdd[i].value;
+    var val_parts = value.split(' ~ ');
+console.log(val_parts);
+    var hostname = val_parts[0];
+    var gddomain = val_parts[1];
+    var v = {hostname: hostname, gddomain: gddomain};
+    arr_gdd[hostname]=v;
+  }  
+
+//console.log(arr_gdd);
+  chrome.storage.local.set({wl_domains: arr});
+  chrome.storage.local.set({gd_domains: arr_gdd});
+  chrome.storage.local.get(null, function(items)
+    {
+//      console.log(items);
       document.getElementById("wl_domains_json").value=JSON.stringify(items);  
     });
  }
@@ -347,7 +501,7 @@ function save_options() {
 
   console.log("Options saved");
 
-console.log(localStorage);
+//console.log(localStorage);
 
   var statuses = document.querySelectorAll('.status')
   for (var i=0; i<statuses.length; i++){
@@ -662,21 +816,21 @@ if (magic5_title) {
   document.getElementById("options_json").value = JSON.stringify(localStorage);
 
   chrome.permissions.getAll(function(permissions){
-    console.log(permissions);
+    //console.log(permissions);
     if(permissions.permissions.includes("contextMenus")){
-      console.log("we have context menus");
+      //console.log("we have context menus");
       document.getElementById("permission_contextmenus_status").innerText = 'GRANTED';
     }else{
-      console.log("we DO NOT have context menus");
+      //console.log("we DO NOT have context menus");
       document.getElementById("permission_contextmenus_status").innerHTML = '<b>NOT GRANTED</b>';
       document.getElementById("permission_contextmenus_block").classList.add("blink_me");
     }
 
     if(permissions.permissions.includes("notifications")){
-      console.log("we have notifications");
+      //console.log("we have notifications");
       document.getElementById("permission_notifications_status").innerText = 'GRANTED';
     }else{
-      console.log("we DO NOT have notifications");
+      //console.log("we DO NOT have notifications");
       document.getElementById("permission_notifications_status").innerHTML = '<b>NOT GRANTED</b>';
     }
 
@@ -740,34 +894,77 @@ document.querySelector('#import_wl_domains').addEventListener('click',import_wl_
 document.querySelector('#remove_wl_domains_button').addEventListener('click', remove_wl_domains);  
 document.querySelector('#add_wl').addEventListener('click', add_wl_domain);
 
+document.querySelector('#add_gddomain').addEventListener('click', add_wl_gddomain);
+document.querySelector('#remove_wl_gddomains_button').addEventListener('click', remove_wl_gddomains);  
+
+
+
+
+
+
 
 document.getElementById("default_icon").addEventListener('change',default_icon_changed);
 document.getElementById("magic_validate").addEventListener('click', function(){
   var title='Valid';
   var help='Validation of project';
   var link='https://${SERVER}/gdc/md/${PID}/validate';
-  set_magic("magic",title,help,link);
+  set_magic(find_free_magic(),title,help,link);
 },false);
 
 document.getElementById("magic_clone").addEventListener('click', function(){
   var title='Clone';
   var help='Clone project';
   var link='https://${SERVER}/labs/apps/app_link?pid=${PID}&app=clone_project';
-  set_magic("magic",title,help,link);
+  set_magic(find_free_magic(),title,help,link);
 },false);
 
 document.getElementById("magic_params").addEventListener('click', function(){
   var title='Par';
   var help='ETL Params (metadata)';
   var link='https://${SERVER}/gdc/projects/${PID}/dataload/metadata';
-  set_magic("magic",title,help,link);
+  set_magic(find_free_magic(),title,help,link);
 },false);
 
 document.getElementById("magic_add").addEventListener('click', function(){
   var title='ADD';
   var help='Automated Data Distribution configuration';
   var link='https://${SERVER}/gdc/dataload/projects/${PID}/outputStage';
-  set_magic("magic",title,help,link);
+  set_magic(find_free_magic(),title,help,link);
+},false);
+
+document.getElementById("magic_ff").addEventListener('click', function(){
+  var title='FF';
+  var help='Hierarchical Feature Flags - Project';
+  var link='https://${SERVER}/gdc/dataload/projects/${PID}/config';
+  set_magic(find_free_magic(),title,help,link);
+},false);
+
+document.getElementById("magic_dom_ff").addEventListener('click', function(){
+  var title='DFF';
+  var help='Hierarchical Feature Flags - Domain';
+  var link='https://${SERVER}/gdc/domains/${DOMAIN}/config';
+  set_magic(find_free_magic(),title,help,link);
+},false);
+
+document.getElementById("magic_dom_users").addEventListener('click', function(){
+  var title='DUS';
+  var help='Domain Users';
+  var link='https://${SERVER}/gdc/domains/${DOMAIN}/users';
+  set_magic(find_free_magic(),title,help,link);
+},false);
+
+document.getElementById("magic_dom_wl").addEventListener('click', function(){
+  var title='WL';
+  var help='White-Labeling Settings';
+  var link='https://${SERVER}/gdc/domains/${DOMAIN}/settings';
+  set_magic(find_free_magic(),title,help,link);
+},false);
+
+document.getElementById("magic_dom_lcm").addEventListener('click', function(){
+  var title='LCM';
+  var help='Lifecycle Management Data Products';
+  var link='https://${SERVER}/gdc/domains/${DOMAIN}/dataproducts/';
+  set_magic(find_free_magic(),title,help,link);
 },false);
 
 
@@ -826,6 +1023,26 @@ document.getElementById("permission_notifications_revoke").addEventListener('cli
 
 
 
+document.getElementById("reset_magic").addEventListener('click',function(event){
+  set_magic("magic","", "", "");
+});
+document.getElementById("reset_magic2").addEventListener('click',function(event){
+  set_magic("magic2","", "", "");
+});
+document.getElementById("reset_magic3").addEventListener('click',function(event){
+  set_magic("magic3","", "", "");
+});
+document.getElementById("reset_magic4").addEventListener('click',function(event){
+  set_magic("magic4","", "", "");
+});
+document.getElementById("reset_magic5").addEventListener('click',function(event){
+  set_magic("magic5","", "", "");
+});
+
+
+
+
+
 /*
 document.getElementById("permission_hostnames_add").addEventListener('click',function(event){
         var newhostname = "https://"+document.getElementById("permission_newhostname").value+"/*";
@@ -860,3 +1077,9 @@ document.getElementById("dont_parse_cc_logs").addEventListener('change', functio
       document.getElementById("dont_parse_ruby_sql").disabled=false;
     }
 });
+
+
+
+
+
+//testStorage();

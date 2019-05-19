@@ -31,9 +31,19 @@
   <body  xstyle="width: 730px; height: 40px; margin: 0px;" xwidth="730" xheight="40">
   <a name="top"></a>
   <h1>GoodData Extension Tool Help</h1>
+  <h3>Making your life with GoodData easier</h3>
 
-  <p>This extension tool makes your life easier when developing with GoodData BI Platform.</p>
-  <p>It contains several components described below.</p>
+  <h2>NEW - Enabling on hostnames</h2>
+  <p>GoodData Extension now requires less permissions in Chrome - it now only has full access to sites you specifically enable it for.</p>
+  <p>Adding site/hostname is now much easier than before. Just click on the (inactive) extension icon on a site for which it is not enabled and a popup will  appear. There you can enable the extension for that hostname. A Chrome popup will ask you for permission and if you confirm it, next time you visit this hostname, it the extension will be active there.</p>
+<p>
+  <img src="unknown_popup2.png"> &nbsp; <img src="approve_access2.png">
+</p>
+<p>If for whatever reason the popup would not show, please try to close the tab and try again or add the hostname manually in the options.</p>
+
+
+
+  <p>The Extension contains several components:</p>
   <p><sup>(*)</sup>These functions require user to be an Administrator of a project.</p>
   <p></p>
   <p><a href="#changelog" class="internal_link">"I already know the extension, just show me what's new..."</a></p>
@@ -217,12 +227,19 @@
 <p class="help_div">There is a special mode for SQL Executor brick. In case of SQL Executor, the Extension displays how long each script took to execute. The script runs are also displayed on a timeline so you can easily see which scripts run in parallel. For iterations in SQL Executor (.isql files), each iteration is now displayed separately with an appropriate key.</p> 
 
 
+<h2>Context Menu</h2>
+<p class="help_div">If you select any text on a page, ypou can right click and use "Lookup Selection in Gooddata" command</p>
+<p class="help_div">It will take the current selection and  perform lookup of it in GoodData metadata and if found displays the information in a overlay.</p>
+<p class="help_div">Supported are: object URIs (/gdc/md/PID/obj/OBJID), element IDs (/gdc/md/PID/obj/OBJID?id=elementid), and identifiers.</p>
+
 
 <h2>The Options</h2>
 <p class="help_div">You can change the default GoodData Extension icon in the extension options.</p>
 <p class="help_div">You can set alternate icons for different projects or hostnames.</p>
-<p class="help_div">To enable the extension od hostnames other than *.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section.</p>
-<p class="help_div">You can add up to five custom "magic" buttons. You can use GoodData resource or any other outside URL and to which you can pass the PID. You can use following placeholders: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object ID. Example: https://${SERVER}/gdc/md/${PID}/validate.
+<p class="help_div">To enable the extension od hostnames other than secure.gooddata.com (i.e. whitelabeled) add the hostname to "whitelabeled hostnames" section. You can add hostnames manually here if you can do not want or can not use the popup for adding current hostname.</p>
+<p class="help_div">You can associate a GoodData domain to hostname to allow working with domain name in the magic buttons. If you do that, you will be able to use ${DOMAIN} placeholder in magic buttons. Note that domain-level APIs are typically only accessible to domain admin.</p>
+<p class="help_div">You can add up to five custom "magic" buttons. You can use GoodData resource or any other outside URL and to which you can pass the PID. You can use following placeholders: ${SERVER} - current hostname, ${PID} - current project ID, ${OBJ} - current object ID. Example: https://${SERVER}/gdc/md/${PID}/validate.</p>
+<p class="help_div">If you've previously associated a GoodData domain to a hostname, you can also use ${DOMAIN} placeholder. Note that domain-level APIs are only accessible to domain admin in GoodData.</p>
 <p class="help_div">
 You can also target any specific <a class="dev_link" href="https://secure.gooddata.com/labs/apps" target="_blank">GoodData Labs</a> application from your "magic" button. To link it with context of current project, use URL like this: https://${SERVER}/labs/apps/app_link?pid=${PID}&amp;app=APP_NAME where APP_NAME is the name of the Labs App (it is part of its URL i.e. "clone_project").</p>
 <p class="help_div">The extension toolbar total width is limited to 800px and if needed it will make some of the standard link titles shorter to fit your custom buttons. If they would still not fit, it will shorten the longest titles of your magic buttons.</p>
@@ -233,6 +250,23 @@ You can also target any specific <a class="dev_link" href="https://secure.goodda
 <div class="end"></div>
 <a name="changelog"></a>
 <h2>What's new</h2>
+
+<p>v0.9102:
+  <ul>
+    <li>Improved management of permissions to hostnames</li>
+    <li>Easy enablement of hostname with a popup</li>
+    <li>Support for GoodData domains (for domain admins only)</li>
+    <li>Explain now works even for unsaved reports (report definitions)</li>
+    <li>Support for GD domain in magic buttons - {DOMAIN}</li>
+    <li>Detect GD domain and whether user is domain admin in the hostname popup</li>
+    <li>Improved predefined magic buttons - reuse first empty + ability to empty them</li>
+    <li>New context menu for doing lookup in identifiers/object IDs/element IDs</li>
+    <li>Improved support for identification of objects also based on identifiers</li>
+    <li>Support for KPI dashboards</li>
+    <li>Improved parsing of ADS Integrator entities</li>
+</ul>
+</p>
+
 
 <p>v0.9018:
   <ul>

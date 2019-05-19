@@ -133,6 +133,10 @@ function addMagicButton(magic_name) {
     if (localStorage[magic_name+"_link"].indexOf("${OBJURL}") >= 0) {
         classAttr += "needobj ";
     }
+    if (localStorage[magic_name+"_link"].indexOf("${DOMAIN}") >= 0) {
+        classAttr += "needdomain ";
+    }
+
     a.setAttribute("class", classAttr);
 
 

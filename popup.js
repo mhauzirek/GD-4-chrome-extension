@@ -27,8 +27,10 @@
 
 var tabId=-1;
 var obj="";
+var identifier="";
 var pid = "";
 var server="";
+var domain="";
 var spec_schedule="";
 var ui=0;
 var objURL="#";
@@ -38,32 +40,58 @@ var webdav_dir;//="#";
 document.addEventListener('DOMContentLoaded', loader);
 
 
-
 function replacer() {
 //console.log("executing replacer with objURL="+objURL);
     var target = document.body.innerHTML.replace(/\${PID}/g, pid);
     target = target.replace(/\${SERVER}/g, server).replace(/\${OBJURL}/g, objURL);
     target = target.replace(/\${OBJ}/g, obj);
     target = target.replace(/\${SCHEDULE}/g, spec_schedule);
+    target = target.replace(/\${DOMAIN}/g, domain);
     
     document.body.innerHTML = target;
 }
 
 function parse_gd_url(url) {
 
+    var object_id=null;
+    var object_identifier=null;
+    var ui=0;
+
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md)/([^/|]*))?.*");
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/]*/)?(gdc/)?((projects|md|admin/disc/#/projects)/([^/|]*))?.*");    
     //var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects)/([^/|%]*))?.*");
     var pidParse = url.match("https://([^/]*)/([^#]*#s=[^/%]*[/%])?(gdc[/%])?((projects|md|admin/disc/#/projects|dataload/projects|analyze/#|data/#/projects|dashboards/#/project)/([^/|%]*))?.*");
-    var objParse = url.match("https://.*/obj/([0-9]+).*");
+    //var objParse = url.match("https://.*/obj/([0-9]+).*");
+
+    //var objParse = url.match("/obj/([0-9]*)");
+    //console.log(objParse);
 
     var schParse = url.match("https://.*/schedules/([A-Za-z0-9]+).*");
 
+/*  3 = object id; 5 and 7 = identifier*/
+    var objRegex2 = /(\/obj)?\/(([0-9]+)|(identifier:([a-zA-Z0-9]+))|(dashboard\/([a-zA-Z0-9]+)))(\/edit)?/
+    var objParse2 = objRegex2.exec(url);
+
+    if(objParse2){
+      if(objParse2[3]) object_id = objParse2[3];
+      if(objParse2[5]) object_identifier = objParse2[5];
+      if(objParse2[7]) object_identifier = objParse2[7];
+    }
+
+    if(pidParse && pidParse[2]){
+      ui = 1;
+    }
+
+    if(objParse2 &&  (objParse2[7] || objParse2[8]) ){
+      ui = 1;
+    }
+    
     return {
         server: (!pidParse || !pidParse[1] ? null : pidParse[1]),
-        ui: (!pidParse || !pidParse[2] ? 0 : 1),
+        ui: ui,
         pid: (!pidParse || !pidParse[6] ? null : pidParse[6]),
-        obj: (!objParse || !objParse[1] ? null : objParse[1]),
+        obj: (!object_id ? null : object_id),
+        identifier: (!object_identifier ?  null : object_identifier),
         sch: (!schParse || !schParse[1] ? null : schParse[1])          
     };
 }
@@ -214,6 +242,21 @@ function needPidEnabler(){
     }
 }
 
+function needDomainEnabler(){
+    needpid = document.getElementsByClassName('needdomain');
+    for (var i = 0; i < needpid.length; i++) {
+      needpid[i].className=needpid[i].className.replace(" disabled","");
+      needpid[i].className=needpid[i].className.replace(" partdisabled","");
+    }
+}
+
+function needDomainDisabler(){
+    needpid = document.getElementsByClassName('needdomain');
+    for (var i = 0; i < needpid.length; i++) {
+      needpid[i].className+=" disabled";
+    }
+}
+
 function explainEnabler(){
   //console.log("enabling explain");
   document.getElementById("explain").href = explain_url;
@@ -269,13 +312,29 @@ function loader(){
     var tab = array_of_tabs[0];
     tabId= tab.id;
 
-     var parsed = parse_gd_url(tab.url);    
+     var parsed = parse_gd_url(tab.url);  
+console.log(parsed);
      ui=parsed.ui;
      //console.log("Are we in UI? "+ui);
      server=parsed.server;
      pid=parsed.pid;
      obj=parsed.obj;
+     identifier  = parsed.identifier;
      spec_schedule = (parsed.sch == null ? "" : parsed.sch); //return schedule value or empty string - avoid null
+
+
+//get domain name for server
+
+
+  chrome.storage.local.get("gd_domains",function(items){
+    //console.log(items);
+    //console.log(server);
+    if(items.gd_domains && items.gd_domains.hasOwnProperty(server)){
+      domain = items.gd_domains[server].gddomain;
+      needDomainEnabler();
+    }else{
+      needDomainDisabler();
+    }
 
     if(pid!=null){
         //console.log("Found PID "+pid);
@@ -358,6 +417,46 @@ function loader(){
             addListeners();
             needObjEnabler();
           }
+        }else if(identifier!=null){
+          if(ui==0){
+            //we have identifier and are in GP - only limited 
+            //we are in gray pages and need to determine category of object
+            //console.log("calling for category");
+            chrome.tabs.sendMessage(tabId, {type: "obj_category"}, function(response) {
+              //console.log("in GP looking for category - received category: "+response.category);
+              switch(response.category){    
+                case 'projectDashboard' :
+                  objURL = '/#s=/gdc/projects/'+pid+'|projectDashboardPage|/gdc/md/'+pid+'/obj/identifier:'+identifier+'|';
+                  needObjEnabler();
+                  explainDisabler();
+                break;
+                 case 'analyticalDashboard':
+                 //analytical designer objects
+                  objURL = '/dashboards/#/project/'+pid+'/dashboard/'+identifier;
+                  needObjEnabler();
+                  explainDisabler();
+                 break; 
+
+                default:
+                  objURL="";
+                  needObjDisabler();
+                  explainDisabler();
+              }
+            replacer();
+            addListeners();
+            });
+
+
+          }else{
+            //we are in UI with identifier - this is simple 
+            objURL='/gdc/md/'+pid+'/obj/identifier:'+identifier;
+            //get_explain_info(pid,server,obj);
+            replacer();
+            addListeners();
+            needObjEnabler();
+            explainDisabler();
+          }
+
         }else{
           needObjDisabler();
           replacer();
@@ -368,6 +467,14 @@ function loader(){
         replacer();
         addListeners();
       }
+
+  });
+
+
+      //domain = get_gd_domain_name(server);
+
+
+
 
     }
     

@@ -42,7 +42,7 @@ var lastURL = "";
 
 var contextMenuItem = {
   "id": "gd_menu",
-  "title": "GoodData URL Lookup",
+  "title": "Lookup Selection in GoodData",
   "contexts": ["selection"]
 }
 
@@ -52,27 +52,22 @@ var cmid;
 
 var cm_clickHandler = function(clickData){
   
-//console.log(clickData);
+  //console.log(clickData);
 
   if(clickData.menuItemId == "gd_menu" && clickData.selectionText){
+    var parsed = parse_gd_url(clickData.pageUrl);
+    var server = parsed.server;
+    var pid = parsed.pid;
+
     var selection = clickData.selectionText;
 
       chrome.tabs.query({active: true, windowId: chrome.windows.WINDOW_ID_CURRENT},function(array_of_tabs){
         if(array_of_tabs.length>0){
-          var server = "";
           var tab = array_of_tabs[0];
           tabId= tab.id;
-          var url = tab.url;
-
-          var server_regexp = /^https:\/\/([^\/]*)/
-          var server_matches = server_regexp.exec(url);
-
-          if(server_matches){
-            server = server_matches[1];
-          }
         }
 
-      var response  = {"message": "showTooltip", "type": "showTooltip", "server": server, "selection": selection}
+      var response  = {"message": "showTooltip", "type": "showTooltip", "server": server, "pid": pid, "selection": selection}
       chrome.tabs.sendMessage(tabId,response)
     });
   }
@@ -88,7 +83,7 @@ var cm_clickHandler = function(clickData){
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
 
-console.log(request);
+//console.log(request);
 
     switch (request.message){
       case "wakeup":
@@ -99,8 +94,12 @@ console.log(request);
           function( tabid , info , tab) {
             if ( info.status == "complete" && info.url != lastURL ) {
               //console.log("url changed from "+lastURL+" to "+info.url+"- calling set_icon");
-              set_icon(tab);
-              lastURL=info.url;
+              try{
+                set_icon(tab);
+                lastURL=info.url;
+              }catch(e){
+                console.log("Error: "+e);
+              }
             }
           }
          );
@@ -121,6 +120,11 @@ console.log(request);
         case "removeContextMenu":
             chrome.contextMenus.removeAll();
         break;
+
+        case "unknownHostname":
+            //console.log(request);
+            unknown_hostname(sender.tab,request.hostname);
+        break;        
 
 
       case "updateContextMenu":
@@ -237,7 +241,7 @@ function notify(title, text, tab, img, link) {
         console.log("created notification "+notID+" with title "+title);
       });
         } else {
-          console.log("The extension doesn't have the permissions.");
+          console.log("The extension doesn't have notification permissions.");
         }
       });
 }
@@ -353,6 +357,14 @@ var response = {
 return response;
 }
 
+function  unknown_hostname(tab,hostname){
+
+  var details = {"tabId": tab.id, "popup": "popup_unknown.html"};
+  chrome.pageAction.setPopup(details);
+  chrome.pageAction.show(tab.id);
+  chrome.runtime.sendMessage({message: "displayHostname", hostname: hostname});
+
+}
 
 function set_icon(tab) {
 
@@ -445,6 +457,11 @@ var parsed = parse_gd_url(tab.url);
           '38' : retina_icon
         }
     });
+/*
+  
+//THIS  ACTUALLY WORKS
+
+*/
     }else{
       //console.log("no server found in URL ");
     }
@@ -468,6 +485,18 @@ chrome.runtime.onInstalled.addListener(function(details){
     }
 });
 
+
+/*
+chrome.commands.onCommand.addListener( function(command) {
+  console.log(command);
+
+    if(command === "toggle-feature-foo"){
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, getProjectInfo(request.PID, request.server));
+        });
+    }
+});
+*/
  
 //Export project
 
