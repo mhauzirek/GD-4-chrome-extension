@@ -375,7 +375,7 @@ function default_icon_changed(){
   for(i=0; i<select_gdd.length; i++){
     var value = select_gdd[i].value;
     var val_parts = value.split(' ~ ');
-console.log(val_parts);
+//console.log(val_parts);
     var hostname = val_parts[0];
     var gddomain = val_parts[1];
     var v = {hostname: hostname, gddomain: gddomain};
@@ -935,7 +935,7 @@ document.getElementById("magic_add").addEventListener('click', function(){
 document.getElementById("magic_ff").addEventListener('click', function(){
   var title='FF';
   var help='Hierarchical Feature Flags - Project';
-  var link='https://${SERVER}/gdc/dataload/projects/${PID}/config';
+  var link='https://${SERVER}/gdc/projects/${PID}/config';
   set_magic(find_free_magic(),title,help,link);
 },false);
 

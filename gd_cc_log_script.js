@@ -169,7 +169,7 @@ function numberWithCommas1(x,decimals, noselect) {
   var GroupSeparator = Number("1000").toLocaleString().substr(1,1);
 
 
-  if(isNaN(x)){
+  if(isNaN(x) || !x){
     return "N/A";
   }
 
@@ -1078,7 +1078,10 @@ var gdw_upload_line_match;
 var gdw_sli_start_line_match;
 var gdw_sli_finish_line_match;
 
+
+
 var gdw_rows={};
+
 gdw_rows['*total*']=0;
 gdw_rows['*max*']=0;
 var gdw_sizes={};
@@ -1578,6 +1581,7 @@ var gdw_sli_start_line_match;
 var gdw_sli_finish_line_match;
 
 var gdw_rows={};
+var gdw_multi_uploads={};
 gdw_rows['*total*']=0;
 gdw_rows['*max*']=0;
 var gdw_sizes={};
@@ -1601,26 +1605,38 @@ for (var i = 0; i < gdw_length; i++) {
 
   }
 
-  if(gdw_upload_line_match!==undefined && gdw_upload_line_match !== null && !gdw_sizes.hasOwnProperty(gdw_upload_line_match[1])){
-    gdw_sizes[gdw_upload_line_match[1]]=Number(gdw_upload_line_match[4]);
+  if(gdw_upload_line_match!==undefined && gdw_upload_line_match !== null ){  //&& !gdw_sizes.hasOwnProperty(gdw_upload_line_match[1])
+
+    if(gdw_sizes[gdw_upload_line_match[1]]){
+      gdw_sizes[gdw_upload_line_match[1]] += Number(gdw_upload_line_match[4]);      
+    }else{
+      gdw_sizes[gdw_upload_line_match[1]] = Number(gdw_upload_line_match[4]);      
+    }
+
+
+
     gdw_sizes['*total*']+=Number(gdw_upload_line_match[4]);
-    if(Number(gdw_upload_line_match[4])>gdw_sizes['*max*']) {gdw_sizes['*max*']=Number(gdw_upload_line_match[4]);}
+    if(gdw_sizes[gdw_upload_line_match[1]]>gdw_sizes['*max*']) {gdw_sizes['*max*']=gdw_sizes[gdw_upload_line_match[1]];}
     gdw_datasets[gdw_upload_line_match[1]]=gdw_upload_line_match[3];
   }
 
 
 //console.log(gdw_sizes);
 
-  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null &&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])){
+  if(gdw_rows_line_match!==undefined && gdw_rows_line_match !== null){ //&&  !gdw_rows.hasOwnProperty(gdw_rows_line_match[1])
     //we've never seen this writer before
-    gdw_rows[gdw_rows_line_match[1]]=Number(gdw_rows_line_match[2]);
 
-//    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
-      //we have also dataset record for this - it is not Eventstore or some other file...
-      //removed due to race condition between gd_rows_line_match and gdw_datasets, replaced by 'dataset.' in the regexp to avoid eventstore files
-      if(Number(gdw_rows_line_match[2])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[2]);}    
+    if(gdw_rows[gdw_rows_line_match[1]]){
+      gdw_rows[gdw_rows_line_match[1]] += Number(gdw_rows_line_match[2]);  
+      gdw_multi_uploads[gdw_rows_line_match[1]] += 1;
+    }else{
+      gdw_rows[gdw_rows_line_match[1]] = Number(gdw_rows_line_match[2]);  
+      gdw_multi_uploads[gdw_rows_line_match[1]] = 1;
+    }
+    
+
+      if(gdw_rows[gdw_rows_line_match[1]]>gdw_rows['*max*']) {gdw_rows['*max*']=gdw_rows[gdw_rows_line_match[1]];}    
       gdw_rows['*total*']+=Number(gdw_rows_line_match[2]);
-//    }
   }
 }
 
@@ -1638,6 +1654,7 @@ for (var i = 0; i < gdw_length; i++) {
           gdw_current_sli.finish_date = null;
           gdw_current_sli.start_date = null;
           gdw_current_sli.batch=false;
+          gdw_current_sli.num_loads=1;
           gdw_sli[gdw_sli_start_line_match[2]]=gdw_current_sli;
         }else{
           gdw_current_sli=gdw_sli[gdw_sli_start_line_match[2]];
@@ -1647,10 +1664,16 @@ for (var i = 0; i < gdw_length; i++) {
           gdw_current_sli.batch=true;
         }
         if(gdw_sli_start_line_match[4]=="STARTED" || gdw_sli_start_line_match[4]=="start"){
-          gdw_current_sli.start_date = Date.parse(gdw_sli_start_line_match[1]);
+          gdw_current_sli.start_date = Date.parse(gdw_sli_start_line_match[1]);            
+
         }else if(gdw_sli_start_line_match[4]=="FINISHED" || gdw_sli_start_line_match[4]=="finished"){
           gdw_current_sli.finish_date = Date.parse(gdw_sli_start_line_match[1]);
-          gdw_current_sli.duration = gdw_current_sli.finish_date - gdw_current_sli.start_date;
+          if(!gdw_current_sli.duration){
+            gdw_current_sli.duration = gdw_current_sli.finish_date - gdw_current_sli.start_date;
+          }else{
+            gdw_current_sli.duration += gdw_current_sli.finish_date - gdw_current_sli.start_date;
+            gdw_current_sli.num_loads++;
+          }
         }      
       }
     }
@@ -1674,7 +1697,13 @@ for (var key in gdw_rows) {
 
 /*      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+gdw_datasets[key]+"'>"+key+"</td>";*/
 
-      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+key+"'>"+gdw_datasets[key]+"</td>";
+      text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+key+"'>"
+      
+      if(gdw_multi_uploads && gdw_multi_uploads[key] && gdw_multi_uploads[key]>1){
+        text = text + "<sup title='this dataset was written to "+gdw_multi_uploads[key]+" times during this graph run and the numbers represent sum of all these runs.'>"+gdw_multi_uploads[key]+"</sup>";
+      }
+
+      text=text+gdw_datasets[key]+"</td>"
       
       text=text+"<td class='cc_writer_rows'>"+numberWithCommas1(gdw_rows[key],0,true)+"</td><td class='cc_writer_size' ";
       text=text+"title='"+sizeWithCommasIec(gdw_sizes[key],0,'KiB',true,false)+"'>"+sizeWithCommasIec(gdw_sizes[key],0,'KiB',false,true)+"</td>";
