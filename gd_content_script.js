@@ -26,6 +26,8 @@
  * it is embeded to GD pages and sends message to wakeup extension
  */
 
+
+
 function getUILink(category,pid,obj,identifier){
   var objURL = "#";
   switch(category){    
@@ -158,6 +160,8 @@ chrome.extension.onMessage.addListener(
        case "showProjectInfo3":
           //console.log("showing project info overlay3 for project "+request.PID+", server "+request.server+", specific schedule "+request.spec_schedule);
           showProjectInfo3(request.PID, request.server,request.spec_schedule);
+
+          //testMe();
 
       break;
 

@@ -192,13 +192,18 @@
     </fieldset>
 
     <fieldset>
-      <legend>CloudConnect logs:</legend>
+      <legend>KPI Dashbboards improvements:</legend>
+      (use if the KPI dashboard improvements (i.e. edit button) cause problems)<br>
+      <label><input type="checkbox" id="dont_improve_kpi" value="1">Do NOT add functions to KPI dashboards</label><br>
+    </fieldset>    
+    <fieldset>
+      <legend>ETL logs:</legend>
       (use if the parsing is causing slownes or other problems)<br>
       <label><input type="checkbox" id="dont_parse_cc_logs" value="1">Do NOT parse CloudConnect/Ruby logs AT ALL</label><br>
       &nbsp;<label><input type="checkbox" id="dont_parse_cc_datasets" value="1">Do NOT parse Dataset Writers in CloudConnect logs</label><br>
       &nbsp;<label><input type="checkbox" id="dont_parse_cc_phases" value="1">Do NOT parse Phases in CloudConnect logs</label><br>
       &nbsp;<label><input type="checkbox" id="dont_parse_ruby_sql" value="1">Do NOT parse Phases in Ruby SQL Executor logs</label><br>      
-    </fieldset>    
+    </fieldset>        
 
         <fieldset>
       <legend>Alternative Icon for host:</legend>

@@ -1,68 +1,88 @@
 {
-  "name": "GoodData Extension Tool",
-  "version": "0.9105",
-  "version_name": "0.9105",
+"update_url": "https://clients2.google.com/service/update2/crx",
 
-
-  "icons" : {
-    "48" : "default.png",
-    "96" : "guy96.png",
-    "128": "guy128.png",
-    "256": "guy256.png"
-      
-  },  
-
+  "name": "GoodData Extension Tool BETA",
+  "version": "0.9106",
+  "version_name": "0.9106",
+  "icons": {
+    "48": "default_beta.png",
+    "96": "guy96_beta.png",
+    "128": "guy128_beta.png",
+    "256": "guy256_beta.png"
+  },
   "description": "Makes your life easier when developing in GoodData Cloud BI platform",
   "options_page": "options.html",
-  "background": {"persistent": false, "scripts": ["GDextension.js"] },
-
-  "page_action" :
-  {
-    "default_icon" : {
-      "19" : "icons/gd19_rebrand_gray.png",
-      "38" : "retina/icons/gd19_rebrand_gray.png"
-    },
-    "default_title" : "Legen...wait for it GoodData is loading...dary!",
-    "default_popup" : "gdpopup.html"
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "GDextension.js"
+    ]
   },
-
+  "page_action": {
+    "default_icon": {
+      "19": "icons/gd19_rebrand_gray.png",
+      "38": "retina/icons/gd19_rebrand_gray.png"
+    },
+    "default_title": "Legen...wait for it GoodData is loading...dary!",
+    "default_popup": "gdpopup.html"
+  },
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
-      "js": ["gd_content_script.js"],
-      "css":["gd_content.css"]
-    },
-    {
-      "matches": ["https://*/*/log*"],
-      "js": ["gd_cc_log_script.js","cc_log_switching.js"],
-      "css":["gd_cc_log.css"]
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "gd_content_script.js"
+      ],
+      "css": [
+        "gd_content.css"
+      ]
     },
     {
       "matches": [
-                  "https://*/gdc/md/*/obj/*",
-                  "https://*/gdc/md/*/usedby2/*",
-                  "https://*/gdc/md/*/using2/*"
+        "https://*/*/log*"
       ],
-      "js": ["identifiers.js"]
+      "js": [
+        "gd_cc_log_script.js",
+        "cc_log_switching.js"
+      ],
+      "css": [
+        "gd_cc_log.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://*/gdc/md/*/obj/*",
+        "https://*/gdc/md/*/usedby2/*",
+        "https://*/gdc/md/*/using2/*"
+      ],
+      "js": [
+        "identifiers.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://*/dashboards/*"
+      ],
+      "js": [
+        "gd_content_script_kpi.js"
+      ]
     }
   ],
-
-
-  "permissions" : [
+  "permissions": [
     "https://secure.gooddata.com/*",
     "activeTab",
     "storage"
   ],
-
-  "optional_permissions" : [
+  "optional_permissions": [
     "https://*/*",
     "tabs",
     "contextMenus",
     "notifications"
   ],
-
-  "web_accessible_resources": ["cc_log_switching.js","identifiers_inject.js"],
-
-
+  "web_accessible_resources": [
+    "cc_log_switching.js",
+    "identifiers_inject.js"
+  ],
   "manifest_version": 2
 }

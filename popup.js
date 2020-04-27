@@ -141,6 +141,9 @@ function get_explain_info(pid,server,obj){
         }else if(typeof resp.reportDefinition !== 'undefined' && resp.reportDefinition.meta.category=='reportDefinition'){
           explain_url = 'https://'+server+'/gdc/md/'+pid+'/obj/'+obj+'/explain2?type=opt_qt_dot&format=html&submit=submit';
           explainEnabler();
+        }else if(typeof resp.visualizationObject !== 'undefined' && resp.visualizationObject.meta.category=='visualizationObject'){
+          explain_url = 'https://'+server+'/gdc/md/'+pid+'/obj/'+obj+'/explain?type=opt_qt_dot&submit=submit';
+          explainEnabler();          
         }else{
           explainDisabler();
         }

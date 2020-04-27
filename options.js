@@ -440,6 +440,14 @@ function save_options() {
   select = document.getElementById("alt_pid_icon5");
   localStorage["alt_pid_icon5"] = select.children[select.selectedIndex].value;
 
+
+ select = document.getElementById("dont_improve_kpi");
+  if(select.checked){
+    localStorage["dont_improve_kpi"]="1";
+  }else{
+    localStorage.removeItem("dont_improve_kpi");
+  }
+
   select = document.getElementById("dont_parse_cc_logs");
   if(select.checked){
     localStorage["dont_parse_cc_logs"]="1";
@@ -540,6 +548,8 @@ function restore_options() {
   var alt_pid_icon4 = localStorage["alt_pid_icon4"];
   var alt_pid5 = localStorage["alt_pid5"]; 
   var alt_pid_icon5 = localStorage["alt_pid_icon5"];
+
+  var dont_improve_kpi = localStorage["dont_improve_kpi"];
 
   var dont_parse_cc_logs = localStorage["dont_parse_cc_logs"];
   var dont_parse_cc_datasets = localStorage["dont_parse_cc_datasets"];
@@ -739,6 +749,12 @@ function restore_options() {
     }
   }
 
+
+
+
+  if(dont_improve_kpi=="1"){
+    document.getElementById("dont_improve_kpi").checked=true;
+  }
 
 
   if(dont_parse_cc_logs=="1"){

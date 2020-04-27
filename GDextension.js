@@ -169,6 +169,14 @@ chrome.extension.onMessage.addListener(
             }
         break;
 
+        case "canImproveKPI":      
+          if(localStorage['dont_improve_kpi']=="1"){
+            sendResponse({improve_kpi: false});
+          }else{ 
+            sendResponse({improve_kpi: true})
+          }
+        break;        
+
         case "showNotification":
         //when only_other_tab is true show notification only when other tab is active or whole window is not focused
         //= do not show notification when I am in the window.
