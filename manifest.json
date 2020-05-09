@@ -1,14 +1,10 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
-
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9106",
-  "version_name": "0.9106",
+  "version": "0.9107",
+  "version_name": "0.9107",
   "icons": {
-    "48": "default_beta.png",
-    "96": "guy96_beta.png",
-    "128": "guy128_beta.png",
-    "256": "guy256_beta.png"
+    "128": "gdlogo128_beta.png",
+    "192": "gdlogo192_beta.png"
   },
   "description": "Makes your life easier when developing in GoodData Cloud BI platform",
   "options_page": "options.html",

@@ -169,7 +169,7 @@ function numberWithCommas1(x,decimals, noselect) {
   var GroupSeparator = Number("1000").toLocaleString().substr(1,1);
 
 
-  if(isNaN(x) || !x){
+  if( (isNaN(x) || !x) && !x===0){
     return "N/A";
   }
 
@@ -1064,7 +1064,8 @@ var gdw_length = (gdw_upload_match.length);
 var gdw_upload_line_regexp = /Dataset with id: ([^ ]*) (w[^ ]*) be loaded ((in [a-z]+ mode)|(the delete)|((.*))).*/
 
 //var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n(UPSERT )?[Qq]uery: SELECT .+ FROM "[^"]+"\."[^"]+"( WHERE x__client_id='([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
-var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n([A-Z]{6} )?[Qq]uery: SELECT .+ FROM "[^"]+" ?\. ?"[^"]+"( WHERE x__client_id ?= ?'([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
+//var gdw_rows_line_regexp = /File: .*(dataset\.[^\n]+)\.csv\n([A-Z]{6} )?[Qq]uery: SELECT .+ FROM "[^"]+" ?\. ?"[^"]+"( WHERE x__client_id ?= ?'([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
+var gdw_rows_line_regexp = /File: .*\/([A-Za-z_]*)?(dataset\.[^\n]+)\.csv\n([A-Z]{6} )?[Qq]uery: SELECT .+ FROM "[^"]+" ?\. ?"[^"]+"( WHERE x__client_id ?= ?'([^']+)')?.*\. Processed (([0-9]*) bytes, )?([0-9]+) row\(s\), ([0-9]+) column\(s\),([^,]*,)? in ([0-9]+) milliseconds/
 
 
 
@@ -1123,8 +1124,6 @@ for (var i = 0; i < gdw_length; i++) {
       if(gdw_upload_line_match[3]=="in full mode"){current_dataset.mode="F";}
     }
 
-
-
 //console.log(gdw_datasets);
 
   }
@@ -1156,32 +1155,42 @@ for (var i = 0; i < gdw_rows_length; i++) {
     var rows = -1;
     var delete_bytes = -1;
     var delete_rows = -1;
+    var tbl_delete_bytes = -1;
+    var tbl_delete_rows = -1;
+    var has_tbl_delete = -1;
 
 
-    if(gdw_rows_line_match[2]===undefined || gdw_rows_line_match[2]=="UPSERT " ){
+    if(gdw_rows_line_match[3]===undefined || gdw_rows_line_match[3]=="UPSERT " ){
       has_upsert = true;
-      bytes = Number(gdw_rows_line_match[6]);
-      rows = Number(gdw_rows_line_match[7]);
+      bytes = Number(gdw_rows_line_match[7]);
+      rows = Number(gdw_rows_line_match[8]);
     }
-    if(gdw_rows_line_match[2]=="DELETE " ){
-      delete_bytes = Number(gdw_rows_line_match[6]);
-      delete_rows = Number(gdw_rows_line_match[7]);
+    if(gdw_rows_line_match[3]=="DELETE " && gdw_rows_line_match[1]=="delete_"){
+      //delete based on x__deleted
+      delete_bytes = Number(gdw_rows_line_match[7]);
+      delete_rows = Number(gdw_rows_line_match[8]);
       has_delete = true;
     }
+    if(gdw_rows_line_match[3]=="DELETE " && gdw_rows_line_match[1]=="delete_tbl_"){
+      //delete based on delete side table
+      tbl_delete_bytes = Number(gdw_rows_line_match[7]);
+      tbl_delete_rows = Number(gdw_rows_line_match[8]);
+      has_tbl_delete = true;      
+    }
 
-    var columns = Number(gdw_rows_line_match[8]);
-    var extract_duration_ms = Number(gdw_rows_line_match[10]);
+    var columns = Number(gdw_rows_line_match[9]);
+    var extract_duration_ms = Number(gdw_rows_line_match[11]);
     var client_discriminator = false;
     var client_id = '';
     
-    if(gdw_rows_line_match[3]){
+    if(gdw_rows_line_match[4]){
       client_discriminator = true;
-      client_id = gdw_rows_line_match[4];
+      client_id = gdw_rows_line_match[5];
     }
 
-    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[1])){
+    if(gdw_datasets.hasOwnProperty(gdw_rows_line_match[2])){
       //we've seen this dataset before and have proper load mode for it
-      current_dataset = gdw_datasets[gdw_rows_line_match[1]];
+      current_dataset = gdw_datasets[gdw_rows_line_match[2]];
       if(rows!=-1) current_dataset.rows = rows;
       current_dataset.columns = columns;
       current_dataset.extract_duration_ms = extract_duration_ms;
@@ -1192,11 +1201,14 @@ for (var i = 0; i < gdw_rows_length; i++) {
       if(delete_rows!=-1) current_dataset.delete_rows = delete_rows;
       if(has_upsert!=-1) current_dataset.has_upsert = has_upsert;
       if(has_delete!=-1) current_dataset.has_delete = has_delete;
+      if(has_tbl_delete!=-1) current_dataset.has_tbl_delete = has_tbl_delete;      
+      if(tbl_delete_bytes!=-1) current_dataset.tbl_delete_bytes = tbl_delete_bytes;
+      if(tbl_delete_rows!=-1) current_dataset.tbl_delete_rows = tbl_delete_rows;      
 
 //console.log("updating "+current_dataset.name);
     }else{
       //we've not seen this dataset before - should not happen though but if, we create it
-      current_dataset.name = gdw_rows_line_match[1];
+      current_dataset.name = gdw_rows_line_match[2];
       current_dataset.mode = "?";
       if(rows!=-1) current_dataset.rows = rows;
       current_dataset.columns = columns;
@@ -1208,8 +1220,11 @@ for (var i = 0; i < gdw_rows_length; i++) {
       if(delete_bytes!=-1) current_dataset.delete_bytes = delete_bytes;
       if(has_upsert!=-1) current_dataset.has_upsert = has_upsert;
       if(has_delete!=-1) current_dataset.has_delete = has_delete;
+      if(has_tbl_delete!=-1) current_dataset.has_tbl_delete = has_tbl_delete;      
+      if(tbl_delete_bytes!=-1) current_dataset.tbl_delete_bytes = tbl_delete_bytes;
+      if(tbl_delete_rows!=-1) current_dataset.tbl_delete_rows = tbl_delete_rows;       
 
-      gdw_datasets[gdw_rows_line_match[1]]=current_dataset;
+      gdw_datasets[gdw_rows_line_match[2]]=current_dataset;
 //console.log("creating "+current_dataset.name);
     }
 
@@ -1221,27 +1236,36 @@ for (var i = 0; i < gdw_rows_length; i++) {
     if(delete_rows>gdw_datasets['*max*'].rows){
       gdw_datasets['*max*'].rows = delete_rows;
     }    
+    if(tbl_delete_rows>gdw_datasets['*max*'].rows){
+      gdw_datasets['*max*'].rows = tbl_delete_rows;
+    }       
     if(bytes>gdw_datasets['*max*'].bytes){
       gdw_datasets['*max*'].bytes = bytes;
     }
     if(delete_bytes>gdw_datasets['*max*'].bytes){
       gdw_datasets['*max*'].bytes = delete_bytes;
     }
+    if(tbl_delete_bytes>gdw_datasets['*max*'].bytes){
+      gdw_datasets['*max*'].bytes = tbl_delete_bytes;
+    }    
+
 
 
     if(rows!=-1) gdw_datasets['*total*'].rows += rows;
     if(delete_rows!=-1) gdw_datasets['*total*'].rows += delete_rows;
+    if(tbl_delete_rows!=-1) gdw_datasets['*total*'].rows += tbl_delete_rows;    
     
     if(bytes!=-1) gdw_datasets['*total*'].bytes += bytes;
     if(delete_bytes!=-1) gdw_datasets['*total*'].bytes += delete_bytes;
+    if(tbl_delete_bytes!=-1) gdw_datasets['*total*'].bytes += tbl_delete_bytes;    
 
     gdw_datasets['*total*'].extract_duration_ms += extract_duration_ms;
     
 
 
-    gdw_rows[gdw_rows_line_match[1]]=rows;
-    if(Number(gdw_rows_line_match[3])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[3]);}    
-    gdw_rows['*total*']+=Number(gdw_rows_line_match[3]);
+    gdw_rows[gdw_rows_line_match[2]]=rows;
+    if(Number(gdw_rows_line_match[4])>gdw_rows['*max*']) {gdw_rows['*max*']=Number(gdw_rows_line_match[3]);}    
+    gdw_rows['*total*']+=Number(gdw_rows_line_match[4]);
   }
 //console.log(gdw_rows);
 //console.log(gdw_datasets);
@@ -1318,13 +1342,11 @@ for (var key in gdw_datasets) {
 
       text=text+"<tr class='cc_head_writer'><td class='cc_writer_name' title='"+key+" ";
 
-      if(gdw_datasets[key].mode!='X'){
         if(gdw_datasets[key].client_discriminator){
           text=text+"\rCLIENT_ID = "+gdw_datasets[key].client_id;
         }else{
           text=text+"\rNO CLIENT DISCRIMINATOR!";
         }
-      }
 
       switch(gdw_datasets[key].mode){
         case "F":
@@ -1386,48 +1408,27 @@ for (var key in gdw_datasets) {
 
       text=text+"</tr>\n";
 
-      /*and repeat for delete rows*/
-      if(gdw_datasets[key].has_delete && gdw_datasets[key].delete_rows>0){
+      /*and repeat for delete rows - x__deleted*/
+      if(gdw_datasets[key].has_delete /*&& gdw_datasets[key].delete_rows>0*/){
 
-        text=text+"<tr class='cc_head_writer'><td class='cc_writer_name add_delete' title='"+key+" DELETE";
+        text=text+"<tr class='cc_head_writer_del'><td class='cc_writer_name add_delete' title='"+key+" DELETE";
 
-      if(gdw_datasets[key].mode!='X'){
         if(gdw_datasets[key].client_discriminator){
           text=text+"\rCLIENT_ID = "+gdw_datasets[key].client_id;
         }else{
           text=text+"\rNO CLIENT DISCRIMINATOR!";
         }
-      }
 
-      switch(gdw_datasets[key].mode){
-        case "I":
-          text=text+"\rINCREMENTAL DELETE";
-        break;
-        case "X":
-          text=text+"\rNOT LOADED!\r"+gdw_datasets[key].nonload_reason;
-        break;                
-      }
-
+      text=text+"\rINCREMENTAL DELETE - x__deleted";
       text = text+"'>";
-
-      switch(gdw_datasets[key].mode){
-        case "F":
-        case "I":
-          text=text+"<span class='btn'>&nbsp; &nbsp;</span><span class='btn btn_d'>D</span>";
-        break;
-        case "X":
-          text=text+"<span class='btn btn_x'>N/A</span>";
-        break;                
-      }
-
-
+      text=text+"<span class='btn'>&nbsp; &nbsp;</span><span class='btn btn_d'>D</span>";
 
       var short_name_length = 26;
 
       var short_name = gdw_datasets[key].name.substring(0,short_name_length)+(gdw_datasets[key].name.length>short_name_length ? "»" : "");
       //text=text+" "+short_name;
 //      text=text+" &nbsp; &nbsp; (delete)";
-      text=text+"<span class='inviscopy'>"+short_name+"</span> (delete)";      
+      text=text+"<span class='inviscopy'>"+short_name+"</span><span> (delete)</span>";      
       text=text+"</td>";
      
       text=text+"<td class='cc_writer_rows add_delete'>"+numberWithCommas1(gdw_datasets[key].delete_rows,0,true)+"</td><td class='cc_writer_size add_delete' ";
@@ -1446,16 +1447,58 @@ for (var key in gdw_datasets) {
       text=text+"</td>";
 
       text=text+"</tr>\n";
+      }
+      cc_total_count++;
+      last_key = key;
+  }
+
+      /*and repeat for delete rows from side-table */
+      if(gdw_datasets[key].has_tbl_delete /*&& gdw_datasets[key].tbl_delete_rows>0*/){
+
+        text=text+"<tr class='cc_head_writer_del'><td class='cc_writer_name add_delete' title='"+key+" DELETE";
+
+        if(gdw_datasets[key].client_discriminator){
+          text=text+"\rCLIENT_ID = "+gdw_datasets[key].client_id;
+        }else{
+          text=text+"\rNO CLIENT DISCRIMINATOR!";
+        }
+
+        text=text+"\rINCREMENTAL DELETE - side table";
+
+      text = text+"'>";
+      text=text+"<span class='btn'>&nbsp; &nbsp;</span><span class='btn btn_d'>S</span>";
+      
+
+
+
+      var short_name_length = 26;
+
+      var short_name = gdw_datasets[key].name.substring(0,short_name_length)+(gdw_datasets[key].name.length>short_name_length ? "»" : "");
+      //text=text+" "+short_name;
+//      text=text+" &nbsp; &nbsp; (delete)";
+      text=text+"<span class='inviscopy'>"+short_name+"</span><span> (delete - side table)</span>";
+      text=text+"</td>";
+     
+      text=text+"<td class='cc_writer_rows add_delete'>"+numberWithCommas1(gdw_datasets[key].tbl_delete_rows,0,true)+"</td><td class='cc_writer_size add_delete' ";
+      text=text+"title='Data Volume\r"+sizeWithCommasIec(gdw_datasets[key].tbl_delete_bytes,0,'KiB',true,false)+"'>";
+      text=text+sizeWithCommasIec(gdw_datasets[key].tbl_delete_bytes,0,'KiB',false,true)+"</td>";
+
+      //text=text+formatTimeCompact(Math.round(gdw_datasets[key].extract_duration_ms/1000))+"</td>";
+
+
+
+        text=text+"<td class='cc_writer_sli'>&nbsp;</td>";
+
+      text=text+"<td class='cc_writer_bar add_delete_bar' title='"+gdw_datasets[key].name+"&#10;"+(!isNaN(gdw_datasets[key].tbl_delete_rows) ? Math.round(gdw_datasets[key].tbl_delete_rows/gdw_datasets['*total*'].rows*100) : "N/A")+"% rows\r"+(!isNaN(gdw_datasets[key].tbl_delete_bytes) ? Math.round(gdw_datasets[key].tbl_delete_bytes/gdw_datasets['*total*'].bytes*100) : "N/A")+"% of volume'>";
+      text=text+"<div class='cc_writer_bar_rows cc_writer_bar_rows_delete' style=\"width: "+(!isNaN(gdw_datasets[key].tbl_delete_rows) ? Math.round(gdw_datasets[key].tbl_delete_rows/gdw_datasets['*max*'].rows*30) : "0")+"px\"> </div>";
+      text=text+"<div class='cc_writer_bar_sizes cc_writer_sizes_delete' style=\"width: "+(!isNaN(gdw_datasets[key].tbl_delete_bytes) ? Math.round(gdw_datasets[key].tbl_delete_bytes/gdw_datasets['*max*'].bytes*30) : "0")+"px\"> </div>";
+      text=text+"</td>";
+
+      text=text+"</tr>\n";
 
 
       }
 
-
-      cc_total_count++;
-      last_key = key;
-
-
-  }
 }
 
       /* additional last row for SLI load */

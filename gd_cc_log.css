@@ -494,7 +494,7 @@ span.graph_name a:hover {
 }
 
 
-tr.cc_head_writer{
+tr.cc_head_writer, tr.cc_head_writer_del{
 	padding-top: 1px;
 	padding-bottom: 1px;
 	margin-top: 1px;
@@ -502,10 +502,22 @@ tr.cc_head_writer{
 	font-size: 12px;
 	margin: 0em;
 	background-color: #000;
+	height: 16px !important;
+	line-height: 16px !important;
+	max-height: 16px !important;
 }
 
+tr.cc_head_writer_del{
+	height: 16px !important;
+	line-height: 16px !important;
+	max-height: 16px !important;
+	font-size: 12px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 0px;	
+}
 
-tr.cc_head_writer:hover{
+tr.cc_head_writer:hover, tr.cc_head_writer_del:hover{
 	background-color: #333;
 }
 
@@ -574,7 +586,8 @@ tr.cc_head_writer_header td.cc_writer_name{
 }
 
 .add_delete {
-	color: #666;
+	color: #777;
+	max-height: 16px !important;
 }
 
 
@@ -1003,10 +1016,15 @@ margin-right: 50px;
 }
 
 .inviscopy { 
+
   display: inline-block !important;
-  width: 0px !important;
-  padding-left: 1px !important;
+  width: 1px !important;
+  padding-left: 0px !important;
   border: none !important;
   overflow:hidden !important;
+  font-size: 1px;
   text-overflow:clip !important;
+  height: 10px !important;
+  max-height: 10px !important;
+  line-height: 10px !important;
 }
