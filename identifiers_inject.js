@@ -23,102 +23,116 @@
 
 var global_objects_cache = [];
 
-
-
-function display_identifier(obj){
-  var url_parts = obj.href.split('/');
-  var url = '/'+url_parts.slice(3,8).join('/');
+function display_identifier(obj) {
+  var url_parts = obj.href.split("/");
+  var url = "/" + url_parts.slice(3, 8).join("/");
   //console.log(url);
 
-  if(typeof global_objects_cache[url] !== 'undefined' ){
-    replace_specific_href(obj,url,global_objects_cache);
-  }else{
-    get_objects_cache(url, function(){replace_specific_href(obj,url)});
+  if (typeof global_objects_cache[url] !== "undefined") {
+    replace_specific_href(obj, url, global_objects_cache);
+  } else {
+    get_objects_cache(url, function () {
+      replace_specific_href(obj, url);
+    });
   }
 }
 
-
-function get_objects_cache(url,callback){
-  if(!global_objects_cache || !global_objects_cache[url]){
+function get_objects_cache(url, callback) {
+  if (!global_objects_cache || !global_objects_cache[url]) {
     var env = parse_gd_url(location.href);
     //var urls = find_objects(document.body.innerText, env);
-    get_object([url], env, function(cache){
-        global_objects_cache = Object.assign({},global_objects_cache,cache);
-        callback(url,global_objects_cache);
-        //console.log(global_objects_cache);
+    get_object([url], env, function (cache) {
+      global_objects_cache = Object.assign({}, global_objects_cache, cache);
+      callback(url, global_objects_cache);
+      //console.log(global_objects_cache);
     });
-  }else{
+  } else {
     //console.log("FROM CACHE:");
-    callback(url,global_objects_cache);
+    callback(url, global_objects_cache);
   }
 }
 
+function parse_gd_url(url) {
+  var pidParse = url.match("https://([^/]*)/gdc/md/([^/]*)/([^/]*)/([0-9]*)");
+  //console.log(pidParse);
 
-function parse_gd_url(url){
-
-var pidParse = url.match("https://([^/]*)/gdc/md/([^/]*)/([^/]*)/([0-9]*)");
-//console.log(pidParse);
-
-var response = {
-    server : (!pidParse || !pidParse[1] ? null : pidParse[1]),
-    pid: (!pidParse || !pidParse[2] ? null : pidParse[2]),
-    obj: (!pidParse || !pidParse[4] ? null : pidParse[4])
-};
-//console.log(response);
-return response;
+  var response = {
+    server: !pidParse || !pidParse[1] ? null : pidParse[1],
+    pid: !pidParse || !pidParse[2] ? null : pidParse[2],
+    obj: !pidParse || !pidParse[4] ? null : pidParse[4],
+  };
+  //console.log(response);
+  return response;
 }
 
-function replace_specific_href(obj,url,cache){
-  if(!global_objects_cache[url].error){
-
-
-    obj.title = "category: "+global_objects_cache[url].category+"\rtitle: "+global_objects_cache[url].title+"\ridentifier: "+global_objects_cache[url].identifier;
+function replace_specific_href(obj, url, cache) {
+  if (!global_objects_cache[url].error) {
+    obj.title =
+      "category: " +
+      global_objects_cache[url].category +
+      "\rtitle: " +
+      global_objects_cache[url].title +
+      "\ridentifier: " +
+      global_objects_cache[url].identifier;
     obj.onmouseover = "";
-    obj.insertAdjacentHTML("afterend","<i style=\"user-select: none;\" onmouseover=\"this.style='user-select: auto'\" onmouseout=\"this.style='user-select: none'\"> "+global_objects_cache[url].category+" <b>\""+global_objects_cache[url].title+"\"</b> {"+global_objects_cache[url].identifier+"}</i>");
-  }else{
-    obj.title = "category: "+global_objects_cache[url].category+"\rtitle: "+global_objects_cache[url].title+"\ridentifier: "+global_objects_cache[url].identifier;
+    obj.insertAdjacentHTML(
+      "afterend",
+      '<i style="user-select: none;" onmouseover="this.style=\'user-select: auto\'" onmouseout="this.style=\'user-select: none\'"> ' +
+        global_objects_cache[url].category +
+        ' <b>"' +
+        global_objects_cache[url].title +
+        '"</b> {' +
+        global_objects_cache[url].identifier +
+        "}</i>"
+    );
+  } else {
+    obj.title =
+      "category: " +
+      global_objects_cache[url].category +
+      "\rtitle: " +
+      global_objects_cache[url].title +
+      "\ridentifier: " +
+      global_objects_cache[url].identifier;
     obj.onmouseover = "";
-    obj.insertAdjacentHTML("afterend","<i style=\"user-select: none;\" onmouseover=\"this.style='user-select: auto'\" onmouseout=\"this.style='user-select: none'\"> Error loading details. Try <a href='#' onclick='location.reload();'>reloading the page</a></i>");
-
+    obj.insertAdjacentHTML(
+      "afterend",
+      "<i style=\"user-select: none;\" onmouseover=\"this.style='user-select: auto'\" onmouseout=\"this.style='user-select: none'\"> Error loading details. Try <a href='#' onclick='location.reload();'>reloading the page</a></i>"
+    );
   }
-
 }
 
-
-function dedup_array(a){
-	var sorted_a = a.sort();
-	var result = [];
-	var previous;
-	for (var i = 0; i < sorted_a.length; i++) {
-		if(sorted_a[i] != previous){
-			result.push(sorted_a[i]);
-		}
-		previous = sorted_a[i];
+function dedup_array(a) {
+  var sorted_a = a.sort();
+  var result = [];
+  var previous;
+  for (var i = 0; i < sorted_a.length; i++) {
+    if (sorted_a[i] != previous) {
+      result.push(sorted_a[i]);
     }
-    return result;
+    previous = sorted_a[i];
+  }
+  return result;
 }
 
-
-function get_object(url, env, callback){
+function get_object(url, env, callback) {
   var objects_cache = [];
   var gi_call = new XMLHttpRequest();
-  gi_call.onload = function()
-  {
-  var resp = null;
-  if (gi_call.status==200){
+  gi_call.onload = function () {
+    var resp = null;
+    if (gi_call.status == 200) {
       resp_plain = gi_call.responseText;
       resp_json = JSON.parse(gi_call.responseText);
       var allPropertyNames = Object.keys(resp_json);
       var obj = allPropertyNames[0];
 
-//      console.log(allPropertyNames);
+      //      console.log(allPropertyNames);
 
       //console.log(resp_plain);
       //console.log(resp_json);
 
       var object = resp_json[obj];
 
-//console.log(object);
+      //console.log(object);
 
       var title = object.meta.title;
       var identifier = object.meta.identifier;
@@ -129,34 +143,32 @@ function get_object(url, env, callback){
         identifier: identifier,
         title: title,
         category: category,
-        error: false
-      }
+        error: false,
+      };
 
       objects_cache[url] = obj;
 
-    callback(objects_cache);
-
-    }else{
+      callback(objects_cache);
+    } else {
       console.log("ERROR reading Identifiers");
       console.log(gi_call.responseText);
       obj = {
         url: url,
-        error: true
-      }
+        error: true,
+      };
 
       objects_cache[url] = obj;
       callback(objects_cache);
     }
-  }
+  };
 
-  gi_call.open("GET", "https://"+env.server+url);
+  gi_call.open("GET", "https://" + env.server + url);
   gi_call.setRequestHeader("Accept", "application/json");
-  gi_call.setRequestHeader("Content-Type", "application/json"); 
-  gi_call.setRequestHeader("X-Extension-User-Agent", "GoodData-Chrome-Extension/");
+  gi_call.setRequestHeader("Content-Type", "application/json");
+  gi_call.setRequestHeader(
+    "X-Extension-User-Agent",
+    "GoodData-Chrome-Extension/"
+  );
   //console.log("CALLING API");
   gi_call.send();
-
 }
-
-
-

@@ -31,72 +31,129 @@
 function widen() {
     var minWidth = 685;
 
-//prepare array of magics
+    //prepare array of magics
     var std_buttons = document.getElementById("std_buttons");
-    var magic=document.getElementById("magic");
-    var magic2=document.getElementById("magic2");
-    var magic3=document.getElementById("magic3");
-    var magic4=document.getElementById("magic4");
-    var magic5=document.getElementById("magic5");
+    var magic = document.getElementById("magic");
+    var magic2 = document.getElementById("magic2");
+    var magic3 = document.getElementById("magic3");
+    var magic4 = document.getElementById("magic4");
+    var magic5 = document.getElementById("magic5");
     var magic_array = [];
 
-    if(magic) magic_array.push(magic);
-    if(magic2) magic_array.push(magic2);
-    if(magic3) magic_array.push(magic3);
-    if(magic4) magic_array.push(magic4);
-    if(magic5) magic_array.push(magic5);
+    if (magic) magic_array.push(magic);
+    if (magic2) magic_array.push(magic2);
+    if (magic3) magic_array.push(magic3);
+    if (magic4) magic_array.push(magic4);
+    if (magic5) magic_array.push(magic5);
 
-//sort by length desc
-magic_array.sort(function(a, b){
-  return b.offsetWidth - a.offsetWidth;
-});
+    //sort by length desc
+    magic_array.sort(function (a, b) {
+        return b.offsetWidth - a.offsetWidth;
+    });
 
     var defWidth = std_buttons.offsetWidth;
     var fixedWidth = 100;
 
     var stdWidth = fixedWidth + std_buttons.offsetWidth;
-console.log("standard width="+stdWidth);
+    console.log("standard width=" + stdWidth);
 
-    var newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);   
+    var newWidth =
+        fixedWidth +
+        std_buttons.offsetWidth +
+        (magic ? magic.offsetWidth : 0) +
+        (magic2 ? magic2.offsetWidth : 0) +
+        (magic3 ? magic3.offsetWidth : 0) +
+        (magic4 ? magic4.offsetWidth : 0) +
+        (magic5 ? magic5.offsetWidth : 0);
 
+    if (newWidth > 795) {
+        //console.log("width calculated to"+newWidth+". shortening labels");
+        document.getElementById("query").innerText = "Que";
+        document.getElementById("project_list").innerText = "Lst";
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
+    }
+    if (newWidth > 795) {
+        //console.log("width calculated to"+newWidth+". shortening labels");
+        document.getElementById("validate").innerText = "Val";
+        document.getElementById("project").innerText = "Prj";
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
+    }
+    if (newWidth > 795) {
+        //console.log("width calculated to"+newWidth+". shortening labels");
+        document.getElementById("model").innerText = "LD";
+        document.getElementById("model2").innerText = "LB";
+        document.getElementById("model3").innerText = "WB";
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
+    }
+    if (newWidth > 795) {
+        //console.log("width calculated to"+newWidth+". shortening labels");
+        document.getElementById("explain").innerText = "E";
+        document.getElementById("schedules_gp").innerText = "G";
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
+    }
+    if (newWidth > 795) {
+        //console.log("width calculated to"+newWidth+". shortening labels");
+        document.getElementById("md_export").innerText = "M";
+        document.getElementById("md_import").innerText = "M";
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
+    }
 
-    if(newWidth>795){
-        //console.log("width calculated to"+newWidth+". shortening labels");
-        document.getElementById("query").innerText = 'Que';
-        document.getElementById("project_list").innerText = 'Lst';        
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
-
-    }
-    if(newWidth>795){
-        //console.log("width calculated to"+newWidth+". shortening labels");
-        document.getElementById("validate").innerText = 'Val';
-        document.getElementById("project").innerText = 'Prj';
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
-    }
-    if(newWidth>795){
-        //console.log("width calculated to"+newWidth+". shortening labels");
-        document.getElementById("model").innerText = 'LD';
-        document.getElementById("model2").innerText = 'LB';
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
-    }
-    if(newWidth>795){
-        //console.log("width calculated to"+newWidth+". shortening labels");
-        document.getElementById("explain").innerText = 'E';
-        document.getElementById("schedules_gp").innerText = 'G';
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
-    }
-    if(newWidth>795){
-        //console.log("width calculated to"+newWidth+". shortening labels");
-        document.getElementById("md_export").innerText = 'M';
-        document.getElementById("md_import").innerText = 'M';
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
-    }
-
-    var x=0; //to avoid infinite cycle
-    for (var i = 0; i < magic_array.length && newWidth>795 && x<20; magic_array.sort(function(a, b){return b.offsetWidth - a.offsetWidth})) {
+    var x = 0; //to avoid infinite cycle
+    for (
+        var i = 0;
+        i < magic_array.length && newWidth > 795 && x < 20;
+        magic_array.sort(function (a, b) {
+            return b.offsetWidth - a.offsetWidth;
+        })
+    ) {
         //console.log("width calculated to"+newWidth+". shortening longest magic label "+magic_array[i].innerText );
-        magic_array[i].innerText=magic_array[i].innerText.substring(0,magic_array[i].innerText.length-1);
-        newWidth = fixedWidth + std_buttons.offsetWidth + (magic ? magic.offsetWidth : 0)+(magic2 ? magic2.offsetWidth : 0)+(magic3 ? magic3.offsetWidth : 0)+(magic4 ? magic4.offsetWidth : 0)+(magic5 ? magic5.offsetWidth : 0);
+        magic_array[i].innerText = magic_array[i].innerText.substring(
+            0,
+            magic_array[i].innerText.length - 1
+        );
+        newWidth =
+            fixedWidth +
+            std_buttons.offsetWidth +
+            (magic ? magic.offsetWidth : 0) +
+            (magic2 ? magic2.offsetWidth : 0) +
+            (magic3 ? magic3.offsetWidth : 0) +
+            (magic4 ? magic4.offsetWidth : 0) +
+            (magic5 ? magic5.offsetWidth : 0);
         x++;
     }
 
@@ -119,53 +176,52 @@ function addMagicButton(magic_name) {
 
     var a = document.createElement("a");
     a.setAttribute("id", magic_name);
-    a.setAttribute("href", localStorage[magic_name+"_link"]);
-    a.setAttribute("title", localStorage[magic_name+"_help"]);
-    a.appendChild(document.createTextNode(localStorage[magic_name+"_title"]));
+    a.setAttribute("href", localStorage[magic_name + "_link"]);
+    a.setAttribute("title", localStorage[magic_name + "_help"]);
+    a.appendChild(document.createTextNode(localStorage[magic_name + "_title"]));
 
     var classAttr = "";
-    if (localStorage[magic_name+"_link"].indexOf("${PID}") >= 0) {
+    if (localStorage[magic_name + "_link"].indexOf("${PID}") >= 0) {
         classAttr += "needpid ";
     }
-    if (localStorage[magic_name+"_link"].indexOf("${OBJ}") >= 0) {
+    if (localStorage[magic_name + "_link"].indexOf("${OBJ}") >= 0) {
         classAttr += "needobj ";
     }
-    if (localStorage[magic_name+"_link"].indexOf("${OBJURL}") >= 0) {
+    if (localStorage[magic_name + "_link"].indexOf("${OBJURL}") >= 0) {
         classAttr += "needobj ";
     }
-    if (localStorage[magic_name+"_link"].indexOf("${DOMAIN}") >= 0) {
+    if (localStorage[magic_name + "_link"].indexOf("${DOMAIN}") >= 0) {
         classAttr += "needdomain ";
     }
 
     a.setAttribute("class", classAttr);
 
-
-//TODO dynamically insert before/after
-    document.getElementById("navigation").insertBefore(
-        a,
-        document.getElementById("last-spacer"));
+    //TODO dynamically insert before/after
+    document
+        .getElementById("extra_buttons")
+        .insertBefore(a, document.getElementById("last-spacer"));
 }
 
 /**
  * Adds toolbar customizations.
  */
 function customize() {
-    if(
-        (localStorage["magic_link"] && localStorage["magic_title"]) || 
-        (localStorage["magic2_link"] && localStorage["magic2_title"]) || 
-        (localStorage["magic3_link"] && localStorage["magic3_title"]) || 
-        (localStorage["magic4_link"] && localStorage["magic4_title"]) || 
+    if (
+        (localStorage["magic_link"] && localStorage["magic_title"]) ||
+        (localStorage["magic2_link"] && localStorage["magic2_title"]) ||
+        (localStorage["magic3_link"] && localStorage["magic3_title"]) ||
+        (localStorage["magic4_link"] && localStorage["magic4_title"]) ||
         (localStorage["magic5_link"] && localStorage["magic5_title"])
-    ){
+    ) {
         //we have some magic buttons
         console.log("It's a kind of magic...");
 
         //add spacer
         var spacer = document.createElement("span");
         spacer.setAttribute("class", "spacer");
-        document.getElementById("navigation").insertBefore(
-            spacer,
-            document.getElementById("last-spacer"));  
+        document
+            .getElementById("extra_buttons")
+            .insertBefore(spacer, document.getElementById("last-spacer"));
 
         //add individual buttons
         if (localStorage["magic_link"] && localStorage["magic_title"]) {
@@ -179,16 +235,14 @@ function customize() {
         }
         if (localStorage["magic4_link"] && localStorage["magic4_title"]) {
             addMagicButton("magic4");
-        }        
+        }
         if (localStorage["magic5_link"] && localStorage["magic5_title"]) {
             addMagicButton("magic5");
         }
 
         //update width and compact other titles if needed
-        widen();  
-    }       
+        widen();
+    }
 }
 
 window.onload = customize();
-
-

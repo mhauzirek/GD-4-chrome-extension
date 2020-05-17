@@ -21,40 +21,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /* this file adds to all /gdc/md/OBJ_ID links in grey pages an onMouseOver handler which calls translation of URLs to identifiers using title */
 /* the logic for translation itself is in file identifiers_inject.js which this file injects into the grey pages  */
 
-
-
-
-
 /*  -------------------- */
 
+function replace_hrefs_mouseover() {
+	//hide everything during changes to speedup redraw
+	var orig_display = document.body.display;
+	document.body.display = "none";
 
-function replace_hrefs_mouseover(){
-
-  //hide everything during changes to speedup redraw
-  var orig_display = document.body.display;
-  document.body.display = "none";
-
-//console.log(document.body.innerHTML);
-
-  document.body.innerHTML = document.body.innerHTML.replace(/( href="(\/gdc\/md\/[^\/]*\/obj\/[0-9]*)")>/gm, "$1 onmouseover=\"display_identifier(this)\" style=\"opacity: 0.5\">");
-  document.body.display = orig_display;
+	document.body.innerHTML = document.body.innerHTML.replace(
+		/( href="(\/gdc\/md\/[^\/]*\/obj\/[0-9]*)")>/gm,
+		'$1 onmouseover="display_identifier(this)" style="opacity: 0.5">'
+	);
+	document.body.display = orig_display;
 }
 
-
-
-console.log("GoodData Extension for IDENTIFIERS activated!");
-
 //inject script with identifier lookup functions
-  var s = document.createElement('script');
-  s.src = chrome.extension.getURL("identifiers_inject.js");
-  s.onload = function() {this.parentNode.removeChild(this);}; //remove injected script from source after it is laoded
-  (document.head||document.documentElement).appendChild(s);
-
+var s = document.createElement("script");
+s.src = chrome.extension.getURL("identifiers_inject.js");
+s.onload = function () {
+	this.parentNode.removeChild(this);
+}; //remove injected script from source after it is laoded
+(document.head || document.documentElement).appendChild(s);
 
 //add onmouseover to URL links
 replace_hrefs_mouseover();
-

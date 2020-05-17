@@ -292,32 +292,6 @@ function get_widgets(callback,identifiers,editable_icons){
 
 
 
-
-
-
-
-
-
-
-/*
-chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    switch (request.type){
-       case "showProjectInfo3":
-          //console.log("showing project info overlay3 for project "+request.PID+", server "+request.server+", specific schedule "+request.spec_schedule);
-          
-
-          testMe();
-
-      break;
-
-
-
-     }
-      
-  });
-*/
-
   chrome.extension.sendMessage({message: "canImproveKPI"}, function(response) {
 
       //console.log(response);

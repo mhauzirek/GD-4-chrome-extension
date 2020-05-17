@@ -21,108 +21,115 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-function parse_query(query){
-
+function parse_query(query) {
   var result = {};
-  if(!query) return result;
-  query = query.substring(1,query.length);
+  if (!query) return result;
+  query = query.substring(1, query.length);
   var q_arr = query.split("&");
   var length = q_arr.length;
   var q;
-  for(var s=0; s<length; s++){
-    q=q_arr[s].split("=");
-    result[q[0]]=q[1];
+  for (var s = 0; s < length; s++) {
+    q = q_arr[s].split("=");
+    result[q[0]] = q[1];
   }
   return result;
 }
 
-function switch_style(what, to, notclass, display){
+function switch_style(what, to, notclass, display) {
+  display = display || "block";
+  if (notclass) {
+    notclass = ":not(." + notclass + ")";
+  } else {
+    notclass = "";
+  }
+  var obj = document.getElementById(what + "_style");
+  if (!obj) {
+    obj = document.createElement("style");
+    obj.id = what + "_style";
+    document.head.appendChild(obj);
+  }
 
-display = display||"block"
-if(notclass){
-  notclass=":not(."+notclass+")";
-}else{
-  notclass="";
-}
-var obj = document.getElementById(what+"_style");
-if(!obj){
-  obj = document.createElement('style');
-  obj.id = what+"_style";
-  document.head.appendChild(obj);
-}
+  if (to) {
+    //set visible
+    obj.innerHTML = "." + what + notclass + " { display: " + display + "; }";
+  } else {
+    //set invisible
+    obj.innerHTML = "." + what + notclass + " { display: none; }";
+  }
 
-if(to){
-  //set visible
-   obj.innerHTML = '.'+what+notclass+' { display: '+display+'; }';
-
-}else{
-  //set invisible
-    obj.innerHTML = '.'+what+notclass+' { display: none; }';
-}
-
-switch(what){
-  case "ERROR": show_int.err=(to ? "1" : "0"); break;
-  case "INFO": show_int.inf=(to ? "1" : "0"); break;
-  case "WARN": show_int.wrn=(to ? "1" : "0"); break;
-  case "WatchDog": show_int.wdg=(to ? "1" : "0"); break;
-  case "DEBUG": show_int.dbg=(to ? "1" : "0"); break;
-  case "request_id": show_int.rid=(to ? "1" : "0"); break;
-}
+  switch (what) {
+    case "ERROR":
+      show_int.err = to ? "1" : "0";
+      break;
+    case "INFO":
+      show_int.inf = to ? "1" : "0";
+      break;
+    case "WARN":
+      show_int.wrn = to ? "1" : "0";
+      break;
+    case "WatchDog":
+      show_int.wdg = to ? "1" : "0";
+      break;
+    case "DEBUG":
+      show_int.dbg = to ? "1" : "0";
+      break;
+    case "request_id":
+      show_int.rid = to ? "1" : "0";
+      break;
+  }
 
   refresh_url = set_refresh_url();
 }
 
-function set_refresh_url(){
-
+function set_refresh_url() {
   var old_hash = location.hash;
 
-  var new_url=
-  location.href.split(/\?|#/)[0]+"?"+
-  (show_int.wdg=="1" ? "wdg=1&" : "")+
-  (show_int.rid=="1" ? "rid=1&" : "")+
-  (show_int.dbg=="0" ? "dbg=0&" : "")+
-  (show_int.inf=="0" ? "inf=0&" : "")+
-  (show_int.wrn=="0" ? "wrn=0&" : "")+
-  (show_int.err=="0" ? "err=0&" : "")+
-  (show_int.refresh=="1" ? "refresh=1&" : "") //TODO upravit na finished???
+  var new_url =
+    location.href.split(/\?|#/)[0] +
+    "?" +
+    (show_int.wdg == "1" ? "wdg=1&" : "") +
+    (show_int.rid == "1" ? "rid=1&" : "") +
+    (show_int.dbg == "0" ? "dbg=0&" : "") +
+    (show_int.inf == "0" ? "inf=0&" : "") +
+    (show_int.wrn == "0" ? "wrn=0&" : "") +
+    (show_int.err == "0" ? "err=0&" : "") +
+    (show_int.refresh == "1" ? "refresh=1&" : ""); //TODO upravit na finished???
 
-  if(is_error){
-    new_url+="#first_error";
-  }else{
-    new_url+="#last_line";
+  if (is_error) {
+    new_url += "#first_error";
+  } else {
+    new_url += "#last_line";
   }
-  return new_url;  
+  return new_url;
 }
 
-
-function reload_refresh(){
+function reload_refresh() {
   //console.log("we are reloading...");
-  if(location.href==refresh_url){
+  if (location.href == refresh_url) {
     location.reload(true);
-  }else{
+  } else {
     //console.log("will load this URL: "+refresh_url);
-    location.href=refresh_url;
+    location.href = refresh_url;
   }
 }
 
-
-function reload_hash(){
+function reload_hash() {
   //console.log("reloading without parsing");
   var reload = false;
-  if(!location.search) {reload = true;}
-  location.href=location.href.split(/\?|#/)[0]+"#no_parse";
-  if(reload) window.location.reload(true);
+  if (!location.search) {
+    reload = true;
+  }
+  location.href = location.href.split(/\?|#/)[0] + "#no_parse";
+  if (reload) window.location.reload(true);
   return false;
 }
 
-
 //fade effects by http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/
 // fade out
-function fadeOut(el){
+function fadeOut(el) {
   el.style.opacity = 1;
   (function fade() {
-    if ((el.style.opacity -= .1) < 0) {
+    if ((el.style.opacity -= 0.1) < 0) {
       el.style.display = "none";
     } else {
       requestAnimationFrame(fade);
@@ -131,114 +138,107 @@ function fadeOut(el){
 }
 
 // fade in
-function fadeIn(el, display){
+function fadeIn(el, display) {
   el.style.opacity = 0;
   el.style.display = display || "block";
   (function fade() {
     var val = parseFloat(el.style.opacity);
-    if (!((val += .1) > 1)) {
+    if (!((val += 0.1) > 1)) {
       el.style.opacity = val;
       requestAnimationFrame(fade);
     }
   })();
 }
 
-
-function set_refresh(){
+function set_refresh() {
   //console.log("setting auto reload to 2 minutes");
-  show_int.refresh="1";
+  show_int.refresh = "1";
   timed_refresh = setTimeout(reload_refresh, 120000);
-
-
 }
 
 function stop_refresh() {
   //console.log("canceling auto reload");
-  show_int.refresh="0";
+  show_int.refresh = "0";
   clearTimeout(timed_refresh);
 }
 
-function toggle_refresh(){
-  if(show_int.refresh=="1"){
+function toggle_refresh() {
+  if (show_int.refresh == "1") {
     stop_refresh();
-  }else{
+  } else {
     set_refresh();
   }
   refresh_url = set_refresh_url();
 }
 
-function switch_gd_writers(){
+function switch_gd_writers() {
   //console.log("switching");
-  var gdw = document.getElementById('cc_head_writers_box');
-  var hdw_hid = document.getElementById('cc_head_writers_hider');
+  var gdw = document.getElementById("cc_head_writers_box");
+  var hdw_hid = document.getElementById("cc_head_writers_hider");
 
-  if(gdw.style.display=="none"){
-    hdw_hid.classList.remove('hider_open');
-    hdw_hid.classList.add('hider_closed');
-    fadeIn(gdw, 'inline');
-  }else{
-    hdw_hid.classList.remove('hider_closed');
-    hdw_hid.classList.add('hider_open');
+  if (gdw.style.display == "none") {
+    hdw_hid.classList.remove("hider_open");
+    hdw_hid.classList.add("hider_closed");
+    fadeIn(gdw, "inline");
+  } else {
+    hdw_hid.classList.remove("hider_closed");
+    hdw_hid.classList.add("hider_open");
     fadeOut(gdw);
   }
 }
 
-function scroll_to(hash){
-  location.hash="#"+hash;
+function scroll_to(hash) {
+  location.hash = "#" + hash;
   return false;
 }
 
+function switch_tab(tab_display, tab_hide) {
+  var display = document.getElementById(tab_display + "_box");
+  var display_hid = document.getElementById(tab_display + "_hider");
 
-function switch_tab(tab_display, tab_hide){
-  var display = document.getElementById(tab_display+'_box');
-  var display_hid = document.getElementById(tab_display+'_hider');
-  
-  var hide = document.getElementById(tab_hide+'_box');
-  var hide_hid = document.getElementById(tab_hide+'_hider');
+  var hide = document.getElementById(tab_hide + "_box");
+  var hide_hid = document.getElementById(tab_hide + "_hider");
 
-  if(display){
-    if(display.style.display == 'none'){
+  if (display) {
+    if (display.style.display == "none") {
       //we are showing this tab
-      display_hid.classList.remove('hider_open','hider_not_active','hider_open_other');
-      display_hid.classList.add('hider_closed','hider_clicked');
-      display.style.display='inline';
-      if(hide){
+      display_hid.classList.remove(
+        "hider_open",
+        "hider_not_active",
+        "hider_open_other"
+      );
+      display_hid.classList.add("hider_closed", "hider_clicked");
+      display.style.display = "inline";
+      if (hide) {
         //and hiding others
-        hide_hid.classList.remove('hider_closed','hider_clicked');
-        hide_hid.classList.add('hider_open','hider_open_other');    
-        hide.style.display='none';
+        hide_hid.classList.remove("hider_closed", "hider_clicked");
+        hide_hid.classList.add("hider_open", "hider_open_other");
+        hide.style.display = "none";
       }
-    }else{
+    } else {
       //we are hiding this tab
-      display_hid.classList.remove('hider_closed','hider_clicked');
-      display_hid.classList.add('hider_open','hider_not_active');
-      display.style.display='none';
-      if(hide){
-        hide_hid.classList.remove('hider_open_other');
+      display_hid.classList.remove("hider_closed", "hider_clicked");
+      display_hid.classList.add("hider_open", "hider_not_active");
+      display.style.display = "none";
+      if (hide) {
+        hide_hid.classList.remove("hider_open_other");
       }
     }
-  }else{
+  } else {
     //console.log(display+" not found to display");
   }
-
-
-
 }
 
-
 var timed_refresh = null;
-var is_error = document.getElementById('first_error');
-var is_finished = document.getElementById('finished_ok');
+var is_error = document.getElementById("first_error");
+var is_finished = document.getElementById("finished_ok");
 var show_int = parse_query(location.search);
 var refresh_url = set_refresh_url();
 
 //console.log(refresh_url);
-if(show_int.refresh=="1") set_refresh();
-if(is_error || is_finished){
-    document.getElementById('auto_refresh').checked=false;
-    document.getElementById('auto_refresh').disabled=true;
-    stop_refresh();
-  }
-
-
-
+if (show_int.refresh == "1") set_refresh();
+if (is_error || is_finished) {
+  document.getElementById("auto_refresh").checked = false;
+  document.getElementById("auto_refresh").disabled = true;
+  stop_refresh();
+}

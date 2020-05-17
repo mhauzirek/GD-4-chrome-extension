@@ -97,7 +97,7 @@ color: #999;
 text-decoration: none;
 
 height: 41px;
-line-height: 43px;
+xline-height: 43px;
 
 xline-height: 37px;
 font-size: 14px;
@@ -121,10 +121,59 @@ color: white;
   font-size: 10px;
   margin-left: -5px;
   margin-right: -1px;
-  padding-bottom: 8;
+  xpadding-bottom: 8;
   color: #999;
 }
 
+#navigation .supnav {
+  font-size: 10px;
+  margin-left: -5px;
+  margin-right: -1px;
+  xpadding-bottom: 0;
+  color: #999;
+}
+
+.supsub {
+    display: inline-block;
+    max-height: 40px;
+    
+}
+
+#navigation span.supsub > sup > a {
+  line-height: 20px;
+}
+
+.supsub sup,
+.supsub sub {
+    position: relative;
+    display: block;
+    font-size: .5em;
+
+}
+
+
+#navigation .supsub a{
+  border-bottom: 1px solid #000;
+  padding-bottom: 0px;
+}
+
+#navigation .supsub a:hover{
+  border-bottom: 2px solid #999;
+}
+
+.supsub sub {
+    top: 1.5em;
+}
+.supsub sup {
+    top: 1.5em;
+}
+
+span#std_buttons,
+span#extra_buttons
+ {
+    top: -4;
+    position: relative;
+}
 
 Xbody, Xhtml {
   width: 750px;
@@ -245,3 +294,4 @@ text-decoration: none;
     50% { background-color: #999; color: #fff;}
     100% { background-color: #000; color: #999;}
 }
+
