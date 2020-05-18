@@ -6,7 +6,7 @@
         z-index: 4998;
         margin: 0 auto;
         height: 40px;
-        background: url("sprite1.png") repeat-x 0 0;
+        xbackground: url("images/sprite1.png") repeat-x 0 0;
         -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
       }
@@ -45,7 +45,7 @@ top: 10px;
 left: 10px;
 height: 19px;
 border: 0;
-background: url("GoodData.png") no-repeat 0 0;
+xbackground: url("GoodData.png") no-repeat 0 0;
 width: 121px;
 border: 0 solid white;
 }

@@ -235,7 +235,8 @@ function clicked(tab, link) {
 
 // show desktop notification
 function notify(title, text, tab, img, link) {
-  img = typeof img !== "undefined" ? img : "icons/gd19_rebrand_black.png";
+  img =
+    typeof img !== "undefined" ? img : "images/notifications/gd_default.png";
   chrome.permissions.contains(
     {
       permissions: ["notifications"],
@@ -266,12 +267,13 @@ function notify(title, text, tab, img, link) {
 }
 
 function audio_notify(title, text, tab, img, link, sound_scheme) {
-  img = typeof img !== "undefined" ? img : "icons/gd19_rebrand_black.png";
+  img =
+    typeof img !== "undefined" ? img : "images/notifications/gd_default.png";
   var sound;
-  if (img == "icons/gd_etl_error.png") {
+  if (img == "images/notfications/gd_etl_error.png") {
     sound = "sound/" + sound_scheme + "/error.ogg";
   }
-  if (img == "icons/gd_etl_ok.png") {
+  if (img == "images/notifications/gd_etl_ok.png") {
     sound = "sound/" + sound_scheme + "/success.ogg";
   }
 
@@ -301,7 +303,8 @@ function notificationClicked(notID) {
 }
 
 function notify_old(title, text, tab, img, link) {
-  img = typeof img !== "undefined" ? img : "icons/gd19_rebrand_black.png";
+  img =
+    typeof img !== "undefined" ? img : "images/notifications/gd_default.png";
 
   var havePermission = window.webkitNotifications.checkPermission();
   if (havePermission == 0) {
@@ -454,44 +457,35 @@ function set_icon(tab) {
     if (
       icon == "icons/gd19_rebrand_black.png" ||
       icon == "icons/gd19_rebrand_gray.png" ||
+      icon == "icons/gd19_rebrand_black_beta.png" ||
+      icon == "icons/gd19_tiger.png" ||      
       icon == "icons/default.png"
     ) {
-      retina_icon = "retina/" + icon;
+      retina_icon = "icons/retina/" + icon.substring(6);
     } else {
       retina_icon = icon;
     }
 
-    //console.log("changing icon to "+icon);
-
     chrome.pageAction.setIcon({
       tabId: tab.id,
       path: {
-        "19": icon,
-        "38": retina_icon,
+        "19": "images/" + icon,
+        "38": "images/" + retina_icon,
       },
     });
-    /*
-  
-//THIS  ACTUALLY WORKS
-
-*/
   } else {
     //console.log("no server found in URL ");
   }
 }
 
-chrome.runtime.onSuspend.addListener(function () {
-  //console.info("GoodData extension for chrome is going to sleep");
-});
-
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == "install") {
-    //console.log("This is a first install of GoodData Extension Tool!");
+    //This is a first install of GoodData Extension Tool
     notify(
       "Welcome to GoodData Extension Tool!",
       "Click here to see the help",
       null,
-      "install_96.png",
+      "images/notification/gd_default.png",
       "gd_help.html#top"
     );
   } else if (details.reason == "update") {
@@ -500,29 +494,11 @@ chrome.runtime.onInstalled.addListener(function (details) {
       "Updated from " + details.previousVersion + " to " + thisVersion + "!"
     );
     notify(
-      "GoodData Extension has been updated!",
+      "GoodData Extension has been updated to version " + thisVersion,
       "Check help to see what is new and enjoy!",
       null,
-      "install_96.png",
+      "images/notifications/gd_default.png",
       "gd_help.html#changelog"
     );
   }
 });
-
-/*
-chrome.commands.onCommand.addListener( function(command) {
-  console.log(command);
-
-    if(command === "toggle-feature-foo"){
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, getProjectInfo(request.PID, request.server));
-        });
-    }
-});
-*/
-
-//Export project
-
-//Import project
-
-//New project

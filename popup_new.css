@@ -52,7 +52,7 @@ xtop: 10px;
 xleft: 10px;
 xheight: 19px;
 xborder: 0;
-background: url("logo_new@1x.png") no-repeat 0 0;
+background: url("images/popup/logo_new@1x.png") no-repeat 0 0;
 
 xwidth: 121px;
 
@@ -70,7 +70,7 @@ height: 30px;
 /*CSS for serving the retina image to devices with a high "device-pixel-ratio":*/
 @media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-devicepixel-ratio: 1.5), only screen and (min-resolution: 1.5dppx) {
 .appHeader .logoButton{
-    background-image: url("logo_new@2x.png");
+    background-image: url("images/popup/logo_new@2x.png");
     background-size: 30px 30px;
   }
 }
@@ -155,6 +155,7 @@ color: white;
 #navigation .supsub a{
   border-bottom: 1px solid #000;
   padding-bottom: 0px;
+  padding-left: 1px;
 }
 
 #navigation .supsub a:hover{

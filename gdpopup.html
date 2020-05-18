@@ -78,14 +78,16 @@
             id="object"
             title="Toggle between GUI and API display of objects"
             >Obj</a
-          ><sub
-            ><a
-              class="subnav"
-              href="https://${SERVER}${OBJURL}/explain2?type=oqt_dot&amp;format=html&amp;submit=submit"
-              id="explain"
-              title="Explain calculation of report"
-              >EX</a
-            ></sub
+          ><span class="supsub"
+            ><sub
+              ><a
+                class="subnav"
+                href="https://${SERVER}${OBJURL}/explain2?type=oqt_dot&amp;format=html&amp;submit=submit"
+                id="explain"
+                title="Explain calculation of report"
+                >EX</a
+              > </sub
+            ></span
           >
           <!--span class="spacer"></span-->
           <a
@@ -156,29 +158,34 @@
             id="export"
             title="Export project to create a copy"
             >Exp</a
-          ><sub
-            ><a
-              class="needpid subnav"
-              href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdexport"
-              id="md_export"
-              title="Export dashboard/metric/report to import it to another project"
-              >MD</a
-            ></sub
-          >
+          ><span class="supsub">
+            <sub
+              ><a
+                class="needpid subnav"
+                href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdexport"
+                id="md_export"
+                title="Export dashboard/metric/report to import it to another project"
+                >MD</a
+              ></sub
+            >
+          </span>
           <a
             class="needpid"
             href="https://${SERVER}/gdc/md/${PID}/maintenance/import"
             id="import"
             title="Import previously exported project to blank project"
             >Imp</a
-          ><sub
-            ><a
-              class="needpid subnav"
-              href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdimport"
-              id="md_import"
-              title="Import previously exported dashboard/metric/report"
-              >MD</a
-            ></sub
+          >
+          <span class="supsub"
+            ><sub
+              ><a
+                class="needpid subnav"
+                href="https://${SERVER}/gdc/md/${PID}/maintenance/partialmdimport"
+                id="md_import"
+                title="Import previously exported dashboard/metric/report"
+                >MD</a
+              ></sub
+            ></span
           >
           <span class="spacer"></span>
           <!--a class="needpid" href="${WEBDAV_PATH}" id="data" title="Go to project-specific WebDav directory">Data</a-->
@@ -202,7 +209,8 @@
             id="schedules"
             title="ETL Schedules within a project"
             >Sch</a
-          ><sub
+          ><span class="supsub"
+            ><sub
             ><a
               class="needpid subnav"
               href="https://${SERVER}/gdc/projects/${PID}/schedules/${SCHEDULE}"
@@ -210,7 +218,7 @@
               title="Selected Schedule in Gray Pages. If nothing is selected show all schedules in Project"
               >GP</a
             ></sub
-          >
+          ></span>
         </span>
         <span id="extra_buttons">
           <span class="spacer" id="last-spacer"></span>

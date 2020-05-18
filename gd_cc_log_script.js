@@ -911,7 +911,7 @@ function parseCClog() {
       message: "showNotification",
       title: "ETL Process ERROR",
       text: "'" + graph_name + "' finished with ERROR.",
-      img: "icons/gd_etl_error.png",
+      img: "images/notifications/gd_etl_error.png",
       only_other_tab: true,
     });
   } else {
@@ -920,7 +920,7 @@ function parseCClog() {
         message: "showNotification",
         title: "ETL Process FINISHED OK",
         text: "'" + graph_name + "' finished successfully.",
-        img: "icons/gd_etl_ok.png",
+        img: "images/notifications/gd_etl_ok.png",
         only_other_tab: true,
       });
     }

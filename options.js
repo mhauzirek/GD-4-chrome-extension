@@ -154,7 +154,7 @@ function read_chrome_storage() {
 }
 
 function default_icon_changed() {
-  new_icon = document.getElementById("default_icon").value;
+  new_icon = "images/" + document.getElementById("default_icon").value;
   document.getElementById("default_icon_view").src = chrome.extension.getURL(
     new_icon
   );
@@ -836,43 +836,6 @@ function restore_options() {
         "<b>NOT GRANTED</b>";
     }
 
-    //    var origins = permissions.origins;
-    //    var default_origins = ["https://*.gooddata.com/*","https://*/*","https://*/*/log*","https://*/gdc/md/*/obj/*","https://*/gdc/md/*/usedby2/*","https://*/gdc/md/*/using2/*"];
-    //    var hostnames_block = "https://*.gooddata.com/*<br>\n";
-    /*    
-    for(var i = 0; i<origins.length; i++){
-      var origin = origins[i];
-      if(!default_origins.includes(origin)){
-          hostnames_block = hostnames_block + "<input type=\"button\" class=\"hostname\" value=\""+origin+"\"><br>\n";
-      }else{
-        //is in default origins - we do not care;
-      }
-    }
-
-
-    document.getElementById('permission_hostnames_block').innerHTML = hostnames_block;
-    var hostnames = document.querySelectorAll('.hostname');
-    for (var i=0; i<hostnames.length; i++){
-      hostnames[i].addEventListener('click', function(e){
-          console.log(e);
-          alert(e.target.value);
-
-        chrome.permissions.remove({
-          permissions: ["contextMenus"],
-          origins: ["https://*.gooddata.com/*",e.target.value]
-        }, function(revoked) {
-          // The callback argument will be true if the user granted the permissions.
-          if (revoked) {
-            document.getElementById("permission_hostname_status").innerText = "Permission Revoked";
-          } else {
-            document.getElementById("permission_hostname_status").innerText = "Permission NOT Revoked";
-          }
-        });
-
-      });
-    }
-
-    */
   });
 }
 

@@ -1,10 +1,10 @@
 {
   "name": "GoodData Extension Tool BETA",
-  "version": "0.9108",
-  "version_name": "0.9108",
+  "version": "0.9109",
+  "version_name": "0.9109",
   "icons": {
-    "128": "gdlogo128_beta.png",
-    "192": "gdlogo192_beta.png"
+    "128": "images/extension/gdlogo128_beta.png",
+    "192": "images/extension/gdlogo192_beta.png"
   },
   "description": "Makes your life easier when developing in GoodData Cloud BI platform",
   "options_page": "options.html",
@@ -16,8 +16,8 @@
   },
   "page_action": {
     "default_icon": {
-      "19": "icons/gd19_rebrand_gray.png",
-      "38": "retina/icons/gd19_rebrand_gray.png"
+      "19": "images/icons/gd19_rebrand_gray.png",
+      "38": "images/icons/retina/gd19_rebrand_gray.png"
     },
     "default_title": "Legen...wait for it GoodData is loading...dary!",
     "default_popup": "gdpopup.html"
