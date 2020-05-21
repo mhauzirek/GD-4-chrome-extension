@@ -1,44 +1,41 @@
 html {
-            background-color: #eee;
-            font-size: 12px;
-        }
+    background-color: #eee;
+    font-size: 12px;
+}
 
-        pre {
-            line-height: 130%;
-        }
-        body {
-            font-family: monospace;
-            font-size: 12px;
-        }
+pre {
+    line-height: 130%;
+}
+body {
+    font-family: monospace;
+    font-size: 12px;
+}
 
-        html body div.form {
-            padding: 3px;
-            background-color: #ddd;
-            border: 1px solid #999;
-            margin-bottom: 10px;
-        }
+html body div.form {
+    padding: 3px;
+    background-color: #ddd;
+    border: 1px solid #999;
+    margin-bottom: 10px;
+}
 
-        body form div.fields {
-            padding : 3px;
-            margin: 3px;
-            float:left;
-        }
+body form div.fields {
+    padding: 3px;
+    margin: 3px;
+    float: left;
+}
 
-        body form div.fields fieldset {
-            border: 1px solid black;
-        }
+body form div.fields fieldset {
+    border: 1px solid black;
+}
 
-        span.detail {
-            font-size: 90%;
-        }
+span.detail {
+    font-size: 90%;
+}
 
-        body form div.submit {
-            padding : 3px;
-            clear:both;
-        }
-
-
-
+body form div.submit {
+    padding: 3px;
+    clear: both;
+}
 
 .blink_me {
     -webkit-animation-name: blinker;
@@ -47,8 +44,17 @@ html {
     -webkit-animation-iteration-count: 4;
 }
 
-@-webkit-keyframes blinker {  
-    0% { background-color: #999; color: #fff;}
-    50% { background-color: #000; color: #999;}
-    100% { background-color: #999; color: #fff;}
+@-webkit-keyframes blinker {
+    0% {
+        background-color: #999;
+        color: #fff;
+    }
+    50% {
+        background-color: #000;
+        color: #999;
+    }
+    100% {
+        background-color: #999;
+        color: #fff;
+    }
 }

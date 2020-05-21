@@ -71,7 +71,6 @@ overflow: hidden;
     font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: bold;
-    xwidth: 290;
 }
 
 .gd4chrome_value_inline{
@@ -169,10 +168,6 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     background-image: none;
     background-origin: padding-box;
     background-size: auto;
-    x_border-bottom-left-radius: 15px;
-    x_border-bottom-right-radius: 15px;
-    x_border-top-left-radius: 15px;
-    x_border-top-right-radius: 15px;
     color: rgb(255, 255, 255);
     display: block;
     font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
@@ -212,10 +207,6 @@ a.gd4chrome_etl_status_OK:hover,a.gd4chrome_etl_status_ERROR:hover,a.gd4chrome_e
     background-image: none;
     background-origin: padding-box;
     background-size: auto;
-    x_border-bottom-left-radius: 15px;
-    x_border-bottom-right-radius: 15px;
-    x_border-top-left-radius: 15px;
-    x_border-top-right-radius: 15px;
     color: rgb(255, 255, 255);
     display: block;
     font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
