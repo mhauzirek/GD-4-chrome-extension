@@ -170,7 +170,7 @@ function numberWithCommas1(x, decimals, noselect) {
   var DecimalSeparator = Number("1.2").toLocaleString().substr(1, 1);
   var GroupSeparator = Number("1000").toLocaleString().substr(1, 1);
 
-  if ((isNaN(x) || !x) && !x === 0) {
+  if (typeof(x) == 'undefined' || isNaN(x) || (!x && !x === 0) ) {
     return "N/A";
   }
 
