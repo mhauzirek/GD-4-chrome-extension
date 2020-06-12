@@ -36,7 +36,7 @@
     },
     {
       "matches": [
-        "https://*/*/log*"
+        "https://*/gdc/projects/*/log*"
       ],
       "js": [
         "gd_cc_log_script.js",
